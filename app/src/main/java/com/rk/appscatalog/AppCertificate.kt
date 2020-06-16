@@ -13,4 +13,19 @@ data class AppCertificate(
     val serialNumber: String?,
     val issuedDate: Date?,
     val expiryDate: Date?
-)
+) {
+
+    val desc: String
+        get() = """
+            Common Name         :   ${commonName.defaultOnNullOrEmpty()}
+            Organization        :   ${organization.defaultOnNullOrEmpty()}
+            Organization Unit   :   ${organizationUnit.defaultOnNullOrEmpty()}
+            Location            :   ${location.defaultOnNullOrEmpty()}
+            State               :   ${state.defaultOnNullOrEmpty()}
+            Country             :   ${country.defaultOnNullOrEmpty()}
+            Algorithm           :   ${algorithm.defaultOnNullOrEmpty()}
+            Serial Number       :   ${serialNumber.defaultOnNullOrEmpty()}
+            Issued Date         :   ${issuedDate.toReadableTimestamp().defaultOnNullOrEmpty()}
+            Expiry Date         :   ${expiryDate.toReadableTimestamp().defaultOnNullOrEmpty()}
+        """.trimIndent()
+}

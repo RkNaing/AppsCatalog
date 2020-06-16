@@ -6,13 +6,15 @@ import java.util.*
 
 private const val TAG = "Extensions"
 
-fun Long?.toReadableTimestamp(): String? {
+fun Long?.toReadableTimestamp(): String? =
+    if (this != null) Date(this).toReadableTimestamp() else null
 
-    if (this != null){
+fun Date?.toReadableTimestamp(): String? {
+
+    if (this != null) {
         try {
-            val date = Date(this)
-            val sdf = SimpleDateFormat("dd MMMM yyyy hh:mm:ss a",Locale.US)
-            return sdf.format(date)
+            val sdf = SimpleDateFormat("dd MMMM yyyy hh:mm:ss a", Locale.US)
+            return sdf.format(this)
         } catch (e: Exception) {
             Log.e(TAG, "toReadableTimestamp: ", e)
         }
@@ -20,3 +22,6 @@ fun Long?.toReadableTimestamp(): String? {
 
     return null
 }
+
+fun String?.defaultOnNullOrEmpty(default: String = "-"): String =
+    if (this == null || this.isEmpty() || this.isBlank()) default else this

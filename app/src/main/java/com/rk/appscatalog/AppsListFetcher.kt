@@ -9,6 +9,7 @@ import android.content.pm.ResolveInfo
 import android.content.pm.Signature
 import android.os.Build
 import android.util.Log
+import androidx.annotation.WorkerThread
 import java.io.ByteArrayInputStream
 import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
@@ -17,7 +18,17 @@ object AppsListFetcher {
 
     private const val TAG = "AppsListFetcher"
 
-    fun getAppsList(context: Context) {
+    private val apps: MutableList<App> = mutableListOf()
+
+    fun getApps():List<App> = apps
+
+    @WorkerThread
+    fun loadApps(context: Context) {
+        apps.clear()
+        getAppsList(context)
+    }
+
+    private fun getAppsList(context: Context) {
         val packageManager = context.packageManager
         val mainIntent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
         val resolvedAppsList: List<ResolveInfo> =
@@ -26,6 +37,7 @@ object AppsListFetcher {
         resolvedAppsList.forEach { resolvedInfo ->
 
             val appName = resolvedInfo.loadLabel(packageManager).toString()
+            val appIcon = resolvedInfo.loadIcon(packageManager)
             val packageName = resolvedInfo.activityInfo.packageName
             val installedBy = packageManager.getInstallerPackageName(packageName)
             var installedTimestamp: Long? = null
@@ -36,6 +48,7 @@ object AppsListFetcher {
             var permissions: List<Pair<String, String?>> = listOf()
             var providers: List<String> = listOf()
             var appCertificate: AppCertificate? = null
+            var category = "Undefined"
 
             try {
 
@@ -97,12 +110,15 @@ object AppsListFetcher {
                 val appInfo = packageManager.getApplicationInfo(packageName, 0)
                 isSystemApp = appInfo.flags and ApplicationInfo.FLAG_SYSTEM != 0
                 appId = appInfo.uid
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    category = getAppCategory(appInfo.category)
+                }
                 processName = appInfo.processName
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     minimumSDKDescription = Android.getDescriptionLabelFor(appInfo.minSdkVersion)
                 }
                 targetSDKDescription = Android.getDescriptionLabelFor(appInfo.targetSdkVersion)
-
+                appInfo.publicSourceDir
 
             } catch (e: Exception) {
                 Log.e(TAG, "getAppsList: ", e)
@@ -110,6 +126,8 @@ object AppsListFetcher {
 
             val app = App(
                 name = appName,
+                icon = appIcon,
+                category = category,
                 packageName = packageName,
                 installerPackageName = installedBy,
                 installedTimestamp = installedTimestamp,
@@ -128,7 +146,7 @@ object AppsListFetcher {
             )
 
             Log.d(TAG, "getAppsList: ${app.desc}")
-
+            apps.add(app)
         }
     }
 
@@ -222,6 +240,19 @@ object AppsListFetcher {
             Log.e(TAG, "getDNValue: ", e)
         }
         return value
+    }
+
+    private fun getAppCategory(category: Int): String {
+        return when (category) {
+            ApplicationInfo.CATEGORY_AUDIO -> "Audio"
+            ApplicationInfo.CATEGORY_GAME -> "Game"
+            ApplicationInfo.CATEGORY_IMAGE -> "Photo"
+            ApplicationInfo.CATEGORY_MAPS -> "Map"
+            ApplicationInfo.CATEGORY_NEWS -> "News"
+            ApplicationInfo.CATEGORY_PRODUCTIVITY -> "Productivity"
+            ApplicationInfo.CATEGORY_SOCIAL -> "Social"
+            else -> "Undefined"
+        }
     }
 
 }
