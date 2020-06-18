@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="list_item_margin">8dp</dimen>
+    <dimen name="app_icon">60dp</dimen>
+    <dimen name="img_empty_size">300dp</dimen>
+</resources>

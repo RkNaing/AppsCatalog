@@ -1,12 +1,16 @@
-package com.rk.appscatalog
+package com.rk.appscatalog.data.models
 
 import android.graphics.drawable.Drawable
+import com.rk.appscatalog.utils.defaultOnNullOrEmpty
+import com.rk.appscatalog.utils.toReadableTimestamp
 
 data class App(
     val name: String,
     val icon: Drawable?,
     val category: String,
     val packageName: String,
+    val versionName: String?,
+    val versionCode: Long?,
     val installerPackageName: String?,
     val installedTimestamp: Long?,
     val lastUpdatedTimestamp: Long?,

@@ -1,5 +1,7 @@
-package com.rk.appscatalog
+package com.rk.appscatalog.data.models
 
+import com.rk.appscatalog.utils.defaultOnNullOrEmpty
+import com.rk.appscatalog.utils.toReadableTimestamp
 import java.util.*
 
 data class AppCertificate(

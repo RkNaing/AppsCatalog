@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Apps Catalog</string>
+
+    <string name="lbl_all">All</string>
+    <string name="lbl_user">User</string>
+    <string name="lbl_system">System</string>
+    <string name="msg_no_apps">Hmm… Nothing here yet.</string>
+    <plurals name="lbl_apps_count">
+        <item quantity="one">%d Application</item>
+        <item quantity="other">%d Applications</item>
+    </plurals>
 </resources>

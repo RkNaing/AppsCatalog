@@ -1,4 +1,4 @@
-package com.rk.appscatalog
+package com.rk.appscatalog.data.models
 
 data class Android(val apiLevel: Int, val version: String, val name: String) {
     companion object {
@@ -16,13 +16,29 @@ data class Android(val apiLevel: Int, val version: String, val name: String) {
             Android(18, "4.3.x", "Jelly Bean"),
             Android(17, "4.2.x", "Jelly Bean"),
             Android(16, "4.1.x", "Jelly Bean"),
-            Android(15, "4.0.3 - 4.0.4", "Ice Cream Sandwich"),
-            Android(14, "4.0.1 - 4.0.2", "Ice Cream Sandwich"),
+            Android(
+                15,
+                "4.0.3 - 4.0.4",
+                "Ice Cream Sandwich"
+            ),
+            Android(
+                14,
+                "4.0.1 - 4.0.2",
+                "Ice Cream Sandwich"
+            ),
             Android(13, "3.2.x", "Honeycomb"),
             Android(12, "3.1", "Honeycomb"),
             Android(11, "3.0", "Honeycomb"),
-            Android(10, "2.3.3 - 2.3.7", "Gingerbread"),
-            Android(9, "2.3 - 2.3.2", "Gingerbread"),
+            Android(
+                10,
+                "2.3.3 - 2.3.7",
+                "Gingerbread"
+            ),
+            Android(
+                9,
+                "2.3 - 2.3.2",
+                "Gingerbread"
+            ),
             Android(8, "2.2.x", "Froyo"),
             Android(7, "2.1", "Eclair"),
             Android(6, "2.0.1", "Eclair"),

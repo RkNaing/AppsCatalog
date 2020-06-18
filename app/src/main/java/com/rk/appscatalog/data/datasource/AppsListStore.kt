@@ -1,4 +1,4 @@
-package com.rk.appscatalog
+package com.rk.appscatalog.data.datasource
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -9,23 +9,32 @@ import android.content.pm.ResolveInfo
 import android.content.pm.Signature
 import android.os.Build
 import android.util.Log
-import androidx.annotation.WorkerThread
+import com.rk.appscatalog.data.models.Android
+import com.rk.appscatalog.data.models.App
+import com.rk.appscatalog.data.models.AppCertificate
 import java.io.ByteArrayInputStream
 import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
 
-object AppsListFetcher {
+object AppsListStore {
 
     private const val TAG = "AppsListFetcher"
 
     private val apps: MutableList<App> = mutableListOf()
 
-    fun getApps():List<App> = apps
+    private var isLoaded: Boolean = false
 
-    @WorkerThread
-    fun loadApps(context: Context) {
+    fun getApps(context: Context): List<App> {
+        if (!isLoaded) {
+            loadApps(context)
+        }
+        return apps
+    }
+
+    private fun loadApps(context: Context) {
         apps.clear()
         getAppsList(context)
+        isLoaded = true
     }
 
     private fun getAppsList(context: Context) {
@@ -40,6 +49,8 @@ object AppsListFetcher {
             val appIcon = resolvedInfo.loadIcon(packageManager)
             val packageName = resolvedInfo.activityInfo.packageName
             val installedBy = packageManager.getInstallerPackageName(packageName)
+            var versionName: String? = null
+            var versionCode: Long? = null
             var installedTimestamp: Long? = null
             var lastUpdatedTimestamp: Long? = null
             var activities: List<String> = listOf()
@@ -56,6 +67,13 @@ object AppsListFetcher {
                     packageManager.getPackageInfo(packageName, PackageManager.GET_META_DATA)
                 installedTimestamp = metadataPackageInfo.firstInstallTime
                 lastUpdatedTimestamp = metadataPackageInfo.lastUpdateTime
+                versionName= metadataPackageInfo.versionName
+                versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    metadataPackageInfo.longVersionCode
+                }else{
+                    @Suppress("DEPRECATION")
+                    metadataPackageInfo.versionCode.toLong()
+                }
 
                 val activityInfoList = packageManager.getPackageInfo(
                     packageName,
@@ -80,7 +98,10 @@ object AppsListFetcher {
                 permissions = permissionInfoList?.mapNotNull {
                     Pair(
                         it,
-                        getPermissionDescription(context, it)
+                        getPermissionDescription(
+                            context,
+                            it
+                        )
                     )
                 } ?: listOf()
 
@@ -90,7 +111,11 @@ object AppsListFetcher {
                 ).providers
                 providers = providerInfoList?.mapNotNull { it.name }?.toList() ?: listOf()
 
-                val applicationSignatures = getApplicationSignatures(context, packageName)
+                val applicationSignatures =
+                    getApplicationSignatures(
+                        context,
+                        packageName
+                    )
                 Log.d(TAG, "getAppsList: ${applicationSignatures.size}")
                 appCertificate =
                     if (applicationSignatures.isNotEmpty()) extractSignatureInformation(
@@ -111,13 +136,22 @@ object AppsListFetcher {
                 isSystemApp = appInfo.flags and ApplicationInfo.FLAG_SYSTEM != 0
                 appId = appInfo.uid
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    category = getAppCategory(appInfo.category)
+                    category =
+                        getAppCategory(
+                            appInfo.category
+                        )
                 }
                 processName = appInfo.processName
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    minimumSDKDescription = Android.getDescriptionLabelFor(appInfo.minSdkVersion)
+                    minimumSDKDescription =
+                        Android.getDescriptionLabelFor(
+                            appInfo.minSdkVersion
+                        )
                 }
-                targetSDKDescription = Android.getDescriptionLabelFor(appInfo.targetSdkVersion)
+                targetSDKDescription =
+                    Android.getDescriptionLabelFor(
+                        appInfo.targetSdkVersion
+                    )
                 appInfo.publicSourceDir
 
             } catch (e: Exception) {
@@ -129,6 +163,8 @@ object AppsListFetcher {
                 icon = appIcon,
                 category = category,
                 packageName = packageName,
+                versionName = versionName,
+                versionCode = versionCode,
                 installerPackageName = installedBy,
                 installedTimestamp = installedTimestamp,
                 lastUpdatedTimestamp = lastUpdatedTimestamp,
@@ -204,12 +240,30 @@ object AppsListFetcher {
             //CN=Android,OU=Android,O=Google Inc.,L=Mountain View,ST=California,C=US
             Log.d(TAG, "extractSignatureInformation: $issuerDNName")
             AppCertificate(
-                commonName = getDNValue("CN", issuerDNName),
-                organization = getDNValue("O", issuerDNName),
-                organizationUnit = getDNValue("OU", issuerDNName),
-                location = getDNValue("L", issuerDNName),
-                state = getDNValue("ST", issuerDNName),
-                country = getDNValue("C", issuerDNName),
+                commonName = getDNValue(
+                    "CN",
+                    issuerDNName
+                ),
+                organization = getDNValue(
+                    "O",
+                    issuerDNName
+                ),
+                organizationUnit = getDNValue(
+                    "OU",
+                    issuerDNName
+                ),
+                location = getDNValue(
+                    "L",
+                    issuerDNName
+                ),
+                state = getDNValue(
+                    "ST",
+                    issuerDNName
+                ),
+                country = getDNValue(
+                    "C",
+                    issuerDNName
+                ),
                 algorithm = x509Cert.sigAlgName,
                 serialNumber = x509Cert.serialNumber.toString(),
                 issuedDate = x509Cert.notBefore,
