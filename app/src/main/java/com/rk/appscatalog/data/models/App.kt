@@ -6,10 +6,10 @@ import com.rk.appscatalog.utils.toReadableTimestamp
 
 data class App(
     val name: String,
-    val icon: Drawable?,
+    @Transient val icon: Drawable?,
     val category: String,
     val packageName: String,
-    val versionName: String?,
+    val versionName: String,
     val versionCode: Long?,
     val installerPackageName: String?,
     val installedTimestamp: Long?,

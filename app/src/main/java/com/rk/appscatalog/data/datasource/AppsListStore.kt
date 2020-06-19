@@ -1,18 +1,18 @@
 package com.rk.appscatalog.data.datasource
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import android.content.pm.ResolveInfo
 import android.content.pm.Signature
 import android.os.Build
 import android.util.Log
+import com.google.gson.GsonBuilder
 import com.rk.appscatalog.data.models.Android
 import com.rk.appscatalog.data.models.App
 import com.rk.appscatalog.data.models.AppCertificate
 import java.io.ByteArrayInputStream
+import java.io.File
+import java.io.FileWriter
 import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
 
@@ -33,178 +33,107 @@ object AppsListStore {
 
     private fun loadApps(context: Context) {
         apps.clear()
-        getAppsList(context)
+        apps.addAll(
+            context.packageManager.getInstalledPackages(0)
+                .mapNotNull { it?.applicationInfo?.packageName }
+                .mapNotNull { packageName ->
+                    runCatching { collectAppInformation(context, packageName) }
+                        .getOrNull()
+                }
+        )
         isLoaded = true
+        debugLogFile(context)
     }
 
-    private fun getAppsList(context: Context) {
+    private fun collectAppInformation(context: Context, packageName: String): App {
         val packageManager = context.packageManager
-        val mainIntent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
-        val resolvedAppsList: List<ResolveInfo> =
-            packageManager.queryIntentActivities(mainIntent, 0)
-        Log.d(TAG, "getAppsList: Found ${resolvedAppsList.size} applications.")
-        resolvedAppsList.forEach { resolvedInfo ->
 
-            val appName = resolvedInfo.loadLabel(packageManager).toString()
-            val appIcon = resolvedInfo.loadIcon(packageManager)
-            val packageName = resolvedInfo.activityInfo.packageName
-            val installedBy = packageManager.getInstallerPackageName(packageName)
-            var versionName: String? = null
-            var versionCode: Long? = null
-            var installedTimestamp: Long? = null
-            var lastUpdatedTimestamp: Long? = null
-            var activities: List<String> = listOf()
-            var services: List<String> = listOf()
-            var receivers: List<String> = listOf()
-            var permissions: List<Pair<String, String?>> = listOf()
-            var providers: List<String> = listOf()
-            var appCertificate: AppCertificate? = null
-            var category = "Undefined"
+        //region MetaData Information
+        val metadataPackageInfo =
+            packageManager.getPackageInfo(packageName, PackageManager.GET_META_DATA)
 
-            try {
-
-                val metadataPackageInfo =
-                    packageManager.getPackageInfo(packageName, PackageManager.GET_META_DATA)
-                installedTimestamp = metadataPackageInfo.firstInstallTime
-                lastUpdatedTimestamp = metadataPackageInfo.lastUpdateTime
-                versionName= metadataPackageInfo.versionName
-                versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    metadataPackageInfo.longVersionCode
-                }else{
-                    @Suppress("DEPRECATION")
-                    metadataPackageInfo.versionCode.toLong()
-                }
-
-                val activityInfoList = packageManager.getPackageInfo(
-                    packageName,
-                    PackageManager.GET_ACTIVITIES
-                ).activities
-                activities = activityInfoList?.mapNotNull { it.name }?.toList() ?: listOf()
-
-                val serviceInfoList =
-                    packageManager.getPackageInfo(packageName, PackageManager.GET_SERVICES).services
-                services = serviceInfoList?.mapNotNull { it.name }?.toList() ?: listOf()
-
-                val receiverInfoList = packageManager.getPackageInfo(
-                    packageName,
-                    PackageManager.GET_RECEIVERS
-                ).receivers
-                receivers = receiverInfoList?.mapNotNull { it.name }?.toList() ?: listOf()
-
-                val permissionInfoList = packageManager.getPackageInfo(
-                    packageName,
-                    PackageManager.GET_PERMISSIONS
-                ).requestedPermissions
-                permissions = permissionInfoList?.mapNotNull {
-                    Pair(
-                        it,
-                        getPermissionDescription(
-                            context,
-                            it
-                        )
-                    )
-                } ?: listOf()
-
-                val providerInfoList = packageManager.getPackageInfo(
-                    packageName,
-                    PackageManager.GET_PROVIDERS
-                ).providers
-                providers = providerInfoList?.mapNotNull { it.name }?.toList() ?: listOf()
-
-                val applicationSignatures =
-                    getApplicationSignatures(
-                        context,
-                        packageName
-                    )
-                Log.d(TAG, "getAppsList: ${applicationSignatures.size}")
-                appCertificate =
-                    if (applicationSignatures.isNotEmpty()) extractSignatureInformation(
-                        applicationSignatures[0]
-                    ) else null
-
-            } catch (e: Exception) {
-                Log.e(TAG, "getAppsList: ", e)
-            }
-
-            var appId: Int? = null
-            var isSystemApp = false
-            var processName: String? = null
-            var minimumSDKDescription: String? = null
-            var targetSDKDescription: String? = null
-            try {
-                val appInfo = packageManager.getApplicationInfo(packageName, 0)
-                isSystemApp = appInfo.flags and ApplicationInfo.FLAG_SYSTEM != 0
-                appId = appInfo.uid
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    category =
-                        getAppCategory(
-                            appInfo.category
-                        )
-                }
-                processName = appInfo.processName
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    minimumSDKDescription =
-                        Android.getDescriptionLabelFor(
-                            appInfo.minSdkVersion
-                        )
-                }
-                targetSDKDescription =
-                    Android.getDescriptionLabelFor(
-                        appInfo.targetSdkVersion
-                    )
-                appInfo.publicSourceDir
-
-            } catch (e: Exception) {
-                Log.e(TAG, "getAppsList: ", e)
-            }
-
-            val app = App(
-                name = appName,
-                icon = appIcon,
-                category = category,
-                packageName = packageName,
-                versionName = versionName,
-                versionCode = versionCode,
-                installerPackageName = installedBy,
-                installedTimestamp = installedTimestamp,
-                lastUpdatedTimestamp = lastUpdatedTimestamp,
-                isSystemApp = isSystemApp,
-                processName = processName,
-                minimumSDKDescription = minimumSDKDescription,
-                targetSDKDescription = targetSDKDescription,
-                appId = appId,
-                activities = activities,
-                services = services,
-                receivers = receivers,
-                permissions = permissions,
-                providers = providers,
-                appCertificate = appCertificate
+        val applicationInfo = metadataPackageInfo.applicationInfo
+        val name = applicationInfo.loadLabel(packageManager).toString()
+        val icon = applicationInfo.loadIcon(packageManager)
+        val category = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            getAppCategory(applicationInfo.category)
+        } else {
+            "Undefined"
+        }
+        val isSystemApp = applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM != 0
+        val appId = applicationInfo.uid
+        val processName = applicationInfo.processName
+        val targetSDKDescription =
+            Android.getDescriptionLabelFor(
+                applicationInfo.targetSdkVersion
             )
-
-            Log.d(TAG, "getAppsList: ${app.desc}")
-            apps.add(app)
+        val minimumSDKDescription = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Android.getDescriptionLabelFor(
+                applicationInfo.minSdkVersion
+            )
+        } else null
+        val appPackageName = metadataPackageInfo.packageName
+        val versionName = metadataPackageInfo.versionName
+        val versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            metadataPackageInfo.longVersionCode
+        } else {
+            @Suppress("DEPRECATION")
+            metadataPackageInfo.versionCode.toLong()
         }
-    }
+        val installedTimestamp = metadataPackageInfo.firstInstallTime
+        val lastUpdatedTimestamp = metadataPackageInfo.lastUpdateTime
+        val installedBy = packageManager.getInstallerPackageName(packageName)
+        //endregion
 
-    private fun getPermissionDescription(context: Context, permission: String): String? {
-        try {
-            val packageManager = context.packageManager
-            val permissionInfo =
-                packageManager.getPermissionInfo(permission, PackageManager.GET_META_DATA)
-            return permissionInfo.loadDescription(packageManager)?.toString()
-        } catch (e: Exception) {
-            //Log.e(TAG, "getPermissionDescription: ", e)
-        }
-        return null
-    }
+        //region Activities
+        val activityInfoList = packageManager.getPackageInfo(
+            packageName,
+            PackageManager.GET_ACTIVITIES
+        ).activities
+        val activities = activityInfoList?.mapNotNull { it.name }?.toList() ?: listOf()
+        //endregion
 
-    private fun getApplicationSignatures(context: Context, packageName: String): List<Signature> {
+        //region Services
+        val serviceInfoList =
+            packageManager.getPackageInfo(packageName, PackageManager.GET_SERVICES).services
+        val services = serviceInfoList?.mapNotNull { it.name }?.toList() ?: listOf()
+        //endregion
 
-        var signatures: List<Signature>? = null
+        //region Receivers
+        val receiverInfoList = packageManager.getPackageInfo(
+            packageName,
+            PackageManager.GET_RECEIVERS
+        ).receivers
+        val receivers = receiverInfoList?.mapNotNull { it.name }?.toList() ?: listOf()
+        //endregion
 
-        try {
-            @SuppressLint("PackageManagerGetSignatures")
-            signatures = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        //region Permissions
+        val permissionInfoList = packageManager.getPackageInfo(
+            packageName,
+            PackageManager.GET_PERMISSIONS
+        ).requestedPermissions
+        val permissions = permissionInfoList?.mapNotNull {
+            Pair(
+                it,
+                getPermissionDescription(
+                    context,
+                    it
+                )
+            )
+        } ?: listOf()
+        //endregion
+
+        //region Providers
+        val providerInfoList = packageManager.getPackageInfo(
+            packageName,
+            PackageManager.GET_PROVIDERS
+        ).providers
+        val providers = providerInfoList?.mapNotNull { it.name }?.toList() ?: listOf()
+        //endregion
+
+        //region Signature Information
+        val applicationSignatures: List<Signature> =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 val signature = context.packageManager.getPackageInfo(
                     packageName,
                     PackageManager.GET_SIGNING_CERTIFICATES
@@ -220,13 +149,49 @@ object AppsListStore {
                     packageName,
                     PackageManager.GET_SIGNATURES
                 ).signatures?.toList()
-            }
+            } ?: listOf()
+
+        val appCertificate =
+            if (applicationSignatures.isNotEmpty()) extractSignatureInformation(
+                applicationSignatures[0]
+            ) else null
+        //endregion
+
+        return App(
+            name = name,
+            icon = icon,
+            category = category,
+            packageName = appPackageName,
+            versionName = versionName,
+            versionCode = versionCode,
+            installerPackageName = installedBy,
+            installedTimestamp = installedTimestamp,
+            lastUpdatedTimestamp = lastUpdatedTimestamp,
+            isSystemApp = isSystemApp,
+            processName = processName,
+            minimumSDKDescription = minimumSDKDescription,
+            targetSDKDescription = targetSDKDescription,
+            appId = appId,
+            activities = activities,
+            services = services,
+            receivers = receivers,
+            permissions = permissions,
+            providers = providers,
+            appCertificate = appCertificate
+        )
+
+    }
+
+    private fun getPermissionDescription(context: Context, permission: String): String? {
+        try {
+            val packageManager = context.packageManager
+            val permissionInfo =
+                packageManager.getPermissionInfo(permission, PackageManager.GET_META_DATA)
+            return permissionInfo.loadDescription(packageManager)?.toString()
         } catch (e: Exception) {
-            //Log.e(TAG, "getApplicationSignatures: ", e)
+            //Log.e(TAG, "getPermissionDescription: ", e)
         }
-
-        return signatures ?: emptyList()
-
+        return null
     }
 
     private fun extractSignatureInformation(signature: Signature): AppCertificate? {
@@ -307,6 +272,12 @@ object AppsListStore {
             ApplicationInfo.CATEGORY_SOCIAL -> "Social"
             else -> "Undefined"
         }
+    }
+
+    private fun debugLogFile(context: Context) {
+        val gson = GsonBuilder().setPrettyPrinting().create()
+        val jsonLogFile = File(context.cacheDir, "Apps.json")
+        gson.toJson(apps, FileWriter(jsonLogFile))
     }
 
 }
