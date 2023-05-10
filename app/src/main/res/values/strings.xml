@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Apps Catalog</string>
+
+    <string name="lbl_all_apps">All Apps</string>
+    <string name="lbl_system_apps">System Apps</string>
+    <string name="lbl_installed_apps">Installed Apps</string>
+
+    <string name="content_desc_tune_app_list">Filter/sort applications list.</string>
+    <string name="lbl_system_app">System App</string>
+    <string name="lbl_debuggable">Debuggable</string>
+</resources>
