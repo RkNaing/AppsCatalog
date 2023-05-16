@@ -61,13 +61,16 @@ dependencies {
     setupJetpackCompose()
 
     /* Androidx */
-    implementation("androidx.core:core-ktx:1.10.0")
+    implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
 
-    /* Hilt https://developer.android.com/training/dependency-injection/hilt-android#setup */
+    /* Hilt https://tinyurl.com/hilt-android */
     val hiltVersion = "2.45"
     implementation("com.google.dagger:hilt-android:$hiltVersion")
     kapt("com.google.dagger:hilt-android-compiler:$hiltVersion")
+
+    /* Preference Datastore https://tinyurl.com/preference-datastore*/
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 
     /* Kotlin Coroutines */
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")

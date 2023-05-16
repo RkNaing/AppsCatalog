@@ -3,8 +3,8 @@ package com.rkzmn.appscatalog.presentation.apps.list
 import androidx.annotation.DrawableRes
 import com.rkzmn.appscatalog.domain.model.AppInfo
 import com.rkzmn.appscatalog.utils.android.UiString
-import com.rkzmn.appscatalog.utils.app.Drawables
-import com.rkzmn.appscatalog.utils.app.Strings
+import com.rkzmn.appscatalog.utils.app.AppDrawables
+import com.rkzmn.appscatalog.utils.app.AppStrings
 import com.rkzmn.appscatalog.utils.kotlin.byteCountToDisplaySize
 
 data class AppItem(
@@ -23,12 +23,12 @@ data class AppItem(
     ) {
         companion object {
             val systemAppIndicator = Indicator(
-                icon = Drawables.ic_system_app,
-                contentDescription = UiString.from(Strings.lbl_system_app)
+                icon = AppDrawables.ic_system_app,
+                contentDescription = UiString.from(AppStrings.lbl_system_app)
             )
             val debuggableIndicator = Indicator(
-                icon = Drawables.ic_debugable,
-                contentDescription = UiString.from(Strings.lbl_debuggable)
+                icon = AppDrawables.ic_debugable,
+                contentDescription = UiString.from(AppStrings.lbl_debuggable)
             )
         }
     }

@@ -4,12 +4,7 @@ import android.content.Context
 import com.rkzmn.apps_data_provider.getApps
 import com.rkzmn.appscatalog.domain.mappers.getAppInfo
 import com.rkzmn.appscatalog.domain.model.AppInfo
-import com.rkzmn.appscatalog.domain.model.AppInfoSortOption
-import com.rkzmn.appscatalog.domain.model.AppInfoSortOption.Property.INSTALLED_DATE
-import com.rkzmn.appscatalog.domain.model.AppInfoSortOption.Property.LAST_UPDATED
-import com.rkzmn.appscatalog.domain.model.AppInfoSortOption.Property.LAST_USED
-import com.rkzmn.appscatalog.domain.model.AppInfoSortOption.Property.NAME
-import com.rkzmn.appscatalog.domain.model.AppInfoSortOption.Property.SIZE
+import com.rkzmn.appscatalog.domain.model.AppSortOption
 import com.rkzmn.appscatalog.domain.model.AppsListType
 import com.rkzmn.appscatalog.domain.repositories.AppDataRepository
 import com.rkzmn.appscatalog.utils.kotlin.CoroutineDispatcherProvider
@@ -27,7 +22,7 @@ class AndroidAppDataRepository @Inject constructor(
 
     override suspend fun getAllApps(
         isRefresh: Boolean,
-        sortOption: AppInfoSortOption,
+        sortOption: AppSortOption,
         listType: AppsListType
     ): List<AppInfo> {
         Timber.d("getAllApps() called with: isRefresh = [$isRefresh], sortOption = [$sortOption], listType = [$listType]")
@@ -36,23 +31,20 @@ class AndroidAppDataRepository @Inject constructor(
                 apps.addAll(getApps(context).map { it.getAppInfo() })
             }
 
-            val selector: (AppInfo) -> Comparable<*>? = when (sortOption.property) {
-                NAME -> AppInfo::appName
-                INSTALLED_DATE -> AppInfo::installedTimestamp
-                LAST_UPDATED -> AppInfo::lastUpdatedTimestamp
-                SIZE -> AppInfo::appSize
-                LAST_USED -> AppInfo::lastUsedTimestamp
+            val comparator = when (sortOption) {
+                AppSortOption.NAME_ASC -> compareBy(AppInfo::appName)
+                AppSortOption.NAME_DESC -> compareByDescending(AppInfo::appName)
+                AppSortOption.INSTALLED_DATE_ASC -> compareBy(AppInfo::installedTimestamp)
+                AppSortOption.INSTALLED_DATE_DESC -> compareByDescending(AppInfo::installedTimestamp)
+                AppSortOption.LAST_UPDATED_ASC -> compareBy(AppInfo::lastUpdatedTimestamp)
+                AppSortOption.LAST_UPDATED_DESC -> compareByDescending(AppInfo::lastUpdatedTimestamp)
+                AppSortOption.SIZE_ASC -> compareBy(AppInfo::appSize)
+                AppSortOption.SIZE_DESC -> compareByDescending(AppInfo::appSize)
+                AppSortOption.LAST_USED_ASC -> compareBy(AppInfo::lastUsedTimestamp)
+                AppSortOption.LAST_USED_DESC -> compareByDescending(AppInfo::lastUsedTimestamp)
             }
 
-            val allApps = apps.sortedWith(
-                comparator = if (sortOption.isDescending) {
-                    compareBy(selector)
-                } else {
-                    compareByDescending(
-                        selector
-                    )
-                }
-            )
+            val allApps = apps.sortedWith(comparator = comparator)
 
             when (listType) {
                 AppsListType.ALL -> allApps

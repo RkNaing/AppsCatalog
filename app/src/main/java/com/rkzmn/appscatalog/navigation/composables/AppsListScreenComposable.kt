@@ -21,7 +21,10 @@ fun NavGraphBuilder.appsListScreenComposable(
         val state by viewModel.appsListState.collectAsStateWithLifecycle()
         AppListScreen(
             state = state,
-            onItemClicked = {}
+            onItemClicked = {},
+            onSelectAppListType = viewModel::onSelectListType,
+            onSelectDisplayType = viewModel::onSelectDisplayType,
+            onSelectSortOption = viewModel::onSelectSortOption
         )
 
     }

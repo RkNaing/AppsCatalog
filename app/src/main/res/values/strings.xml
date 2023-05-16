@@ -8,4 +8,29 @@
     <string name="content_desc_tune_app_list">Filter/sort applications list.</string>
     <string name="lbl_system_app">System App</string>
     <string name="lbl_debuggable">Debuggable</string>
+
+    <string name="lbl_sort_by">Sort By</string>
+    <string name="lbl_sort_by_name">Name</string>
+    <string name="lbl_sort_by_size">Size</string>
+    <string name="lbl_sort_by_usage">Usage</string>
+    <string name="lbl_sort_by_update">Update</string>
+    <string name="lbl_sort_by_installed">Installation</string>
+    <string name="lbl_ascending">Ascending</string>
+    <string name="lbl_descending">Descending</string>
+    <string name="lbl_bigger_to_smaller">Largest First</string>
+    <string name="lbl_smaller_to_bigger">Smallest First</string>
+    <string name="lbl_recently_used">Recent</string>
+    <string name="lbl_rarely_used">Rare</string>
+    <string name="lbl_recently_updated">Recent First</string>
+    <string name="lbl_least_update">Oldest First</string>
+    <string name="lbl_recent_installed">Recent First</string>
+    <string name="lbl_oldest_installed">Early First</string>
+
+    <string name="lbl_options_filter">Options &amp; Filters</string>
+    <string name="lbl_app_type">Application Type</string>
+    <string name="lbl_app_display_type">Display As</string>
+    <string name="lbl_app_display_type_list">List</string>
+    <string name="lbl_app_display_type_grid">Grid</string>
+
+
 </resources>

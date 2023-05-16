@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -27,17 +28,24 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import com.rkzmn.appscatalog.domain.model.AppSortOption
+import com.rkzmn.appscatalog.domain.model.AppsListType
+import com.rkzmn.appscatalog.presentation.apps.list.states.AppsDisplayType
 import com.rkzmn.appscatalog.presentation.apps.list.states.AppsDisplayType.*
 import com.rkzmn.appscatalog.presentation.apps.list.states.AppsListScreenState
+import com.rkzmn.appscatalog.presentation.apps.options.AppsListOptionsBottomSheet
 import com.rkzmn.appscatalog.ui.theme.seed
 import com.rkzmn.appscatalog.ui.theme.spacingSmall
-import com.rkzmn.appscatalog.utils.app.Strings
+import com.rkzmn.appscatalog.utils.app.AppStrings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppListScreen(
     state: AppsListScreenState,
     onItemClicked: (AppItem) -> Unit,
+    onSelectAppListType: (AppsListType) -> Unit,
+    onSelectDisplayType: (AppsDisplayType) -> Unit,
+    onSelectSortOption: (AppSortOption) -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val context = LocalContext.current
@@ -49,13 +57,31 @@ fun AppListScreen(
             append(" ")
             append(appsTypeLabel)
             addStyle(
-                SpanStyle(color = seed, fontWeight = FontWeight.Bold, fontStyle = FontStyle.Italic,),
+                SpanStyle(
+                    color = seed,
+                    fontWeight = FontWeight.Bold,
+                    fontStyle = FontStyle.Italic,
+                ),
                 start = 0,
                 end = appsCountsLabel.length
             )
         }
         mutableStateOf(annotatedString)
     }
+    var showFilterDialog by remember { mutableStateOf(false) }
+
+    if (showFilterDialog) {
+        AppsListOptionsBottomSheet(
+            onDismissRequest = { showFilterDialog = false },
+            appsType = state.listType,
+            onSelectAppListType = onSelectAppListType,
+            displayType = state.listDisplayType,
+            onSelectDisplayType = onSelectDisplayType,
+            selectedSortOption = state.sortBy,
+            onSelectSortOption = onSelectSortOption,
+        )
+    }
+
 
     Scaffold(
         modifier = Modifier
@@ -68,7 +94,7 @@ fun AppListScreen(
                         modifier = Modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(spacingSmall)
                     ) {
-                        Text(text = stringResource(id = Strings.app_name))
+                        Text(text = stringResource(id = AppStrings.app_name))
 
                         Text(
                             text = subtitle,
@@ -79,10 +105,10 @@ fun AppListScreen(
 
                 },
                 actions = {
-                    IconButton(onClick = { }) {
+                    IconButton(onClick = { showFilterDialog = true }) {
                         Icon(
                             imageVector = Icons.Outlined.FilterList,
-                            contentDescription = stringResource(id = Strings.content_desc_tune_app_list),
+                            contentDescription = stringResource(id = AppStrings.content_desc_tune_app_list),
                             tint = seed
                         )
                     }
