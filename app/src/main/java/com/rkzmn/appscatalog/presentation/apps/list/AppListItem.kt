@@ -96,7 +96,6 @@ fun AppListItem(
                 modifier = Modifier
                     .padding(spacingMedium)
                     .size(appIconSize)
-                    .align(Alignment.CenterVertically)
             )
 
             Column(

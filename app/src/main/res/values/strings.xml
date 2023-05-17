@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Apps Catalog</string>
 
+    <string name="lbl_loading">Just a sec…</string>
+
     <string name="lbl_all_apps">All Apps</string>
     <string name="lbl_system_apps">System Apps</string>
     <string name="lbl_installed_apps">Installed Apps</string>

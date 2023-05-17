@@ -122,4 +122,11 @@ fun DependencyHandlerScope.setupJetpackCompose(){
     // UI Tests
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
+
+    /* Accompanist Libraries */
+    val accompanistVersion = "0.31.2-alpha"
+    implementation("com.google.accompanist:accompanist-placeholder-material:$accompanistVersion")
+    implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion")
+
 }

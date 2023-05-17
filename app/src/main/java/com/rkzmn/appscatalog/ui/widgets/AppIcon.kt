@@ -1,7 +1,9 @@
 package com.rkzmn.appscatalog.ui.widgets
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
 import com.rkzmn.appscatalog.utils.app.AppDrawables
@@ -19,6 +21,6 @@ fun AppIcon(
         placeholder = placeholder,
         error = placeholder,
         fallback = placeholder,
-        modifier = modifier
+        modifier = modifier.clip(MaterialTheme.shapes.medium)
     )
 }

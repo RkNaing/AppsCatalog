@@ -36,6 +36,7 @@ import com.rkzmn.appscatalog.presentation.apps.list.states.AppsListScreenState
 import com.rkzmn.appscatalog.presentation.apps.options.AppsListOptionsBottomSheet
 import com.rkzmn.appscatalog.ui.theme.seed
 import com.rkzmn.appscatalog.ui.theme.spacingSmall
+import com.rkzmn.appscatalog.ui.widgets.ProgressView
 import com.rkzmn.appscatalog.utils.app.AppStrings
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -117,22 +118,32 @@ fun AppListScreen(
             )
         }
     ) { contentPadding ->
-        when (state.listDisplayType) {
-            LIST -> AppsList(
+        if (state.isLoading) {
+            ProgressView(
+                message = stringResource(id = AppStrings.lbl_loading),
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(contentPadding),
-                apps = state.apps,
-                onItemClicked = onItemClicked,
+                    .padding(contentPadding)
             )
+        } else {
+            when (state.listDisplayType) {
+                LIST -> AppsList(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(contentPadding),
+                    apps = state.apps,
+                    onItemClicked = onItemClicked,
+                )
 
-            GRID -> AppsGrid(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(contentPadding),
-                apps = state.apps,
-                onItemClicked = onItemClicked,
-            )
+                GRID -> AppsGrid(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(contentPadding),
+                    apps = state.apps,
+                    onItemClicked = onItemClicked,
+                )
+            }
         }
+
     }
 }
