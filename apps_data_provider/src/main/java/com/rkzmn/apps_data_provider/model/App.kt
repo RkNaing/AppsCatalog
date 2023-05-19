@@ -1,5 +1,7 @@
 package com.rkzmn.apps_data_provider.model
 
+import com.rkzmn.apps_data_provider.utils.getAndroidVersionLabel
+
 data class App(
     val appName: String,
     val appIcon: String?,
@@ -12,5 +14,19 @@ data class App(
     val installedTimestamp: Long,
     val lastUpdatedTimestamp: Long,
     val lastUsedTimestamp: Long?,
-    val appSize: Long
-)
+    val appSize: Long,
+    val minSdk: Int,
+    val targetSdk: Int,
+    val compileSdk: Int,
+) {
+
+    val minAndroidVersion: String
+        get() = getAndroidVersionLabel(minSdk)
+
+    val targetAndroidVersion: String
+        get() = getAndroidVersionLabel(targetSdk)
+
+    val compileSdkAndroidVersion: String
+        get() = getAndroidVersionLabel(compileSdk)
+
+}

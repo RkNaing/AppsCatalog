@@ -13,21 +13,10 @@ data class AppInfo(
     val lastUpdatedTimestamp: Long = 0L,
     val lastUsedTimestamp: Long? = 0L,
     val appSize: Long = 0L,
-) {
-
-    val displayVersion: String = buildString {
-        val components = mutableListOf<String>()
-        if (!versionName.isNullOrBlank()) {
-            components.add(versionName)
-        }
-
-        if (versionCode != 0L) {
-            components.add("($versionCode)")
-        }
-
-        if (components.isNotEmpty()){
-            append(components.joinToString(separator = " "))
-        }
-    }
-
-}
+    val minSdk: Int,
+    val minAndroidVersion: String,
+    val targetSdk: Int,
+    val targetAndroidVersion: String,
+    val compileSdk: Int,
+    val compileSdkAndroidVersion: String,
+)

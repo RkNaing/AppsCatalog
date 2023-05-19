@@ -16,6 +16,12 @@ fun App.getAppInfo(): AppInfo {
         installedTimestamp = installedTimestamp,
         lastUpdatedTimestamp = lastUpdatedTimestamp,
         lastUsedTimestamp = lastUsedTimestamp,
-        appSize = appSize
+        appSize = appSize,
+        minSdk = minSdk,
+        minAndroidVersion = minAndroidVersion,
+        targetSdk = targetSdk,
+        targetAndroidVersion = targetAndroidVersion,
+        compileSdk = compileSdk,
+        compileSdkAndroidVersion = compileSdkAndroidVersion,
     )
 }

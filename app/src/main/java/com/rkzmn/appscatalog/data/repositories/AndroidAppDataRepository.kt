@@ -1,8 +1,17 @@
 package com.rkzmn.appscatalog.data.repositories
 
 import android.content.Context
+import com.rkzmn.apps_data_provider.getAppActivities
+import com.rkzmn.apps_data_provider.getAppPermissions
+import com.rkzmn.apps_data_provider.getAppReceivers
+import com.rkzmn.apps_data_provider.getAppServices
 import com.rkzmn.apps_data_provider.getApps
+import com.rkzmn.apps_data_provider.model.AppComponent
+import com.rkzmn.apps_data_provider.model.AppPermission
 import com.rkzmn.appscatalog.domain.mappers.getAppInfo
+import com.rkzmn.appscatalog.domain.mappers.getComponentInfo
+import com.rkzmn.appscatalog.domain.mappers.getPermissionInfo
+import com.rkzmn.appscatalog.domain.model.AppDetails
 import com.rkzmn.appscatalog.domain.model.AppInfo
 import com.rkzmn.appscatalog.domain.model.AppSortOption
 import com.rkzmn.appscatalog.domain.model.AppsListType
@@ -19,6 +28,7 @@ class AndroidAppDataRepository @Inject constructor(
 ) : AppDataRepository {
 
     private val apps = mutableListOf<AppInfo>()
+    private val appDetails = mutableMapOf<String, AppDetails>()
 
     override suspend fun getAllApps(
         isRefresh: Boolean,
@@ -57,4 +67,38 @@ class AndroidAppDataRepository @Inject constructor(
         }
     }
 
+    override suspend fun getAppDetails(packageName: String): AppDetails? {
+        Timber.d("getAppDetails() called with: packageName = [$packageName]")
+        val cache = appDetails[packageName]
+        if (cache != null) {
+            return cache
+        }
+
+        return withContext(dispatcherProvider.default) {
+            val appInfo =
+                apps.firstOrNull { it.packageName == packageName } ?: return@withContext null
+            val details = AppDetails(
+                info = appInfo,
+                activities = getAppActivities(
+                    context = context,
+                    packageName = packageName
+                ).map(AppComponent::getComponentInfo),
+                services = getAppServices(
+                    context = context,
+                    packageName = packageName
+                ).map(AppComponent::getComponentInfo),
+                broadcastReceivers = getAppReceivers(
+                    context = context,
+                    packageName = packageName
+                ).map(AppComponent::getComponentInfo),
+                permissions = getAppPermissions(
+                    context = context,
+                    packageName = packageName
+                ).map(AppPermission::getPermissionInfo),
+            )
+            appDetails[packageName] = details
+            details
+        }
+
+    }
 }

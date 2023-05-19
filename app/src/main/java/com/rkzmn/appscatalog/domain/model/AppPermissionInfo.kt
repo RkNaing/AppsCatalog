@@ -1,6 +1,6 @@
-package com.rkzmn.apps_data_provider.model
+package com.rkzmn.appscatalog.domain.model
 
-data class AppPermission(
+data class AppPermissionInfo(
     val permission: String,
     val group: String?,
     val description: String?,
