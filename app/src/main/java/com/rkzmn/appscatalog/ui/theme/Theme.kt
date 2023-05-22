@@ -37,7 +37,7 @@ fun AppsCatalogTheme(
     if (!view.isInEditMode) {
         val systemUiController = rememberSystemUiController()
         val useDarkIcons = !darkTheme
-        val backgroundColor = MaterialTheme.colorScheme.background
+        val backgroundColor = MaterialTheme.colorScheme.primary
         DisposableEffect(systemUiController, useDarkIcons) {
             // Update all of the system bar colors to be transparent, and use
             // dark icons if we're in light theme
