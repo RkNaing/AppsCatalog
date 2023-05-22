@@ -147,7 +147,7 @@ fun AppListItem(
             }
 
             // Indicators
-            if (appItem.indicators.isNotEmpty()) {
+            if (appItem.appTypeIndicators.isNotEmpty()) {
                 Row(
                     modifier = Modifier
                         .background(color = MaterialTheme.colorScheme.tertiaryContainer)
@@ -156,7 +156,7 @@ fun AppListItem(
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    appItem.indicators.forEach { indicator ->
+                    appItem.appTypeIndicators.forEach { indicator ->
                         Icon(
                             modifier = Modifier
                                 .padding(spacingExtraSmall)

@@ -4,6 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import com.rkzmn.appscatalog.navigation.composables.appDetailsScreenComposable
+import com.rkzmn.appscatalog.navigation.composables.appSettingsScreenComposable
 import com.rkzmn.appscatalog.navigation.composables.appsListScreenComposable
 import com.rkzmn.appscatalog.navigation.destination.AppsListDestination
 import com.rkzmn.appscatalog.presentation.apps.AppsViewModel
@@ -22,6 +24,15 @@ fun RootNavGraph(
         appsListScreenComposable(
             navHostController = navHostController,
             viewModel = viewModel
+        )
+
+        appDetailsScreenComposable(
+            navHostController = navHostController,
+            viewModel = viewModel
+        )
+
+        appSettingsScreenComposable(
+            navHostController = navHostController
         )
     }
 }

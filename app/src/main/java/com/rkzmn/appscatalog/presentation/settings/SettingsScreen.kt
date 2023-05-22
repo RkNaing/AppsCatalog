@@ -1,0 +1,188 @@
+package com.rkzmn.appscatalog.presentation.settings
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardElevation
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
+import com.rkzmn.appscatalog.domain.model.AppTheme
+import com.rkzmn.appscatalog.ui.theme.spacingLarge
+import com.rkzmn.appscatalog.ui.theme.spacingMedium
+import com.rkzmn.appscatalog.ui.theme.spacingSmall
+import com.rkzmn.appscatalog.utils.android.AndroidVersions
+import com.rkzmn.appscatalog.utils.android.compose.isAppInDarkTheme
+import com.rkzmn.appscatalog.utils.android.isSDKIntAtLeast
+import com.rkzmn.appscatalog.utils.app.AppStrings
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SettingsScreen(
+    appTheme: AppTheme,
+    useDynamicColors: Boolean,
+    onNavIconClicked: () -> Unit,
+    onThemeUpdated: (AppTheme) -> Unit,
+    updateUseDynamicColor: (Boolean) -> Unit,
+) {
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            LargeTopAppBar(
+                title = {
+                    Text(text = stringResource(id = AppStrings.lbl_settings))
+                },
+                navigationIcon = {
+                    IconButton(onClick = onNavIconClicked) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = stringResource(
+                                id = AppStrings.content_desc_back
+                            )
+                        )
+                    }
+                },
+                scrollBehavior = scrollBehavior,
+            )
+        }
+    ) { contentPadding ->
+        Column(
+            modifier = Modifier
+                .padding(contentPadding)
+                .fillMaxSize()
+                .padding(horizontal = spacingLarge)
+                .nestedScroll(scrollBehavior.nestedScrollConnection),
+            verticalArrangement = Arrangement.spacedBy(spacingMedium),
+        ) {
+
+            AppThemeChooserCard(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                appTheme = appTheme,
+                useDynamicColors = useDynamicColors,
+                onThemeUpdated = onThemeUpdated,
+                updateUseDynamicColor = updateUseDynamicColor
+            )
+
+        }
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@Composable
+private fun AppThemeChooserCard(
+    modifier: Modifier,
+    appTheme: AppTheme,
+    useDynamicColors: Boolean,
+    onThemeUpdated: (AppTheme) -> Unit,
+    updateUseDynamicColor: (Boolean) -> Unit,
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val cardColors: CardColors
+    val cardElevation: CardElevation
+
+    if (isAppInDarkTheme) {
+        cardColors = CardDefaults.cardColors()
+        cardElevation = CardDefaults.cardElevation()
+    } else {
+        cardColors = CardDefaults.elevatedCardColors()
+        cardElevation = CardDefaults.elevatedCardElevation()
+    }
+
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        onClick = { },
+        colors = cardColors,
+        elevation = cardElevation,
+    ) {
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = spacingSmall,
+                    vertical = spacingMedium
+                ),
+            verticalArrangement = Arrangement.spacedBy(spacingMedium)
+        ) {
+
+            Text(
+                text = stringResource(id = AppStrings.lbl_app_theme),
+                style = MaterialTheme.typography.headlineSmall
+            )
+
+            FlowRow(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(spacingSmall),
+            ) {
+                AppTheme.values().forEach { theme ->
+                    FilterChip(
+                        interactionSource = interactionSource,
+                        selected = theme == appTheme,
+                        label = {
+                            Text(text = theme.label.asString())
+                        },
+                        onClick = { onThemeUpdated(theme) }
+                    )
+                }
+            }
+
+            if (isSDKIntAtLeast(AndroidVersions.S)) {
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(spacingSmall))
+                        .clickable { updateUseDynamicColor(!useDynamicColors) },
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = stringResource(id = AppStrings.lbl_use_dynamic_color),
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+
+                    Switch(
+                        modifier = Modifier.padding(horizontal = spacingSmall),
+                        checked = useDynamicColors,
+                        onCheckedChange = null,
+                    )
+
+                }
+
+            }
+
+        }
+
+    }
+}

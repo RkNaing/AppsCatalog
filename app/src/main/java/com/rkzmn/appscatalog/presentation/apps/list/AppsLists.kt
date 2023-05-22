@@ -16,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.rkzmn.appscatalog.domain.model.AppTypeIndicator
 import com.rkzmn.appscatalog.ui.theme.spacingMedium
 import com.rkzmn.appscatalog.ui.widgets.ThemedPreview
 import com.rkzmn.appscatalog.utils.android.compose.preview.UiModePreviews
@@ -125,21 +126,21 @@ private val sampleAppItems: List<AppItem>
 
         for (i in 1..15) {
 
-            val indicators = mutableListOf<AppItem.Indicator>()
+            val appTypeIndicators = mutableListOf<AppTypeIndicator>()
 
             if (random.nextBoolean()) {
-                indicators += AppItem.Indicator.systemAppIndicator
+                appTypeIndicators += AppTypeIndicator.system
             }
 
             if (random.nextBoolean()) {
-                indicators += AppItem.Indicator.debuggableIndicator
+                appTypeIndicators += AppTypeIndicator.debuggable
             }
 
             sampleApps += AppItem(
                 appName = "Sample App $i",
                 version = "Version 1.$i (${i + 1})",
                 packageName = "com.sample.app.$i",
-                indicators = indicators,
+                appTypeIndicators = appTypeIndicators,
             )
         }
         return sampleApps.toList()

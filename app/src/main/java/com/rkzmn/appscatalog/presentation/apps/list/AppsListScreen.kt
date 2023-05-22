@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FilterList
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -47,6 +48,7 @@ fun AppListScreen(
     onSelectAppListType: (AppsListType) -> Unit,
     onSelectDisplayType: (AppsDisplayType) -> Unit,
     onSelectSortOption: (AppSortOption) -> Unit,
+    onClickedSettings: () -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val context = LocalContext.current
@@ -110,6 +112,13 @@ fun AppListScreen(
                         Icon(
                             imageVector = Icons.Outlined.FilterList,
                             contentDescription = stringResource(id = AppStrings.content_desc_tune_app_list),
+                            tint = seed
+                        )
+                    }
+                    IconButton(onClick = { onClickedSettings() }) {
+                        Icon(
+                            imageVector = Icons.Outlined.Settings,
+                            contentDescription = stringResource(id = AppStrings.lbl_settings),
                             tint = seed
                         )
                     }

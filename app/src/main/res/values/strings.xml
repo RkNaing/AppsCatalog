@@ -8,8 +8,9 @@
     <string name="lbl_installed_apps">Installed Apps</string>
 
     <string name="content_desc_tune_app_list">Filter/sort applications list.</string>
-    <string name="lbl_system_app">System App</string>
+    <string name="lbl_system">System</string>
     <string name="lbl_debuggable">Debuggable</string>
+    <string name="lbl_user_installed">User Installed</string>
 
     <string name="lbl_sort_by">Sort By</string>
     <string name="lbl_sort_by_name">Name</string>
@@ -34,5 +35,30 @@
     <string name="lbl_app_display_type_list">List</string>
     <string name="lbl_app_display_type_grid">Grid</string>
 
+    <string name="lbl_package_name">Package Name</string>
+    <string name="lbl_version">Version</string>
+    <string name="lbl_version_name">Version Name</string>
+    <string name="lbl_version_code">Version Code</string>
+    <string name="lbl_app_size">Size</string>
+    <string name="lbl_min_android_version">Minimum Android Version</string>
+    <string name="lbl_target_android_version">Target Android Version</string>
+    <string name="lbl_compile_android_version">Compile Android Version</string>
+    <string name="lbl_installed_at">Installed At</string>
+    <string name="lbl_last_updated_at">Last Updated At</string>
+    <string name="lbl_last_used_at">Last Used At</string>
+    <string name="lbl_install_source">Installation Source</string>
+    <string name="lbl_overview">Overview</string>
+    <string name="lbl_permissions">Permissions</string>
+    <string name="lbl_activities">Activities</string>
+    <string name="lbl_services">Services</string>
+    <string name="lbl_receivers">Receivers</string>
+    <string name="lbl_app_details">App Details</string>
+    <string name="content_desc_back">Navigate Back</string>
+    <string name="lbl_settings">Settings</string>
 
+    <string name="lbl_theme_light">Light</string>
+    <string name="lbl_theme_dark">Dark</string>
+    <string name="lbl_theme_follow_system">Follow System</string>
+    <string name="lbl_app_theme">Application Theme</string>
+    <string name="lbl_use_dynamic_color">Use Dynamic Colors</string>
 </resources>

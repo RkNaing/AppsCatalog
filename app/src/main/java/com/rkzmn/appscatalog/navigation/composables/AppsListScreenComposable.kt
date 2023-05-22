@@ -6,6 +6,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.rkzmn.appscatalog.navigation.NAV_TAG
+import com.rkzmn.appscatalog.navigation.destination.AppDetailDestination
+import com.rkzmn.appscatalog.navigation.destination.AppSettingsDestination
 import com.rkzmn.appscatalog.navigation.destination.AppsListDestination
 import com.rkzmn.appscatalog.presentation.apps.AppsViewModel
 import com.rkzmn.appscatalog.presentation.apps.list.AppListScreen
@@ -21,10 +23,15 @@ fun NavGraphBuilder.appsListScreenComposable(
         val state by viewModel.appsListState.collectAsStateWithLifecycle()
         AppListScreen(
             state = state,
-            onItemClicked = {},
-            onSelectAppListType = viewModel::onSelectListType,
-            onSelectDisplayType = viewModel::onSelectDisplayType,
-            onSelectSortOption = viewModel::onSelectSortOption
+            onItemClicked = { item ->
+                navHostController.navigate(
+                    AppDetailDestination.getAddress(item.packageName)
+                )
+            },
+            onSelectAppListType = { viewModel.onSelectListType(it) },
+            onSelectDisplayType = { viewModel.onSelectDisplayType(it) },
+            onSelectSortOption = { viewModel.onSelectSortOption(it) },
+            onClickedSettings = { navHostController.navigate(AppSettingsDestination.route) }
         )
 
     }

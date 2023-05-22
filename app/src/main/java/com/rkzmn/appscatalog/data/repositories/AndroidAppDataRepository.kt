@@ -8,15 +8,20 @@ import com.rkzmn.apps_data_provider.getAppServices
 import com.rkzmn.apps_data_provider.getApps
 import com.rkzmn.apps_data_provider.model.AppComponent
 import com.rkzmn.apps_data_provider.model.AppPermission
+import com.rkzmn.appscatalog.domain.mappers.displayName
 import com.rkzmn.appscatalog.domain.mappers.getAppInfo
 import com.rkzmn.appscatalog.domain.mappers.getComponentInfo
 import com.rkzmn.appscatalog.domain.mappers.getPermissionInfo
+import com.rkzmn.appscatalog.domain.mappers.indicators
+import com.rkzmn.appscatalog.domain.mappers.readableSize
 import com.rkzmn.appscatalog.domain.model.AppDetails
 import com.rkzmn.appscatalog.domain.model.AppInfo
 import com.rkzmn.appscatalog.domain.model.AppSortOption
 import com.rkzmn.appscatalog.domain.model.AppsListType
 import com.rkzmn.appscatalog.domain.repositories.AppDataRepository
 import com.rkzmn.appscatalog.utils.kotlin.CoroutineDispatcherProvider
+import com.rkzmn.appscatalog.utils.kotlin.DateTimeFormat
+import com.rkzmn.appscatalog.utils.kotlin.asFormattedDate
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -77,8 +82,9 @@ class AndroidAppDataRepository @Inject constructor(
         return withContext(dispatcherProvider.default) {
             val appInfo =
                 apps.firstOrNull { it.packageName == packageName } ?: return@withContext null
+
+            val dateTimeFormat = DateTimeFormat.display_date_full_time
             val details = AppDetails(
-                info = appInfo,
                 activities = getAppActivities(
                     context = context,
                     packageName = packageName
@@ -95,6 +101,20 @@ class AndroidAppDataRepository @Inject constructor(
                     context = context,
                     packageName = packageName
                 ).map(AppPermission::getPermissionInfo),
+                appName = appInfo.displayName,
+                appIcon = appInfo.appIcon,
+                versionCode = appInfo.versionCode,
+                versionName = appInfo.versionName,
+                packageName = appInfo.packageName,
+                appTypeIndicators = appInfo.indicators,
+                installationSource = appInfo.installationSource,
+                installedTimestamp = appInfo.installedTimestamp.asFormattedDate(dateTimeFormat),
+                lastUpdatedTimestamp = appInfo.lastUpdatedTimestamp.asFormattedDate(dateTimeFormat),
+                lastUsedTimestamp = appInfo.lastUsedTimestamp?.asFormattedDate(dateTimeFormat),
+                appSize = appInfo.readableSize,
+                minAndroidVersion = with(appInfo) { "$minAndroidVersion ($minSdk)" },
+                targetAndroidVersion = with(appInfo) { "$targetAndroidVersion ($targetSdk)" },
+                compileSdkAndroidVersion = with(appInfo) { "$compileSdkAndroidVersion ($compileSdk)" },
             )
             appDetails[packageName] = details
             details
