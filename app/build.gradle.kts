@@ -65,7 +65,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
 
     /* Hilt https://tinyurl.com/hilt-android */
-    val hiltVersion = "2.45"
+    val hiltVersion = "2.46.1"
     implementation("com.google.dagger:hilt-android:$hiltVersion")
     kapt("com.google.dagger:hilt-android-compiler:$hiltVersion")
 
@@ -73,7 +73,7 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 
     /* Kotlin Coroutines */
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
 
     /* Timber Logging - https://github.com/JakeWharton/timber */
     implementation("com.jakewharton.timber:timber:5.0.1")

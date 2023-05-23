@@ -6,6 +6,8 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.rkzmn.appscatalog.domain.model.AppTheme
 import com.rkzmn.appscatalog.domain.repositories.AppPreferenceRepository
+import com.rkzmn.appscatalog.utils.android.AndroidVersions
+import com.rkzmn.appscatalog.utils.android.isSDKIntAtLeast
 import com.rkzmn.appscatalog.utils.android.setValue
 import com.rkzmn.appscatalog.utils.android.watchValueWithDefault
 import com.rkzmn.appscatalog.utils.android.watchValueWithNonNullMapper
@@ -37,7 +39,7 @@ class AppPreferenceRepositoryImpl @Inject constructor(
 
     override val isUsingDynamicColors: Flow<Boolean>
         get() = keyDynamicColors
-            .watchValueWithDefault(dataStore, true)
+            .watchValueWithDefault(dataStore, isSDKIntAtLeast(AndroidVersions.S))
             .flowOn(dispatcherProvider.io)
 
     override suspend fun setUseDynamicColors(use: Boolean) {

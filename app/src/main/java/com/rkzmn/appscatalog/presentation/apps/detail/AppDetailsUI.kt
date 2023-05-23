@@ -25,8 +25,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.rkzmn.appscatalog.domain.model.AppComponentInfo
@@ -48,7 +46,6 @@ import kotlinx.coroutines.launch
 fun AppDetailsUI(
     modifier: Modifier = Modifier,
     details: AppDetails,
-    connection: NestedScrollConnection = rememberNestedScrollInteropConnection(),
 ) {
     val coroutineScope = rememberCoroutineScope()
     val tabs = remember(details) { details.tabTitles.toMutableStateList() }

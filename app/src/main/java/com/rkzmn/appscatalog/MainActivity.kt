@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
@@ -33,20 +31,18 @@ class MainActivity : ComponentActivity() {
             val currentAppTheme by appPrefRepo.appTheme
                 .collectAsStateWithLifecycle(initialValue = AppTheme.FOLLOW_SYSTEM)
 
-            val isSystemInDarkTheme = isSystemInDarkTheme()
-            val isDarkTheme by remember(currentAppTheme) {
-                mutableStateOf(
-                    when (currentAppTheme) {
-                        AppTheme.LIGHT -> false
-                        AppTheme.DARK -> true
-                        AppTheme.FOLLOW_SYSTEM -> isSystemInDarkTheme
-                    }
-                )
+            val useDynamicColors by appPrefRepo.isUsingDynamicColors
+                .collectAsStateWithLifecycle(initialValue = true)
+
+            val isDarkTheme = when (currentAppTheme) {
+                AppTheme.LIGHT -> false
+                AppTheme.DARK -> true
+                AppTheme.FOLLOW_SYSTEM -> isSystemInDarkTheme()
             }
 
             AppsCatalogTheme(
                 darkTheme = isDarkTheme,
-                dynamicColor = false,
+                dynamicColor = useDynamicColors,
             ) {
                 // A surface container using the 'background' color from the theme
                 Surface(

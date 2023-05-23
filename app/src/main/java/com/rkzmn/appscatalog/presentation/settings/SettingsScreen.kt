@@ -14,9 +14,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -35,11 +32,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import com.rkzmn.appscatalog.domain.model.AppTheme
+import com.rkzmn.appscatalog.ui.theme.cardColorAndElevation
 import com.rkzmn.appscatalog.ui.theme.spacingLarge
 import com.rkzmn.appscatalog.ui.theme.spacingMedium
 import com.rkzmn.appscatalog.ui.theme.spacingSmall
+import com.rkzmn.appscatalog.ui.widgets.ThemedPreview
 import com.rkzmn.appscatalog.utils.android.AndroidVersions
-import com.rkzmn.appscatalog.utils.android.compose.isAppInDarkTheme
+import com.rkzmn.appscatalog.utils.android.compose.preview.UiModePreviews
 import com.rkzmn.appscatalog.utils.android.isSDKIntAtLeast
 import com.rkzmn.appscatalog.utils.app.AppStrings
 
@@ -86,7 +85,8 @@ fun SettingsScreen(
 
             AppThemeChooserCard(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(top = spacingMedium),
                 appTheme = appTheme,
                 useDynamicColors = useDynamicColors,
                 onThemeUpdated = onThemeUpdated,
@@ -108,37 +108,25 @@ private fun AppThemeChooserCard(
     updateUseDynamicColor: (Boolean) -> Unit,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    val cardColors: CardColors
-    val cardElevation: CardElevation
-
-    if (isAppInDarkTheme) {
-        cardColors = CardDefaults.cardColors()
-        cardElevation = CardDefaults.cardElevation()
-    } else {
-        cardColors = CardDefaults.elevatedCardColors()
-        cardElevation = CardDefaults.elevatedCardElevation()
-    }
+    val cardColorsAndElevation = cardColorAndElevation
 
     Card(
         modifier = modifier.fillMaxWidth(),
         onClick = { },
-        colors = cardColors,
-        elevation = cardElevation,
+        colors = cardColorsAndElevation.first,
+        elevation = cardColorsAndElevation.second,
     ) {
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(
-                    horizontal = spacingSmall,
-                    vertical = spacingMedium
-                ),
+                .padding(spacingMedium),
             verticalArrangement = Arrangement.spacedBy(spacingMedium)
         ) {
 
             Text(
                 text = stringResource(id = AppStrings.lbl_app_theme),
-                style = MaterialTheme.typography.headlineSmall
+                style = MaterialTheme.typography.labelLarge
             )
 
             FlowRow(
@@ -163,13 +151,14 @@ private fun AppThemeChooserCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(spacingSmall))
-                        .clickable { updateUseDynamicColor(!useDynamicColors) },
+                        .clickable { updateUseDynamicColor(!useDynamicColors) }
+                        .padding(spacingSmall),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
                         modifier = Modifier.weight(1f),
                         text = stringResource(id = AppStrings.lbl_use_dynamic_color),
-                        style = MaterialTheme.typography.headlineSmall
+                        style = MaterialTheme.typography.bodyMedium
                     )
 
                     Switch(
@@ -184,5 +173,20 @@ private fun AppThemeChooserCard(
 
         }
 
+    }
+}
+
+
+@UiModePreviews
+@Composable
+fun SettingsScreenPreview() {
+    ThemedPreview {
+        SettingsScreen(
+            appTheme = AppTheme.DARK,
+            useDynamicColors = true,
+            onNavIconClicked = { },
+            onThemeUpdated = {},
+            updateUseDynamicColor = {}
+        )
     }
 }

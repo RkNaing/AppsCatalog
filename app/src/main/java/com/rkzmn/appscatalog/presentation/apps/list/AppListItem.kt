@@ -26,13 +26,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.rkzmn.appscatalog.ui.theme.appIconSize
+import com.rkzmn.appscatalog.ui.theme.isAppInDarkTheme
 import com.rkzmn.appscatalog.ui.theme.seed
 import com.rkzmn.appscatalog.ui.theme.spacingExtraSmall
 import com.rkzmn.appscatalog.ui.theme.spacingMedium
 import com.rkzmn.appscatalog.ui.theme.spacingSmall
 import com.rkzmn.appscatalog.ui.widgets.AppIcon
 import com.rkzmn.appscatalog.ui.widgets.ThemedPreview
-import com.rkzmn.appscatalog.utils.android.compose.isAppInDarkTheme
 import com.rkzmn.appscatalog.utils.android.compose.preview.UiModePreviews
 
 @Composable
