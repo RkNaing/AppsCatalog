@@ -120,7 +120,7 @@ fun getAppActivities(context: Context, packageName: String): List<AppComponent> 
 fun getAppReceivers(context: Context, packageName: String): List<AppComponent> {
     val packageManager = context.packageManager
     val receiverInfoList = packageManager
-        .getPackageInfoCompat(packageName, PackageManager.GET_ACTIVITIES)?.receivers
+        .getPackageInfoCompat(packageName, PackageManager.GET_RECEIVERS)?.receivers
         ?: emptyArray()
 
     return receiverInfoList.map { info ->
@@ -139,7 +139,7 @@ fun getAppReceivers(context: Context, packageName: String): List<AppComponent> {
 fun getAppPermissions(context: Context, packageName: String): List<AppPermission> {
     val packageManager = context.packageManager
     val permissionInfoList = packageManager
-        .getPackageInfoCompat(packageName, PackageManager.GET_ACTIVITIES)?.permissions
+        .getPackageInfoCompat(packageName, PackageManager.GET_PERMISSIONS)?.permissions
         ?: emptyArray()
 
     return permissionInfoList.map { info ->

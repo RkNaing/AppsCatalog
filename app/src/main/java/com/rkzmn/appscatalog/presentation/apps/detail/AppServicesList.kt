@@ -84,7 +84,7 @@ private fun ItemService(
                 )
             }
 
-            if (!service.isPrivate) {
+            if (service.isPrivate) {
                 Icon(
                     imageVector = Icons.Filled.Lock,
                     contentDescription = service.name

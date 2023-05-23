@@ -133,6 +133,7 @@ fun AppDetailsUI(
             val pageContentModifier = Modifier
                 .fillMaxSize()
                 .padding(spacingMedium)
+
             when (tabs.getOrNull(position)) {
                 AppDetailTab.OVERVIEW -> {
                     AppInfoContainer(

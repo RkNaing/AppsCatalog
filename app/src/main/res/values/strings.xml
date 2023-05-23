@@ -61,4 +61,7 @@
     <string name="lbl_theme_follow_system">Follow System</string>
     <string name="lbl_app_theme">Application Theme</string>
     <string name="lbl_use_dynamic_color">Use Dynamic Colors</string>
+    <string name="lbl_launching_component">Launching %1$s</string>
+    <string name="msg_component_launch_failed">Failed to launch %1$s</string>
+    <string name="msg_component_launched_already">You are already using AppsCatalog 😁</string>
 </resources>

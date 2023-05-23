@@ -1,5 +1,6 @@
 package com.rkzmn.appscatalog.presentation.apps.detail
 
+import android.app.Activity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -18,18 +19,22 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalView
 import com.rkzmn.appscatalog.domain.model.AppComponentInfo
 import com.rkzmn.appscatalog.ui.theme.cardColorAndElevation
 import com.rkzmn.appscatalog.ui.theme.spacingExtraSmall
 import com.rkzmn.appscatalog.ui.theme.spacingMedium
 import com.rkzmn.appscatalog.ui.widgets.ThemedPreview
 import com.rkzmn.appscatalog.utils.android.compose.preview.UiModePreviews
+import com.rkzmn.appscatalog.utils.app.launch
 
 @Composable
 fun AppActivitiesList(
     modifier: Modifier = Modifier,
     activities: List<AppComponentInfo>,
 ) {
+    val activity = LocalView.current.context as? Activity
+
     LazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(spacingMedium),
@@ -38,12 +43,12 @@ fun AppActivitiesList(
         items(
             items = activities,
             key = { it.fqn },
-        ) { activity ->
+        ) { appComponentInfo ->
             ItemActivity(
                 modifier = Modifier.fillMaxWidth(),
-                activity = activity,
-                onItemClicked = {
-
+                activity = appComponentInfo,
+                onItemClicked = { componentInfo ->
+                    activity?.let { componentInfo.launch(it) }
                 }
             )
         }
