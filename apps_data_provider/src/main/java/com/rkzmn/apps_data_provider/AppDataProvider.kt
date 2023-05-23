@@ -1,6 +1,5 @@
 package com.rkzmn.apps_data_provider
 
-import android.content.ComponentName
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
@@ -89,10 +88,8 @@ fun getAppServices(context: Context, packageName: String): List<AppComponent> {
 
     return serviceInfoList.map { info ->
         val name = info.name
-        val servicePackageName = info.packageName
-        val componentName = ComponentName(servicePackageName, name)
         AppComponent(
-            name = componentName.shortClassName,
+            name = extractShortClassName(name),
             packageName = info.packageName,
             fqn = name,
             isPrivate = !info.exported,
@@ -110,9 +107,8 @@ fun getAppActivities(context: Context, packageName: String): List<AppComponent> 
     return activityInfoList.map { info ->
         val name = info.name
         val activityPackageName = info.packageName
-        val componentName = ComponentName(activityPackageName, name)
         AppComponent(
-            name = componentName.shortClassName,
+            name = extractShortClassName(name),
             packageName = activityPackageName,
             fqn = name,
             isPrivate = info.isPrivate(packageManager),
@@ -130,9 +126,8 @@ fun getAppReceivers(context: Context, packageName: String): List<AppComponent> {
     return receiverInfoList.map { info ->
         val name = info.name
         val receiverPackageName = info.packageName
-        val componentName = ComponentName(receiverPackageName, name)
         AppComponent(
-            name = componentName.shortClassName,
+            name = extractShortClassName(name),
             packageName = receiverPackageName,
             fqn = name,
             isPrivate = !info.exported,
@@ -167,4 +162,17 @@ fun getAppPermissions(context: Context, packageName: String): List<AppPermission
             isDangerous = isDangerous
         )
     }
+}
+
+private fun extractShortClassName(className: String): String {
+    if (className.isBlank() || !className.contains(".")) {
+        return className
+    }
+
+    val parts = className.split(".")
+    if (parts.isEmpty()) {
+        return className
+    }
+
+    return parts[parts.lastIndex]
 }

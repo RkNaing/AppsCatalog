@@ -112,7 +112,6 @@ private fun AppThemeChooserCard(
 
     Card(
         modifier = modifier.fillMaxWidth(),
-        onClick = { },
         colors = cardColorsAndElevation.first,
         elevation = cardColorsAndElevation.second,
     ) {

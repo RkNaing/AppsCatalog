@@ -14,6 +14,7 @@ import com.rkzmn.appscatalog.domain.mappers.getComponentInfo
 import com.rkzmn.appscatalog.domain.mappers.getPermissionInfo
 import com.rkzmn.appscatalog.domain.mappers.indicators
 import com.rkzmn.appscatalog.domain.mappers.readableSize
+import com.rkzmn.appscatalog.domain.model.AppComponentInfo
 import com.rkzmn.appscatalog.domain.model.AppDetails
 import com.rkzmn.appscatalog.domain.model.AppInfo
 import com.rkzmn.appscatalog.domain.model.AppSortOption
@@ -84,19 +85,20 @@ class AndroidAppDataRepository @Inject constructor(
                 apps.firstOrNull { it.packageName == packageName } ?: return@withContext null
 
             val dateTimeFormat = DateTimeFormat.display_date_full_time
+            val comparator = compareBy<AppComponentInfo>({ it.packageName }, { it.name })
             val details = AppDetails(
                 activities = getAppActivities(
                     context = context,
                     packageName = packageName
-                ).map(AppComponent::getComponentInfo),
+                ).map(AppComponent::getComponentInfo).sortedWith(comparator),
                 services = getAppServices(
                     context = context,
                     packageName = packageName
-                ).map(AppComponent::getComponentInfo),
+                ).map(AppComponent::getComponentInfo).sortedWith(comparator),
                 broadcastReceivers = getAppReceivers(
                     context = context,
                     packageName = packageName
-                ).map(AppComponent::getComponentInfo),
+                ).map(AppComponent::getComponentInfo).sortedWith(comparator),
                 permissions = getAppPermissions(
                     context = context,
                     packageName = packageName
