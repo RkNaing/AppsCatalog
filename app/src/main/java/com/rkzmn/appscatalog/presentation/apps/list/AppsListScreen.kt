@@ -25,9 +25,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import com.rkzmn.appscatalog.domain.model.AppSortOption
 import com.rkzmn.appscatalog.domain.model.AppsListType
@@ -39,6 +36,7 @@ import com.rkzmn.appscatalog.ui.theme.seed
 import com.rkzmn.appscatalog.ui.theme.spacingSmall
 import com.rkzmn.appscatalog.ui.widgets.ProgressView
 import com.rkzmn.appscatalog.utils.app.AppStrings
+import com.rkzmn.appscatalog.utils.app.createCountLabelAnnotatedString
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,23 +51,12 @@ fun AppListScreen(
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val context = LocalContext.current
     val subtitle by remember(key1 = state.listType, key2 = state.apps.size) {
-        val appsCountsLabel = "${state.apps.size}"
-        val appsTypeLabel = state.listType.label.asString(context)
-        val annotatedString = buildAnnotatedString {
-            append(appsCountsLabel)
-            append(" ")
-            append(appsTypeLabel)
-            addStyle(
-                SpanStyle(
-                    color = seed,
-                    fontWeight = FontWeight.Bold,
-                    fontStyle = FontStyle.Italic,
-                ),
-                start = 0,
-                end = appsCountsLabel.length
+        mutableStateOf(
+            createCountLabelAnnotatedString(
+                count = state.apps.size,
+                label = state.listType.label.asString(context)
             )
-        }
-        mutableStateOf(annotatedString)
+        )
     }
     var showFilterDialog by remember { mutableStateOf(false) }
 

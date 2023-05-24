@@ -2,9 +2,9 @@ package com.rkzmn.appscatalog.presentation.apps.detail
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,25 +20,30 @@ import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import com.rkzmn.appscatalog.domain.model.AppComponentInfo
 import com.rkzmn.appscatalog.domain.model.AppDetails
 import com.rkzmn.appscatalog.domain.model.AppPermissionInfo
 import com.rkzmn.appscatalog.domain.model.AppTypeIndicator
 import com.rkzmn.appscatalog.ui.theme.appIconSize
-import com.rkzmn.appscatalog.ui.theme.spacingLarge
 import com.rkzmn.appscatalog.ui.theme.spacingMedium
 import com.rkzmn.appscatalog.ui.theme.spacingSmall
 import com.rkzmn.appscatalog.ui.widgets.AppIcon
 import com.rkzmn.appscatalog.ui.widgets.ThemedPreview
 import com.rkzmn.appscatalog.utils.android.compose.preview.UiModePreviews
 import com.rkzmn.appscatalog.utils.app.AppStrings
+import com.rkzmn.appscatalog.utils.app.createCountLabelAnnotatedString
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -48,15 +53,45 @@ fun AppDetailsUI(
     details: AppDetails,
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
     val tabs = remember(details) { details.tabTitles.toMutableStateList() }
     val pagerState = rememberPagerState(initialPage = 0)
     val selectedTabIndex = pagerState.currentPage
+    val subtitleText by remember(key1 = selectedTabIndex, key2 = details) {
+        val annotatedString = when (val selectedTab = tabs.getOrNull(selectedTabIndex)) {
+            AppDetailTab.PERMISSIONS -> createCountLabelAnnotatedString(
+                count = details.permissions.size,
+                label = context.getString(selectedTab.label)
+            )
+
+            AppDetailTab.ACTIVITIES -> createCountLabelAnnotatedString(
+                count = details.activities.size,
+                label = context.getString(selectedTab.label)
+            )
+
+            AppDetailTab.SERVICES -> createCountLabelAnnotatedString(
+                count = details.services.size,
+                label = context.getString(selectedTab.label)
+            )
+
+            AppDetailTab.RECEIVERS -> createCountLabelAnnotatedString(
+                count = details.broadcastReceivers.size,
+                label = context.getString(selectedTab.label)
+            )
+
+            else -> AnnotatedString("")
+        }
+        mutableStateOf(annotatedString)
+    }
+
     Column(
         modifier = modifier,
     ) {
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = spacingMedium),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             AppIcon(
@@ -89,7 +124,24 @@ fun AppDetailsUI(
 
         }
 
-        Spacer(modifier = Modifier.height(spacingLarge))
+//        Spacer(modifier = Modifier.height(spacingLarge))
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(24.dp),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            if (subtitleText.isNotBlank()) {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = spacingMedium),
+                    text = subtitleText,
+                    style = MaterialTheme.typography.labelLarge
+                )
+            }
+        }
 
         ScrollableTabRow(
             modifier = Modifier.fillMaxWidth(),
@@ -143,6 +195,7 @@ fun AppDetailsUI(
                 }
 
                 AppDetailTab.PERMISSIONS -> {
+//                    subtitleText = "${details.permissions.size} ${stringResource(id = tab.label)}"
                     AppPermissionsList(
                         modifier = pageContentModifier,
                         permissions = details.permissions,
@@ -150,6 +203,7 @@ fun AppDetailsUI(
                 }
 
                 AppDetailTab.ACTIVITIES -> {
+//                    subtitleText = "${details.activities.size} ${stringResource(id = tab.label)}"
                     AppActivitiesList(
                         modifier = pageContentModifier,
                         activities = details.activities,
@@ -157,6 +211,7 @@ fun AppDetailsUI(
                 }
 
                 AppDetailTab.SERVICES -> {
+//                    subtitleText = "${details.services.size} ${stringResource(id = tab.label)}"
                     AppServicesList(
                         modifier = pageContentModifier,
                         services = details.services,
@@ -164,6 +219,8 @@ fun AppDetailsUI(
                 }
 
                 AppDetailTab.RECEIVERS -> {
+//                    subtitleText =
+//                        "${details.broadcastReceivers.size} ${stringResource(id = tab.label)}"
                     AppBroadcastReceiversList(
                         modifier = pageContentModifier,
                         receivers = details.broadcastReceivers
