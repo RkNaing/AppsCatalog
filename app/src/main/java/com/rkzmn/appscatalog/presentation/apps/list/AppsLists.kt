@@ -20,6 +20,7 @@ import com.rkzmn.appscatalog.domain.model.AppTypeIndicator
 import com.rkzmn.appscatalog.ui.theme.spacingMedium
 import com.rkzmn.appscatalog.ui.widgets.ThemedPreview
 import com.rkzmn.appscatalog.utils.android.compose.preview.UiModePreviews
+import kotlinx.collections.immutable.toImmutableList
 import kotlin.random.Random
 
 
@@ -140,7 +141,7 @@ private val sampleAppItems: List<AppItem>
                 appName = "Sample App $i",
                 version = "Version 1.$i (${i + 1})",
                 packageName = "com.sample.app.$i",
-                appTypeIndicators = appTypeIndicators,
+                appTypeIndicators = appTypeIndicators.toImmutableList(),
             )
         }
         return sampleApps.toList()

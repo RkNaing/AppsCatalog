@@ -4,6 +4,8 @@ import com.rkzmn.apps_data_provider.model.App
 import com.rkzmn.appscatalog.domain.model.AppInfo
 import com.rkzmn.appscatalog.domain.model.AppTypeIndicator
 import com.rkzmn.appscatalog.utils.kotlin.byteCountToDisplaySize
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 fun App.getAppInfo(): AppInfo {
     return AppInfo(
@@ -28,7 +30,7 @@ fun App.getAppInfo(): AppInfo {
     )
 }
 
-val AppInfo.indicators: List<AppTypeIndicator>
+val AppInfo.indicators: ImmutableList<AppTypeIndicator>
     get() {
         val indicators = mutableListOf<AppTypeIndicator>()
 
@@ -41,7 +43,7 @@ val AppInfo.indicators: List<AppTypeIndicator>
         if (isDebuggable) {
             indicators.add(AppTypeIndicator.debuggable)
         }
-        return indicators.toList()
+        return indicators.toImmutableList()
     }
 
 val AppInfo.readableSize: String?

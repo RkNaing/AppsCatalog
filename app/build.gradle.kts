@@ -6,6 +6,28 @@ plugins {
     kotlin("kapt")
     id("kotlin-parcelize")
     id("com.google.dagger.hilt.android")
+    id("io.gitlab.arturbosch.detekt") version "1.23.0"
+}
+
+detekt {
+    toolVersion = "1.23.0"
+    config.setFrom(file("../config/detekt/detekt.yml"))
+    autoCorrect = true
+    buildUponDefaultConfig = true
+    dependencies{
+        detektPlugins("com.twitter.compose.rules:detekt:0.0.26")
+    }
+}
+
+// Kotlin DSL
+tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+        txt.required.set(true)
+        sarif.required.set(true)
+        md.required.set(true)
+    }
 }
 
 android {
@@ -74,6 +96,8 @@ dependencies {
 
     /* Kotlin Coroutines */
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")
 
     /* Timber Logging - https://github.com/JakeWharton/timber */
     implementation("com.jakewharton.timber:timber:5.0.1")

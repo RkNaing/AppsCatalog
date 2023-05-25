@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -23,14 +22,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.rkzmn.appscatalog.domain.model.AppDetails
 import com.rkzmn.appscatalog.domain.model.AppTypeIndicator
-import com.rkzmn.appscatalog.ui.theme.appIconSize
 import com.rkzmn.appscatalog.ui.theme.spacingLarge
 import com.rkzmn.appscatalog.ui.theme.spacingMedium
 import com.rkzmn.appscatalog.ui.theme.spacingSmall
-import com.rkzmn.appscatalog.ui.widgets.AppIcon
 import com.rkzmn.appscatalog.ui.widgets.ThemedPreview
 import com.rkzmn.appscatalog.utils.android.compose.preview.UiModePreviews
 import com.rkzmn.appscatalog.utils.app.AppStrings
+import kotlinx.collections.immutable.persistentListOf
 
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -284,7 +282,10 @@ private fun AppInfoContainerPreview() {
         versionCode = 7425,
         versionName = "1.0.2",
         packageName = "com.rkzmn.appscatalog",
-        appTypeIndicators = listOf(AppTypeIndicator.installed, AppTypeIndicator.debuggable),
+        appTypeIndicators = persistentListOf(
+            AppTypeIndicator.installed,
+            AppTypeIndicator.debuggable
+        ),
         installationSource = "Android System",
         installedTimestamp = "03 March 2022, 10:15:28 AM",
         lastUpdatedTimestamp = "07 May 2023, 11:19:31 PM",
@@ -293,10 +294,10 @@ private fun AppInfoContainerPreview() {
         minAndroidVersion = "Lollipop (22)",
         targetAndroidVersion = "Android 13",
         compileSdkAndroidVersion = "Android 13",
-        activities = listOf(),
-        services = listOf(),
-        broadcastReceivers = listOf(),
-        permissions = listOf()
+        activities = persistentListOf(),
+        services = persistentListOf(),
+        broadcastReceivers = persistentListOf(),
+        permissions = persistentListOf()
     )
     ThemedPreview {
 

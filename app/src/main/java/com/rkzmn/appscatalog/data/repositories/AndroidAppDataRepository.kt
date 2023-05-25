@@ -24,6 +24,7 @@ import com.rkzmn.appscatalog.utils.kotlin.CoroutineDispatcherProvider
 import com.rkzmn.appscatalog.utils.kotlin.DateTimeFormat
 import com.rkzmn.appscatalog.utils.kotlin.asFormattedDate
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
@@ -90,19 +91,19 @@ class AndroidAppDataRepository @Inject constructor(
                 activities = getAppActivities(
                     context = context,
                     packageName = packageName
-                ).map(AppComponent::getComponentInfo).sortedWith(comparator),
+                ).map(AppComponent::getComponentInfo).sortedWith(comparator).toImmutableList(),
                 services = getAppServices(
                     context = context,
                     packageName = packageName
-                ).map(AppComponent::getComponentInfo).sortedWith(comparator),
+                ).map(AppComponent::getComponentInfo).sortedWith(comparator).toImmutableList(),
                 broadcastReceivers = getAppReceivers(
                     context = context,
                     packageName = packageName
-                ).map(AppComponent::getComponentInfo).sortedWith(comparator),
+                ).map(AppComponent::getComponentInfo).sortedWith(comparator).toImmutableList(),
                 permissions = getAppPermissions(
                     context = context,
                     packageName = packageName
-                ).map(AppPermission::getPermissionInfo),
+                ).map(AppPermission::getPermissionInfo).toImmutableList(),
                 appName = appInfo.displayName,
                 appIcon = appInfo.appIcon,
                 versionCode = appInfo.versionCode,

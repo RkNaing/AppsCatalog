@@ -47,6 +47,7 @@ import com.rkzmn.appscatalog.ui.widgets.ThemedPreview
 import com.rkzmn.appscatalog.utils.android.compose.preview.UiModePreviews
 import com.rkzmn.appscatalog.utils.app.AppStrings
 import com.rkzmn.appscatalog.utils.app.createCountLabelAnnotatedString
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -282,7 +283,10 @@ private fun AppDetailsPreview() {
         versionCode = 7425,
         versionName = "1.0.2",
         packageName = "com.rkzmn.appscatalog",
-        appTypeIndicators = listOf(AppTypeIndicator.installed, AppTypeIndicator.debuggable),
+        appTypeIndicators = persistentListOf(
+            AppTypeIndicator.installed,
+            AppTypeIndicator.debuggable
+        ),
         installationSource = "Android System",
         installedTimestamp = "03 March 2022, 10:15:28 AM",
         lastUpdatedTimestamp = "07 May 2023, 11:19:31 PM",
@@ -291,7 +295,7 @@ private fun AppDetailsPreview() {
         minAndroidVersion = "Lollipop (22)",
         targetAndroidVersion = "Android 13",
         compileSdkAndroidVersion = "Android 13",
-        activities = listOf(
+        activities = persistentListOf(
             AppComponentInfo(
                 name = "Dorothea Guzman",
                 packageName = "Meredith Clements",
@@ -299,7 +303,7 @@ private fun AppDetailsPreview() {
                 isPrivate = false
             )
         ),
-        services = listOf(
+        services = persistentListOf(
             AppComponentInfo(
                 name = "Dorothea Guzman",
                 packageName = "Meredith Clements",
@@ -307,7 +311,7 @@ private fun AppDetailsPreview() {
                 isPrivate = false
             )
         ),
-        broadcastReceivers = listOf(
+        broadcastReceivers = persistentListOf(
             AppComponentInfo(
                 name = "Dorothea Guzman",
                 packageName = "Meredith Clements",
@@ -315,7 +319,7 @@ private fun AppDetailsPreview() {
                 isPrivate = false
             )
         ),
-        permissions = listOf(
+        permissions = persistentListOf(
             AppPermissionInfo(
                 permission = "consectetuer",
                 group = null,

@@ -27,11 +27,12 @@ import com.rkzmn.appscatalog.ui.theme.spacingMedium
 import com.rkzmn.appscatalog.ui.widgets.ThemedPreview
 import com.rkzmn.appscatalog.utils.android.compose.preview.UiModePreviews
 import com.rkzmn.appscatalog.utils.app.launch
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 fun AppActivitiesList(
     modifier: Modifier = Modifier,
-    activities: List<AppComponentInfo>,
+    activities: ImmutableList<AppComponentInfo>,
 ) {
     val activity = LocalView.current.context as? Activity
 

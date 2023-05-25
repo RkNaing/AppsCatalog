@@ -5,7 +5,8 @@ import com.rkzmn.appscatalog.domain.mappers.indicators
 import com.rkzmn.appscatalog.domain.mappers.readableSize
 import com.rkzmn.appscatalog.domain.model.AppInfo
 import com.rkzmn.appscatalog.domain.model.AppTypeIndicator
-import com.rkzmn.appscatalog.utils.kotlin.byteCountToDisplaySize
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 data class AppItem(
     val appName: String? = null,
@@ -13,7 +14,7 @@ data class AppItem(
     val readableSize: String? = null,
     val packageName: String,
     val version: String = "",
-    val appTypeIndicators: List<AppTypeIndicator> = emptyList(),
+    val appTypeIndicators: ImmutableList<AppTypeIndicator> = persistentListOf(),
     val isSelected: Boolean = false,
 ) {
 
