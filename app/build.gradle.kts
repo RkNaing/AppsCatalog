@@ -6,28 +6,6 @@ plugins {
     kotlin("kapt")
     id("kotlin-parcelize")
     id("com.google.dagger.hilt.android")
-    id("io.gitlab.arturbosch.detekt") version "1.23.0"
-}
-
-detekt {
-    toolVersion = "1.23.0"
-    config.setFrom(file("../config/detekt/detekt.yml"))
-    autoCorrect = true
-    buildUponDefaultConfig = true
-    dependencies{
-        detektPlugins("com.twitter.compose.rules:detekt:0.0.26")
-    }
-}
-
-// Kotlin DSL
-tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
-    reports {
-        xml.required.set(true)
-        html.required.set(true)
-        txt.required.set(true)
-        sarif.required.set(true)
-        md.required.set(true)
-    }
 }
 
 android {
@@ -112,7 +90,7 @@ kapt {
     correctErrorTypes = true
 }
 
-fun DependencyHandlerScope.setupJetpackCompose(){
+fun DependencyHandlerScope.setupJetpackCompose() {
     val versionComposeBom = "2023.05.00"
 
     val composeBom = platform("androidx.compose:compose-bom:$versionComposeBom")
@@ -147,10 +125,8 @@ fun DependencyHandlerScope.setupJetpackCompose(){
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
-
     /* Accompanist Libraries */
     val accompanistVersion = "0.31.2-alpha"
     implementation("com.google.accompanist:accompanist-placeholder-material:$accompanistVersion")
     implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion")
-
 }

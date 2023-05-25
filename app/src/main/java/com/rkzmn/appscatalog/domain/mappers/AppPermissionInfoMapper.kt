@@ -1,7 +1,7 @@
 package com.rkzmn.appscatalog.domain.mappers
 
-import com.rkzmn.apps_data_provider.model.AppPermission
 import com.rkzmn.appscatalog.domain.model.AppPermissionInfo
+import com.rkzmn.appsdataprovider.model.AppPermission
 
 fun AppPermission.getPermissionInfo(): AppPermissionInfo {
     return AppPermissionInfo(

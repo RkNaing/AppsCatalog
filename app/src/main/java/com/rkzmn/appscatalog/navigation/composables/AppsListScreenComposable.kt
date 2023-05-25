@@ -33,6 +33,5 @@ fun NavGraphBuilder.appsListScreenComposable(
             onSelectSortOption = { viewModel.onSelectSortOption(it) },
             onClickedSettings = { navHostController.navigate(AppSettingsDestination.route) }
         )
-
     }
 }

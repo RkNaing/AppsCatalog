@@ -20,14 +20,14 @@ import com.rkzmn.appscatalog.domain.model.AppTypeIndicator
 import com.rkzmn.appscatalog.ui.theme.spacingMedium
 import com.rkzmn.appscatalog.ui.widgets.ThemedPreview
 import com.rkzmn.appscatalog.utils.android.compose.preview.UiModePreviews
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlin.random.Random
 
-
 @Composable
 fun AppsGrid(
+    apps: ImmutableList<AppItem>,
     modifier: Modifier = Modifier,
-    apps: List<AppItem>,
     onItemClicked: (AppItem) -> Unit,
 ) {
     LazyVerticalGrid(
@@ -37,7 +37,6 @@ fun AppsGrid(
         horizontalArrangement = Arrangement.spacedBy(spacingMedium, Alignment.CenterHorizontally),
         contentPadding = PaddingValues(spacingMedium)
     ) {
-
         items(
             items = apps,
             key = { it.packageName },
@@ -53,9 +52,9 @@ fun AppsGrid(
 
 @Composable
 fun AppsList(
-    modifier: Modifier = Modifier,
-    apps: List<AppItem>,
+    apps: ImmutableList<AppItem>,
     onItemClicked: (AppItem) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     LazyColumn(
         modifier = modifier,
@@ -63,7 +62,6 @@ fun AppsList(
         verticalArrangement = Arrangement.spacedBy(spacingMedium),
         contentPadding = PaddingValues(spacingMedium)
     ) {
-
         items(
             items = apps,
             key = { it.packageName },
@@ -77,15 +75,13 @@ fun AppsList(
     }
 }
 
-
-///////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 // Previews
-///////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 @UiModePreviews
 @Composable
 fun AppsGridPreview() {
     ThemedPreview {
-
         var selectedApp by remember {
             mutableStateOf("")
         }
@@ -93,7 +89,7 @@ fun AppsGridPreview() {
 
         AppsGrid(
             modifier = Modifier.fillMaxSize(),
-            apps = apps,
+            apps = apps.toImmutableList(),
             onItemClicked = {
                 selectedApp = it.packageName
             },
@@ -105,14 +101,13 @@ fun AppsGridPreview() {
 @Composable
 fun AppsListPreview() {
     ThemedPreview {
-
         var selectedApp by remember { mutableStateOf("") }
 
         val apps = remember(sampleAppItems::toMutableStateList)
 
         AppsList(
             modifier = Modifier.fillMaxSize(),
-            apps = apps,
+            apps = apps.toImmutableList(),
             onItemClicked = {
                 selectedApp = it.packageName
             },

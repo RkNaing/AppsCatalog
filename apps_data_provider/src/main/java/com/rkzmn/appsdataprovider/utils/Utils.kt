@@ -1,4 +1,4 @@
-package com.rkzmn.apps_data_provider.utils
+package com.rkzmn.appsdataprovider.utils
 
 import android.Manifest
 import android.os.Build

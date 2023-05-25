@@ -1,8 +1,7 @@
-package com.rkzmn.apps_data_provider
+package com.rkzmn.appsdataprovider
 
+import org.junit.Assert.assertEquals
 import org.junit.Test
-
-import org.junit.Assert.*
 
 /**
  * Example local unit test, which will execute on the development machine (host).

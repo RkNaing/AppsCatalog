@@ -20,7 +20,6 @@ data class AppItem(
 
     companion object {
         fun from(appInfo: AppInfo): AppItem {
-
             val displayVersion = buildString {
                 val components = mutableListOf<String>()
                 val versionName = appInfo.versionName
@@ -50,8 +49,4 @@ data class AppItem(
             )
         }
     }
-
-
 }
-
-

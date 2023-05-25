@@ -20,7 +20,8 @@ import com.rkzmn.appscatalog.utils.android.isSDKIntAtLeast
 fun AppsCatalogTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = false, content: @Composable () -> Unit
+    dynamicColor: Boolean = false,
+    content: @Composable () -> Unit
 ) {
     val colorScheme = when {
         dynamicColor && isSDKIntAtLeast(AndroidVersions.S) -> {
@@ -35,7 +36,8 @@ fun AppsCatalogTheme(
     val systemUiController = rememberSystemUiController()
     SideEffect {
         systemUiController.setSystemBarsColor(
-            color = colorScheme.background, darkIcons = !darkTheme
+            color = colorScheme.background,
+            darkIcons = !darkTheme
         )
     }
 
@@ -50,9 +52,9 @@ fun AppsCatalogTheme(
     )
 }
 
-///////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 // CompositionLocals
-///////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 val LocalDarkThemeFlag = compositionLocalOf { false }
 
 val isAppInDarkTheme: Boolean
@@ -60,9 +62,9 @@ val isAppInDarkTheme: Boolean
     @ReadOnlyComposable
     get() = LocalDarkThemeFlag.current
 
-///////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 // Color Schemes
-///////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 private val DarkColorScheme = darkColorScheme(
     primary = md_theme_dark_primary,
     onPrimary = md_theme_dark_onPrimary,

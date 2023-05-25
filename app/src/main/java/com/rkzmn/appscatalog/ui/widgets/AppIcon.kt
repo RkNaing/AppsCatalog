@@ -7,11 +7,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
 import com.rkzmn.appscatalog.utils.app.AppDrawables
-
 @Composable
 fun AppIcon(
-    modifier: Modifier = Modifier,
     iconPath: String?,
+    modifier: Modifier = Modifier,
     contentDescription: String? = null,
 ) {
     val placeholder = painterResource(id = AppDrawables.ic_android_seed_24dp)

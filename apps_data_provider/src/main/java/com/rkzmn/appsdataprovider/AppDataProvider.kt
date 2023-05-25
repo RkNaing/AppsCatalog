@@ -1,23 +1,23 @@
-package com.rkzmn.apps_data_provider
+package com.rkzmn.appsdataprovider
 
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.content.pm.PermissionInfo
-import com.rkzmn.apps_data_provider.model.App
-import com.rkzmn.apps_data_provider.model.AppComponent
-import com.rkzmn.apps_data_provider.model.AppPermission
-import com.rkzmn.apps_data_provider.utils.AndroidVersions
-import com.rkzmn.apps_data_provider.utils.appIcon
-import com.rkzmn.apps_data_provider.utils.appSize
-import com.rkzmn.apps_data_provider.utils.getInstallerPackage
-import com.rkzmn.apps_data_provider.utils.getLastTimeUsed
-import com.rkzmn.apps_data_provider.utils.getPackageInfoCompat
-import com.rkzmn.apps_data_provider.utils.getPackages
-import com.rkzmn.apps_data_provider.utils.isPrivate
-import com.rkzmn.apps_data_provider.utils.isSDKIntAtLeast
-import com.rkzmn.apps_data_provider.utils.usageStatsManager
-import com.rkzmn.apps_data_provider.utils.versionCodeCompat
+import com.rkzmn.appsdataprovider.model.App
+import com.rkzmn.appsdataprovider.model.AppComponent
+import com.rkzmn.appsdataprovider.model.AppPermission
+import com.rkzmn.appsdataprovider.utils.AndroidVersions
+import com.rkzmn.appsdataprovider.utils.appIcon
+import com.rkzmn.appsdataprovider.utils.appSize
+import com.rkzmn.appsdataprovider.utils.getInstallerPackage
+import com.rkzmn.appsdataprovider.utils.getLastTimeUsed
+import com.rkzmn.appsdataprovider.utils.getPackageInfoCompat
+import com.rkzmn.appsdataprovider.utils.getPackages
+import com.rkzmn.appsdataprovider.utils.isPrivate
+import com.rkzmn.appsdataprovider.utils.isSDKIntAtLeast
+import com.rkzmn.appsdataprovider.utils.usageStatsManager
+import com.rkzmn.appsdataprovider.utils.versionCodeCompat
 
 fun getApps(context: Context): List<App> {
     val apps = mutableListOf<App>()
@@ -31,7 +31,6 @@ fun getApps(context: Context): List<App> {
     val usageStatsManager = context.usageStatsManager
 
     for (packageInfo in packages) {
-
         val applicationInfo = packageInfo.applicationInfo
 
         val appName = applicationInfo.loadLabel(packageManager).toString()
@@ -75,7 +74,6 @@ fun getApps(context: Context): List<App> {
             targetSdk = targetSdkInt,
             compileSdk = compileSdkInt
         )
-
     }
 
     return apps.toList()
@@ -83,8 +81,9 @@ fun getApps(context: Context): List<App> {
 
 fun getAppServices(context: Context, packageName: String): List<AppComponent> {
     val packageManager = context.packageManager
-    val serviceInfoList = packageManager
-        .getPackageInfoCompat(packageName, PackageManager.GET_SERVICES)?.services ?: emptyArray()
+    val serviceInfoList =
+        packageManager.getPackageInfoCompat(packageName, PackageManager.GET_SERVICES)?.services
+            ?: emptyArray()
 
     return serviceInfoList.map { info ->
         val name = info.name
@@ -100,9 +99,9 @@ fun getAppServices(context: Context, packageName: String): List<AppComponent> {
 
 fun getAppActivities(context: Context, packageName: String): List<AppComponent> {
     val packageManager = context.packageManager
-    val activityInfoList = packageManager
-        .getPackageInfoCompat(packageName, PackageManager.GET_ACTIVITIES)?.activities
-        ?: emptyArray()
+    val activityInfoList =
+        packageManager.getPackageInfoCompat(packageName, PackageManager.GET_ACTIVITIES)?.activities
+            ?: emptyArray()
 
     return activityInfoList.map { info ->
         val name = info.name
@@ -119,9 +118,9 @@ fun getAppActivities(context: Context, packageName: String): List<AppComponent> 
 
 fun getAppReceivers(context: Context, packageName: String): List<AppComponent> {
     val packageManager = context.packageManager
-    val receiverInfoList = packageManager
-        .getPackageInfoCompat(packageName, PackageManager.GET_RECEIVERS)?.receivers
-        ?: emptyArray()
+    val receiverInfoList =
+        packageManager.getPackageInfoCompat(packageName, PackageManager.GET_RECEIVERS)?.receivers
+            ?: emptyArray()
 
     return receiverInfoList.map { info ->
         val name = info.name
@@ -138,21 +137,23 @@ fun getAppReceivers(context: Context, packageName: String): List<AppComponent> {
 
 fun getAppPermissions(context: Context, packageName: String): List<AppPermission> {
     val packageManager = context.packageManager
-    val permissionInfoList = packageManager
-        .getPackageInfoCompat(packageName, PackageManager.GET_PERMISSIONS)?.permissions
-        ?: emptyArray()
+    val permissionInfoList = packageManager.getPackageInfoCompat(
+        packageName,
+        PackageManager.GET_PERMISSIONS
+    )?.permissions ?: emptyArray()
 
     return permissionInfoList.map { info ->
         val name = info.name
         val permissionGroup = info.group?.let {
             runCatching {
-                packageManager.getPermissionGroupInfo(it, 0)
-                    .loadLabel(packageManager)
+                packageManager.getPermissionGroupInfo(it, 0).loadLabel(packageManager)
             }
         }?.getOrNull()?.toString()
-        val description = runCatching { info.loadDescription(packageManager) }
-            .getOrNull()?.toString()
-        @Suppress("DEPRECATION") val protectionFlags =
+        val description =
+            runCatching { info.loadDescription(packageManager) }.getOrNull()?.toString()
+
+        @Suppress("DEPRECATION")
+        val protectionFlags =
             if (isSDKIntAtLeast(AndroidVersions.P)) info.protectionFlags else info.protectionLevel
         val isDangerous = protectionFlags and PermissionInfo.PROTECTION_DANGEROUS != 0
         AppPermission(
@@ -168,11 +169,7 @@ private fun extractShortClassName(className: String): String {
     if (className.isBlank() || !className.contains(".")) {
         return className
     }
-
-    val parts = className.split(".")
-    if (parts.isEmpty()) {
-        return className
+    return with(className.split(".")) {
+        getOrElse(lastIndex, defaultValue = { className })
     }
-
-    return parts[parts.lastIndex]
 }

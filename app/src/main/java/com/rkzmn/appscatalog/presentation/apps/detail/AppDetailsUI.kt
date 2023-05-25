@@ -1,5 +1,6 @@
 package com.rkzmn.appscatalog.presentation.apps.detail
 
+import android.content.Context
 import androidx.annotation.StringRes
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -26,7 +28,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -47,200 +48,249 @@ import com.rkzmn.appscatalog.ui.widgets.ThemedPreview
 import com.rkzmn.appscatalog.utils.android.compose.preview.UiModePreviews
 import com.rkzmn.appscatalog.utils.app.AppStrings
 import com.rkzmn.appscatalog.utils.app.createCountLabelAnnotatedString
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AppDetailsUI(
-    modifier: Modifier = Modifier,
     details: AppDetails,
+    modifier: Modifier = Modifier,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
-    val tabs = remember(details) { details.tabTitles.toMutableStateList() }
+    val tabs = remember(details) { details.tabTitles.toImmutableList() }
     val pagerState = rememberPagerState(initialPage = 0)
     val selectedTabIndex = pagerState.currentPage
     val subtitleText by remember(key1 = selectedTabIndex, key2 = details) {
-        val annotatedString = when (val selectedTab = tabs.getOrNull(selectedTabIndex)) {
-            AppDetailTab.PERMISSIONS -> createCountLabelAnnotatedString(
-                count = details.permissions.size,
-                label = context.getString(selectedTab.label)
+        mutableStateOf(
+            prepareSubtitle(
+                selectedTab = tabs.getOrNull(selectedTabIndex),
+                details = details,
+                context = context
             )
-
-            AppDetailTab.ACTIVITIES -> createCountLabelAnnotatedString(
-                count = details.activities.size,
-                label = context.getString(selectedTab.label)
-            )
-
-            AppDetailTab.SERVICES -> createCountLabelAnnotatedString(
-                count = details.services.size,
-                label = context.getString(selectedTab.label)
-            )
-
-            AppDetailTab.RECEIVERS -> createCountLabelAnnotatedString(
-                count = details.broadcastReceivers.size,
-                label = context.getString(selectedTab.label)
-            )
-
-            else -> AnnotatedString("")
-        }
-        mutableStateOf(annotatedString)
+        )
     }
 
     Column(
         modifier = modifier,
     ) {
-
-        Row(
+        TitleSection(
+            appName = details.appName,
+            packageName = details.packageName,
+            icon = details.appIcon,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = spacingMedium),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            AppIcon(
-                iconPath = details.appIcon,
-                contentDescription = details.appName,
-                modifier = Modifier
-                    .padding(spacingMedium)
-                    .size(appIconSize)
-            )
-            if (!details.appName.isNullOrBlank()) {
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(end = spacingMedium),
-                    text = details.appName,
-                    maxLines = 2,
-                    style = MaterialTheme.typography.headlineSmall
-                )
-            } else {
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(end = spacingMedium),
-                    text = details.packageName,
-                    maxLines = 2,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+        )
 
-        }
-
-        Box(
+        SubtitleSection(
+            subtitle = subtitleText,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(24.dp)
-                .padding(horizontal = spacingExtraLarge),
-            contentAlignment = Alignment.CenterStart
-        ) {
-            // Needs method FQN: https://stackoverflow.com/a/69669445
-            androidx.compose.animation.AnimatedVisibility(
-                visible = subtitleText.isNotBlank(),
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                if (subtitleText.isNotBlank()) {
-                    Text(
-                        modifier = Modifier.animateContentSize(
-                            animationSpec = tween(durationMillis = 200)
-                        ),
-                        text = subtitleText,
-                        style = MaterialTheme.typography.labelLarge
-                    )
-                }
-            }
-        }
+                .padding(horizontal = spacingExtraLarge)
+        )
 
-        ScrollableTabRow(
-            modifier = Modifier.fillMaxWidth(),
+        SectionTabBar(
+            tabs = tabs,
             selectedTabIndex = selectedTabIndex,
-            edgePadding = spacingMedium,
-            divider = { }
-        ) {
-            tabs.forEachIndexed { index, tab ->
-                val isTabSelected = index == selectedTabIndex
-                Tab(
-                    selected = isTabSelected,
-                    unselectedContentColor = MaterialTheme.colorScheme.onBackground,
-                    onClick = {
-                        coroutineScope.launch {
-                            pagerState.scrollToPage(index)
-                        }
-                    },
-                    content = {
-                        Text(
-                            modifier = Modifier.padding(
-                                horizontal = spacingSmall,
-                                vertical = spacingMedium
-                            ),
-                            text = stringResource(id = tab.label),
-                            fontWeight = if (isTabSelected) FontWeight.Bold else null
-                        )
-                    }
-                )
+            onTabSelected = { index ->
+                coroutineScope.launch { pagerState.scrollToPage(index) }
             }
-        }
+        )
 
         Divider(modifier = Modifier.fillMaxWidth())
 
-        HorizontalPager(
+        AppDetailsContentPager(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
+            details = details,
+            pagerState = pagerState,
             pageCount = tabs.size,
-            state = pagerState,
-        ) { position ->
-            val pageContentModifier = Modifier
-                .fillMaxSize()
+            selectedTab = { index -> tabs.getOrNull(index) }
+        )
+    }
+}
+
+@Composable
+private fun TitleSection(
+    appName: String?,
+    packageName: String,
+    icon: String?,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        AppIcon(
+            iconPath = icon,
+            contentDescription = appName,
+            modifier = Modifier
                 .padding(spacingMedium)
+                .size(appIconSize)
+        )
+        if (!appName.isNullOrBlank()) {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = spacingMedium),
+                text = appName,
+                maxLines = 2,
+                style = MaterialTheme.typography.headlineSmall
+            )
+        } else {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = spacingMedium),
+                text = packageName,
+                maxLines = 2,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
 
-            when (tabs.getOrNull(position)) {
-                AppDetailTab.OVERVIEW -> {
-                    AppInfoContainer(
-                        modifier = pageContentModifier.verticalScroll(state = rememberScrollState()),
-                        details = details
-                    )
-                }
-
-                AppDetailTab.PERMISSIONS -> {
-//                    subtitleText = "${details.permissions.size} ${stringResource(id = tab.label)}"
-                    AppPermissionsList(
-                        modifier = pageContentModifier,
-                        permissions = details.permissions,
-                    )
-                }
-
-                AppDetailTab.ACTIVITIES -> {
-//                    subtitleText = "${details.activities.size} ${stringResource(id = tab.label)}"
-                    AppActivitiesList(
-                        modifier = pageContentModifier,
-                        activities = details.activities,
-                    )
-                }
-
-                AppDetailTab.SERVICES -> {
-//                    subtitleText = "${details.services.size} ${stringResource(id = tab.label)}"
-                    AppServicesList(
-                        modifier = pageContentModifier,
-                        services = details.services,
-                    )
-                }
-
-                AppDetailTab.RECEIVERS -> {
-//                    subtitleText =
-//                        "${details.broadcastReceivers.size} ${stringResource(id = tab.label)}"
-                    AppBroadcastReceiversList(
-                        modifier = pageContentModifier,
-                        receivers = details.broadcastReceivers
-                    )
-                }
-
-                null -> Unit
+@Composable
+private fun SubtitleSection(
+    subtitle: AnnotatedString?,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.CenterStart
+    ) {
+        // Needs method FQN: https://stackoverflow.com/a/69669445
+        androidx.compose.animation.AnimatedVisibility(
+            visible = !subtitle.isNullOrBlank(),
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            if (!subtitle.isNullOrBlank()) {
+                Text(
+                    modifier = Modifier.animateContentSize(
+                        animationSpec = tween(durationMillis = 200)
+                    ),
+                    text = subtitle,
+                    style = MaterialTheme.typography.labelLarge
+                )
             }
         }
-
     }
+}
+
+@Composable
+private fun SectionTabBar(
+    tabs: ImmutableList<AppDetailTab>,
+    selectedTabIndex: Int,
+    modifier: Modifier = Modifier,
+    onTabSelected: (Int) -> Unit,
+) {
+    ScrollableTabRow(
+        modifier = modifier.fillMaxWidth(),
+        selectedTabIndex = selectedTabIndex,
+        edgePadding = spacingMedium,
+        divider = { }
+    ) {
+        tabs.forEachIndexed { index, tab ->
+            val isTabSelected = index == selectedTabIndex
+            Tab(
+                selected = isTabSelected,
+                unselectedContentColor = MaterialTheme.colorScheme.onBackground,
+                onClick = { onTabSelected(index) },
+                content = {
+                    Text(
+                        modifier = Modifier.padding(
+                            horizontal = spacingSmall,
+                            vertical = spacingMedium
+                        ),
+                        text = stringResource(id = tab.label),
+                        fontWeight = if (isTabSelected) FontWeight.Bold else null
+                    )
+                }
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun AppDetailsContentPager(
+    details: AppDetails,
+    pagerState: PagerState,
+    pageCount: Int,
+    modifier: Modifier = Modifier,
+    selectedTab: (Int) -> AppDetailTab?,
+) {
+    HorizontalPager(
+        modifier = modifier,
+        pageCount = pageCount,
+        state = pagerState,
+    ) { position ->
+
+        val pageContentModifier = Modifier
+            .fillMaxSize()
+            .padding(spacingMedium)
+
+        when (selectedTab(position)) {
+            AppDetailTab.OVERVIEW -> {
+                AppInfoContainer(
+                    modifier = pageContentModifier.verticalScroll(state = rememberScrollState()),
+                    details = details
+                )
+            }
+
+            AppDetailTab.PERMISSIONS -> {
+                AppPermissionsList(
+                    modifier = pageContentModifier,
+                    permissions = details.permissions,
+                )
+            }
+
+            AppDetailTab.ACTIVITIES -> {
+                AppActivitiesList(
+                    modifier = pageContentModifier,
+                    activities = details.activities,
+                )
+            }
+
+            AppDetailTab.SERVICES -> {
+                AppServicesList(
+                    modifier = pageContentModifier,
+                    services = details.services,
+                )
+            }
+
+            AppDetailTab.RECEIVERS -> {
+                AppBroadcastReceiversList(
+                    modifier = pageContentModifier,
+                    receivers = details.broadcastReceivers
+                )
+            }
+
+            null -> Unit
+        }
+    }
+}
+
+private fun prepareSubtitle(
+    selectedTab: AppDetailTab?,
+    details: AppDetails,
+    context: Context
+): AnnotatedString {
+    if (selectedTab == null) {
+        return AnnotatedString("")
+    }
+
+    return createCountLabelAnnotatedString(
+        count = details.itemSize(selectedTab),
+        label = context.getString(selectedTab.label)
+    )
 }
 
 private val AppDetails.tabTitles: List<AppDetailTab>
@@ -262,6 +312,14 @@ private val AppDetails.tabTitles: List<AppDetailTab>
         return titles
     }
 
+private fun AppDetails.itemSize(tab: AppDetailTab): Int = when (tab) {
+    AppDetailTab.OVERVIEW -> 0
+    AppDetailTab.PERMISSIONS -> permissions.size
+    AppDetailTab.ACTIVITIES -> activities.size
+    AppDetailTab.SERVICES -> services.size
+    AppDetailTab.RECEIVERS -> broadcastReceivers.size
+}
+
 private enum class AppDetailTab(@StringRes val label: Int) {
     OVERVIEW(AppStrings.lbl_overview),
     PERMISSIONS(AppStrings.lbl_permissions),
@@ -270,9 +328,9 @@ private enum class AppDetailTab(@StringRes val label: Int) {
     RECEIVERS(AppStrings.lbl_receivers),
 }
 
-///////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 // Previews
-///////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 
 @UiModePreviews
 @Composable

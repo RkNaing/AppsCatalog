@@ -18,11 +18,12 @@ import com.rkzmn.appscatalog.domain.model.AppPermissionInfo
 import com.rkzmn.appscatalog.ui.theme.cardColorAndElevation
 import com.rkzmn.appscatalog.ui.theme.spacingExtraSmall
 import com.rkzmn.appscatalog.ui.theme.spacingMedium
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 fun AppPermissionsList(
+    permissions: ImmutableList<AppPermissionInfo>,
     modifier: Modifier = Modifier,
-    permissions: List<AppPermissionInfo>,
 ) {
     LazyColumn(
         modifier = modifier,
@@ -42,10 +43,9 @@ fun AppPermissionsList(
 
 @Composable
 private fun ItemPermission(
-    modifier: Modifier = Modifier,
     permission: AppPermissionInfo,
+    modifier: Modifier = Modifier,
 ) {
-
     val cardColorsElevation = cardColorAndElevation
 
     Card(
@@ -53,7 +53,6 @@ private fun ItemPermission(
         colors = cardColorsElevation.first,
         elevation = cardColorsElevation.second,
     ) {
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -82,20 +81,6 @@ private fun ItemPermission(
                     )
                 }
             }
-
-//            if (service.isPrivate) {
-//                Icon(
-//                    imageVector = Icons.Filled.Lock,
-//                    contentDescription = service.name
-//                )
-//            }
-
         }
-
-
     }
 }
-
-///////////////////////////////////////////////////////////////////////////
-//
-///////////////////////////////////////////////////////////////////////////

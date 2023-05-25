@@ -13,6 +13,7 @@ import com.rkzmn.appscatalog.presentation.apps.list.states.AppsListScreenState
 import com.rkzmn.appscatalog.utils.kotlin.CoroutineDispatcherProvider
 import com.rkzmn.appscatalog.utils.kotlin.emitUpdate
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -80,7 +81,6 @@ class AppsViewModel @Inject constructor(
                 _appsListState.emitUpdate { it.copy(listDisplayType = displayType) }
             }
         }
-
     }
 
     private fun loadApps(
@@ -103,7 +103,7 @@ class AppsViewModel @Inject constructor(
             ).map(AppItem.Companion::from)
             _appsListState.emitUpdate {
                 it.copy(
-                    apps = appItems,
+                    apps = appItems.toImmutableList(),
                     sortBy = sortOption,
                     listType = listType,
                     isLoading = false
@@ -142,5 +142,4 @@ class AppsViewModel @Inject constructor(
             _appDetailsState.emitUpdate { it.copy(isLoading = false, details = details) }
         }
     }
-
 }

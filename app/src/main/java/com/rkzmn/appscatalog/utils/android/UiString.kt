@@ -27,7 +27,6 @@ sealed class UiString : Parcelable {
         override fun asString(): String = value
 
         override fun asString(context: Context): String = value
-
     }
 
     @Parcelize
@@ -48,7 +47,6 @@ sealed class UiString : Parcelable {
         } else {
             context.getString(resId)
         }
-
     }
 
     @Parcelize
@@ -70,7 +68,6 @@ sealed class UiString : Parcelable {
         } else {
             context.resources.getQuantityString(resId, count)
         }
-
     }
 
     companion object {

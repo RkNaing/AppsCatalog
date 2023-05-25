@@ -31,5 +31,4 @@ abstract class RepositoryModule {
     abstract fun bindAppPreferenceRepository(
         impl: AppPreferenceRepositoryImpl
     ): AppPreferenceRepository
-
-}// Note on IDE showing as unused code : https://stackoverflow.com/a/68828417
+} // Note on IDE showing as unused code : https://stackoverflow.com/a/68828417

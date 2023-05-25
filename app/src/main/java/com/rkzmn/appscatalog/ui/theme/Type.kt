@@ -11,7 +11,6 @@ import com.rkzmn.appscatalog.utils.app.AppFonts
 val Typography = createTypography()
 
 private fun createTypography(): Typography {
-
     val montserratAlternates = montserratAlternatesFontFamily
 
     val defaultTypography = Typography()
@@ -39,7 +38,6 @@ private fun createTypography(): Typography {
         labelSmall = defaultTypography.labelSmall.copy(fontFamily = montserratAlternates)
     )
 }
-
 
 private val montserratAlternatesFontFamily: FontFamily
     get() = FontFamily(

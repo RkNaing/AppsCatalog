@@ -50,11 +50,12 @@ fun SettingsScreen(
     onNavIconClicked: () -> Unit,
     onThemeUpdated: (AppTheme) -> Unit,
     updateUseDynamicColor: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         topBar = {
             LargeTopAppBar(
                 title = {
@@ -82,7 +83,6 @@ fun SettingsScreen(
                 .nestedScroll(scrollBehavior.nestedScrollConnection),
             verticalArrangement = Arrangement.spacedBy(spacingMedium),
         ) {
-
             AppThemeChooserCard(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -92,20 +92,18 @@ fun SettingsScreen(
                 onThemeUpdated = onThemeUpdated,
                 updateUseDynamicColor = updateUseDynamicColor
             )
-
         }
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 private fun AppThemeChooserCard(
-    modifier: Modifier,
     appTheme: AppTheme,
     useDynamicColors: Boolean,
     onThemeUpdated: (AppTheme) -> Unit,
     updateUseDynamicColor: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val cardColorsAndElevation = cardColorAndElevation
@@ -115,14 +113,12 @@ private fun AppThemeChooserCard(
         colors = cardColorsAndElevation.first,
         elevation = cardColorsAndElevation.second,
     ) {
-
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(spacingMedium),
             verticalArrangement = Arrangement.spacedBy(spacingMedium)
         ) {
-
             Text(
                 text = stringResource(id = AppStrings.lbl_app_theme),
                 style = MaterialTheme.typography.labelLarge
@@ -145,7 +141,6 @@ private fun AppThemeChooserCard(
             }
 
             if (isSDKIntAtLeast(AndroidVersions.S)) {
-
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -165,16 +160,11 @@ private fun AppThemeChooserCard(
                         checked = useDynamicColors,
                         onCheckedChange = null,
                     )
-
                 }
-
             }
-
         }
-
     }
 }
-
 
 @UiModePreviews
 @Composable

@@ -3,6 +3,7 @@ package com.rkzmn.appscatalog.utils.kotlin
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.text.CharacterIterator
 import java.text.StringCharacterIterator
+import java.util.Locale
 
 /**
  * Returns a human-readable version of the file size, where the input represents a specific number of bytes.
@@ -23,8 +24,7 @@ fun byteCountToDisplaySize(bytes: Long): String {
         value /= 1000
         ci.next()
     }
-    return String.format("%.1f %cB", value / 1000.0, ci.current())
+    return "%.1f %cB".format(locale = Locale.ENGLISH, value / 1000.0, ci.current())
 }
-
 
 suspend inline fun <T> MutableStateFlow<T>.emitUpdate(function: (T) -> T) = emit(function(value))

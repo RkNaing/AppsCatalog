@@ -20,6 +20,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.rkzmn.appscatalog.utils.android.compose.preview.UiModePreviews
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 /**
  * items : list of items to be render
@@ -32,8 +34,8 @@ import com.rkzmn.appscatalog.utils.android.compose.preview.UiModePreviews
  */
 @Composable
 fun SegmentedControl(
+    items: ImmutableList<String>,
     modifier: Modifier = Modifier,
-    items: List<String>,
     defaultSelectedItemIndex: Int = 0,
     useFixedWidth: Boolean = false,
     itemWidth: Dp = 120.dp,
@@ -95,7 +97,8 @@ fun SegmentedControl(
                     )
                 },
                 border = BorderStroke(
-                    1.dp, if (selectedIndex.value == index) {
+                    1.dp,
+                    if (selectedIndex.value == index) {
                         color
                     } else {
                         color.copy(alpha = 0.75f)
@@ -135,8 +138,9 @@ private fun SegmentedControlPreview() {
     ThemedPreview {
         SegmentedControl(
             modifier = Modifier.fillMaxWidth(),
-            items = listOf("Option 1", "Option 2", "Option 3", "Option 4"),
+            items = persistentListOf("Option 1", "Option 2", "Option 3", "Option 4"),
             defaultSelectedItemIndex = 3,
-            onItemSelection = {})
+            onItemSelection = {}
+        )
     }
 }

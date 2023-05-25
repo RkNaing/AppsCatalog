@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,11 +23,12 @@ import com.rkzmn.appscatalog.ui.theme.spacingExtraSmall
 import com.rkzmn.appscatalog.ui.theme.spacingMedium
 import com.rkzmn.appscatalog.ui.widgets.ThemedPreview
 import com.rkzmn.appscatalog.utils.android.compose.preview.UiModePreviews
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 fun AppServicesList(
+    services: ImmutableList<AppComponentInfo>,
     modifier: Modifier = Modifier,
-    services: List<AppComponentInfo>,
 ) {
     LazyColumn(
         modifier = modifier,
@@ -47,13 +47,11 @@ fun AppServicesList(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ItemService(
-    modifier: Modifier = Modifier,
     service: AppComponentInfo,
+    modifier: Modifier = Modifier,
 ) {
-
     val cardColorsElevation = cardColorAndElevation
 
     Card(
@@ -61,7 +59,6 @@ private fun ItemService(
         colors = cardColorsElevation.first,
         elevation = cardColorsElevation.second,
     ) {
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -90,16 +87,13 @@ private fun ItemService(
                     contentDescription = service.name
                 )
             }
-
         }
-
-
     }
 }
 
-///////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 // Previews
-///////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 @UiModePreviews
 @Composable
 private fun ItemActivityPreview() {

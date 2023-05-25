@@ -15,7 +15,6 @@ typealias AppDrawables = com.rkzmn.appscatalog.R.drawable
 typealias AppStrings = com.rkzmn.appscatalog.R.string
 typealias AppFonts = com.rkzmn.appscatalog.R.font
 
-
 fun createCountLabelAnnotatedString(
     count: Int,
     label: String,
@@ -37,7 +36,6 @@ fun createCountLabelAnnotatedString(
 }
 
 fun AppComponentInfo.launch(context: Context) {
-
     if (packageName == context.packageName) {
         context.toast(messageResId = AppStrings.msg_component_launched_already)
         return

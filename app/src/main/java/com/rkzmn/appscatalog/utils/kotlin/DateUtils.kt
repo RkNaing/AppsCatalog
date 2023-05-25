@@ -1,7 +1,26 @@
 package com.rkzmn.appscatalog.utils.kotlin
 
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
+
+fun Date.format(format: DateTimeFormat, locale: Locale = Locale.ENGLISH): String {
+    val sdf = SimpleDateFormat(format.pattern, locale)
+    return sdf.format(this)
+}
+
+fun String.asDate(format: DateTimeFormat, locale: Locale = Locale.ENGLISH): Date? {
+    val sdf = SimpleDateFormat(format.pattern, locale)
+    return if (isBlank()) null else runCatching { sdf.parse(this) }.getOrNull()
+}
+
+fun Long.asFormattedDate(format: DateTimeFormat, locale: Locale = Locale.ENGLISH): String? {
+    return if (this > 0) {
+        Date(this).format(format, locale)
+    } else {
+        null
+    }
+}
 
 @JvmInline
 value class DateTimeFormat private constructor(val pattern: String) {
@@ -17,22 +36,3 @@ value class DateTimeFormat private constructor(val pattern: String) {
 //        val timestamp = DateTimeFormat("yyyyMMdd_HHmms")
     }
 }
-
-fun Date.format(format: DateTimeFormat, locale: Locale = Locale.ENGLISH): String {
-    val sdf = SimpleDateFormat(format.pattern, locale)
-    return sdf.format(this)
-}
-
-fun String.asDate(format: DateTimeFormat, locale: Locale = Locale.ENGLISH): Date? {
-    val sdf = SimpleDateFormat(format.pattern, locale)
-    return if (isBlank()) null else runCatching { sdf.parse(this) }.getOrNull()
-}
-
-fun Long.asFormattedDate(format: DateTimeFormat, locale: Locale = Locale.ENGLISH): String? {
-    return if (this > 0){
-        Date(this).format(format, locale)
-    }else{
-        null
-    }
-}
-

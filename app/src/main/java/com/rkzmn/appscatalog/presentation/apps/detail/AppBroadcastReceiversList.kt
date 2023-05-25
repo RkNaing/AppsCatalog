@@ -23,11 +23,12 @@ import com.rkzmn.appscatalog.ui.theme.spacingExtraSmall
 import com.rkzmn.appscatalog.ui.theme.spacingMedium
 import com.rkzmn.appscatalog.ui.widgets.ThemedPreview
 import com.rkzmn.appscatalog.utils.android.compose.preview.UiModePreviews
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 fun AppBroadcastReceiversList(
+    receivers: ImmutableList<AppComponentInfo>,
     modifier: Modifier = Modifier,
-    receivers: List<AppComponentInfo>,
 ) {
     LazyColumn(
         modifier = modifier,
@@ -48,10 +49,9 @@ fun AppBroadcastReceiversList(
 
 @Composable
 private fun ItemBroadcastReceiver(
-    modifier: Modifier = Modifier,
     receiver: AppComponentInfo,
+    modifier: Modifier = Modifier,
 ) {
-
     val cardColorsElevation = cardColorAndElevation
 
     Card(
@@ -59,7 +59,6 @@ private fun ItemBroadcastReceiver(
         colors = cardColorsElevation.first,
         elevation = cardColorsElevation.second,
     ) {
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -88,16 +87,13 @@ private fun ItemBroadcastReceiver(
                     contentDescription = receiver.name
                 )
             }
-
         }
-
-
     }
 }
 
-///////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 // Previews
-///////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 @UiModePreviews
 @Composable
 private fun ItemBroadcastReceiverPreview() {

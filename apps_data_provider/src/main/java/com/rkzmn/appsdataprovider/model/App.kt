@@ -1,6 +1,6 @@
-package com.rkzmn.apps_data_provider.model
+package com.rkzmn.appsdataprovider.model
 
-import com.rkzmn.apps_data_provider.utils.getAndroidVersionLabel
+import com.rkzmn.appsdataprovider.utils.getAndroidVersionLabel
 
 data class App(
     val appName: String,
@@ -28,5 +28,4 @@ data class App(
 
     val compileSdkAndroidVersion: String
         get() = getAndroidVersionLabel(compileSdk)
-
 }

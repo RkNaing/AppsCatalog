@@ -31,8 +31,8 @@ import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 fun AppActivitiesList(
-    modifier: Modifier = Modifier,
     activities: ImmutableList<AppComponentInfo>,
+    modifier: Modifier = Modifier,
 ) {
     val activity = LocalView.current.context as? Activity
 
@@ -59,11 +59,10 @@ fun AppActivitiesList(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ItemActivity(
-    modifier: Modifier = Modifier,
     activity: AppComponentInfo,
+    modifier: Modifier = Modifier,
     onItemClicked: (AppComponentInfo) -> Unit,
 ) {
-
     val cardColorsElevation = cardColorAndElevation
 
     Card(
@@ -72,7 +71,6 @@ private fun ItemActivity(
         colors = cardColorsElevation.first,
         elevation = cardColorsElevation.second,
     ) {
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -101,16 +99,13 @@ private fun ItemActivity(
                     contentDescription = activity.name
                 )
             }
-
         }
-
-
     }
 }
 
-///////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 // Previews
-///////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 @UiModePreviews
 @Composable
 private fun ItemActivityPreview() {

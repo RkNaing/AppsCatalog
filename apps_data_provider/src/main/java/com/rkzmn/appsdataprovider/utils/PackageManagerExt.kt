@@ -1,4 +1,4 @@
-package com.rkzmn.apps_data_provider.utils
+package com.rkzmn.appsdataprovider.utils
 
 import android.Manifest
 import android.content.Context
@@ -31,7 +31,7 @@ internal fun PackageManager.getPackages(flag: Int = PackageManager.GET_META_DATA
 internal fun PackageManager.getPackageInfoCompat(packageName: String, flags: Int): PackageInfo? {
     Timber.tag(TAG)
         .d("getPackageInfoCompat() called with: packageName = [$packageName], flags = [$flags]")
-    return try {
+    return runCatching {
         when {
             isSDKIntAtLeast(AndroidVersions.TIRAMISU) -> {
                 getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(flags.toLong()))
@@ -42,7 +42,7 @@ internal fun PackageManager.getPackageInfoCompat(packageName: String, flags: Int
                 getPackageInfo(packageName, flags)
             }
         }
-    } catch (e: Exception) {
+    }.getOrElse { e ->
         Timber.tag(TAG).e(e, "getPackageInfoCompat: Failed to get PackageInfo for $packageName")
         return null
     }
@@ -50,7 +50,7 @@ internal fun PackageManager.getPackageInfoCompat(packageName: String, flags: Int
 
 internal fun PackageManager.getInstallerPackage(context: Context, packageName: String): String? {
     Timber.tag(TAG).d("getInstallerPackage() called with: packageName = [$packageName]")
-    return try {
+    return runCatching {
         if (isSDKIntAtLeast(AndroidVersions.R)) {
             if (
                 ContextCompat.checkSelfPermission(
@@ -66,7 +66,7 @@ internal fun PackageManager.getInstallerPackage(context: Context, packageName: S
             @Suppress("DEPRECATION")
             getInstallerPackageName(packageName)
         }
-    } catch (e: Exception) {
+    }.getOrElse { e ->
         Timber.tag(TAG)
             .e(e, "getInstallerPackage: Failed to get Installer Package for $packageName")
         null

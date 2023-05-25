@@ -1,9 +1,9 @@
 package com.rkzmn.appscatalog.domain.mappers
 
-import com.rkzmn.apps_data_provider.model.App
 import com.rkzmn.appscatalog.domain.model.AppInfo
 import com.rkzmn.appscatalog.domain.model.AppTypeIndicator
 import com.rkzmn.appscatalog.utils.kotlin.byteCountToDisplaySize
+import com.rkzmn.appsdataprovider.model.App
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 

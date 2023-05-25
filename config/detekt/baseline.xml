@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues>
+    <ID>TooGenericExceptionCaught:ContextExt.kt$e: Exception</ID>
+    <ID>MagicNumber:Utils.kt$1000</ID>
+    <ID>MagicNumber:Utils.kt$999950</ID>
+    <ID>MagicNumber:Utils.kt$1000.0</ID>
+    <ID>TooManyFunctions:PreferenceDataStoreUtils.kt$com.rkzmn.appscatalog.utils.android.PreferenceDataStoreUtils.kt</ID>
+  </ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>TooManyFunctions:PreferenceDataStoreUtil.kt</ID>
+  </CurrentIssues>
+</SmellBaseline>

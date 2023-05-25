@@ -1,6 +1,5 @@
 package com.rkzmn.appscatalog.data.repositories
 
-
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.stringPreferencesKey

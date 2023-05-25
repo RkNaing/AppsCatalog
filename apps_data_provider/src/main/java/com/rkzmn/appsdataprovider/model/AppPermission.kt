@@ -1,5 +1,4 @@
-package com.rkzmn.apps_data_provider.model
-
+package com.rkzmn.appsdataprovider.model
 data class AppPermission(
     val permission: String,
     val group: String?,

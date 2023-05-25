@@ -41,7 +41,6 @@ fun AppGridItem(
     modifier: Modifier = Modifier,
     onClicked: (AppItem) -> Unit,
 ) {
-
     AppItemContainer(
         modifier = modifier,
         onClick = { onClicked(appItem) },
@@ -72,7 +71,6 @@ fun AppGridItem(
                 .align(Alignment.CenterHorizontally)
         )
     }
-
 }
 
 @Composable
@@ -81,15 +79,12 @@ fun AppListItem(
     modifier: Modifier = Modifier,
     onClicked: (AppItem) -> Unit,
 ) {
-
     AppItemContainer(
         modifier = modifier,
         onClick = { onClicked(appItem) },
         isSelected = appItem.isSelected,
     ) {
-
         Row(modifier = Modifier.fillMaxWidth()) {
-
             AppIcon(
                 iconPath = appItem.appIcon,
                 contentDescription = appItem.appName,
@@ -169,17 +164,15 @@ fun AppListItem(
                 }
             }
         }
-
-
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AppItemContainer(
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
     isSelected: Boolean = false,
-    onClick: () -> Unit,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val cardColors: CardColors
@@ -207,9 +200,9 @@ val appGridItemMinSize = 85.dp
 
 const val ITEM_TYPE_APP = "AppItem"
 
-///////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 // Previews
-///////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 @UiModePreviews
 @Composable
 fun AppGridItemPreview() {

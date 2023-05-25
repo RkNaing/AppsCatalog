@@ -27,7 +27,7 @@ sealed class Destination(
 
         args?.forEach { (key, value) ->
             value?.let {
-                address = address.replace("{${key}}", valueTransformer(key, value))
+                address = address.replace("{$key}", valueTransformer(key, value))
             }
         }
 

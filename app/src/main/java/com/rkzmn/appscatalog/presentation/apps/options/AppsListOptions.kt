@@ -35,7 +35,6 @@ import com.rkzmn.appscatalog.ui.widgets.ThemedPreview
 import com.rkzmn.appscatalog.utils.android.compose.preview.UiModePreviews
 import com.rkzmn.appscatalog.utils.app.AppStrings
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppsListOptionsBottomSheet(
@@ -46,6 +45,7 @@ fun AppsListOptionsBottomSheet(
     onSelectDisplayType: (AppsDisplayType) -> Unit,
     selectedSortOption: AppSortOption,
     onSelectSortOption: (AppSortOption) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
@@ -54,7 +54,7 @@ fun AppsListOptionsBottomSheet(
         sheetState = bottomSheetState,
     ) {
         AppsListOptions(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = modifier.fillMaxWidth(),
             appsType = appsType,
             onSelectAppListType = onSelectAppListType,
             displayType = displayType,
@@ -67,18 +67,16 @@ fun AppsListOptionsBottomSheet(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun AppsListOptions(
-    modifier: Modifier = Modifier,
     appsType: AppsListType,
     onSelectAppListType: (AppsListType) -> Unit,
     displayType: AppsDisplayType,
     onSelectDisplayType: (AppsDisplayType) -> Unit,
     selectedSortOption: AppSortOption,
     onSelectSortOption: (AppSortOption) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-
     val sortFilters = AppSortFilter.filters
     val displayTypes = AppsDisplayType.values()
     val listTypes = AppsListType.values()
@@ -91,7 +89,6 @@ fun AppsListOptions(
         modifier = modifier.padding(spacingMedium),
         verticalArrangement = Arrangement.spacedBy(spacingMedium)
     ) {
-
         Text(
             modifier = Modifier
                 .fillMaxWidth()
@@ -108,24 +105,12 @@ fun AppsListOptions(
             style = MaterialTheme.typography.titleSmall,
         )
 
-        FlowRow(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(spacingSmall),
-        ) {
-
-            listTypes.forEach { type ->
-                FilterChip(
-                    interactionSource = appTypeInteractionSource,
-                    selected = appsType == type,
-                    label = {
-                        Text(text = type.label.asString())
-                    },
-                    onClick = { onSelectAppListType(type) }
-                )
-            }
-
-        }
+        AppListTypeOptions(
+            listTypes = listTypes,
+            appTypeInteractionSource = appTypeInteractionSource,
+            appsType = appsType,
+            onSelectAppListType = onSelectAppListType
+        )
 
         Text(
             modifier = Modifier
@@ -135,33 +120,12 @@ fun AppsListOptions(
             style = MaterialTheme.typography.titleSmall,
         )
 
-        FlowRow(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(spacingSmall),
-        ) {
-
-            displayTypes.forEach { type ->
-
-                val label = type.label.asString()
-
-                FilterChip(
-                    interactionSource = displayTypeInteractionSource,
-                    selected = displayType == type,
-                    label = {
-                        Text(text = label)
-                    },
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(id = type.icon),
-                            contentDescription = label
-                        )
-                    },
-                    onClick = { onSelectDisplayType(type) }
-                )
-            }
-
-        }
+        AppDisplayTypeOptions(
+            displayTypes = displayTypes,
+            displayTypeInteractionSource = displayTypeInteractionSource,
+            displayType = displayType,
+            onSelectDisplayType = onSelectDisplayType
+        )
 
         Text(
             modifier = Modifier
@@ -171,34 +135,108 @@ fun AppsListOptions(
             style = MaterialTheme.typography.titleSmall,
         )
 
-        sortFilters.forEach { filter ->
-            SortFilterRow(
-                modifier = Modifier.fillMaxWidth(),
-                interactionSource = sortInteractionSource,
-                filter = filter,
-                selectedOption = selectedSortOption,
-                onSelected = onSelectSortOption
+        AppSortOptions(
+            sortFilters = sortFilters,
+            sortInteractionSource = sortInteractionSource,
+            selectedSortOption = selectedSortOption,
+            onSelectSortOption = onSelectSortOption
+        )
+    }
+}
+
+@Composable
+private fun AppSortOptions(
+    sortFilters: Array<AppSortFilter>,
+    sortInteractionSource: MutableInteractionSource,
+    selectedSortOption: AppSortOption,
+    onSelectSortOption: (AppSortOption) -> Unit
+) {
+    sortFilters.forEach { filter ->
+        SortFilterRow(
+            modifier = Modifier.fillMaxWidth(),
+            interactionSource = sortInteractionSource,
+            filter = filter,
+            selectedOption = selectedSortOption,
+            onSelected = onSelectSortOption
+        )
+    }
+}
+
+@Composable
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
+private fun AppDisplayTypeOptions(
+    displayTypes: Array<AppsDisplayType>,
+    displayTypeInteractionSource: MutableInteractionSource,
+    displayType: AppsDisplayType,
+    onSelectDisplayType: (AppsDisplayType) -> Unit
+) {
+    FlowRow(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(spacingSmall),
+    ) {
+        displayTypes.forEach { type ->
+
+            val label = type.label.asString()
+
+            FilterChip(
+                interactionSource = displayTypeInteractionSource,
+                selected = displayType == type,
+                label = {
+                    Text(text = label)
+                },
+                leadingIcon = {
+                    Icon(
+                        painter = painterResource(id = type.icon),
+                        contentDescription = label
+                    )
+                },
+                onClick = { onSelectDisplayType(type) }
             )
         }
+    }
+}
 
+@Composable
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
+private fun AppListTypeOptions(
+    listTypes: Array<AppsListType>,
+    appTypeInteractionSource: MutableInteractionSource,
+    appsType: AppsListType,
+    onSelectAppListType: (AppsListType) -> Unit
+) {
+    FlowRow(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(spacingSmall),
+    ) {
+        listTypes.forEach { type ->
+            FilterChip(
+                interactionSource = appTypeInteractionSource,
+                selected = appsType == type,
+                label = {
+                    Text(text = type.label.asString())
+                },
+                onClick = { onSelectAppListType(type) }
+            )
+        }
     }
 }
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun SortFilterRow(
-    modifier: Modifier = Modifier,
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     filter: AppSortFilter,
     selectedOption: AppSortOption?,
     onSelected: (AppSortOption) -> Unit,
+    modifier: Modifier = Modifier,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
     FlowRow(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(spacingSmall),
     ) {
-
         val label = filter.label.asString()
 
         Icon(
@@ -224,15 +262,13 @@ private fun SortFilterRow(
                 label = { Text(text = option.label.asString()) },
                 onClick = { onSelected(option) }
             )
-
         }
-
     }
 }
 
-///////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 // Previews
-///////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////
 
 @UiModePreviews
 @Composable

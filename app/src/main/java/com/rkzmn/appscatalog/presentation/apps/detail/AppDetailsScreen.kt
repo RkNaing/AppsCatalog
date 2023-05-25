@@ -23,12 +23,13 @@ import com.rkzmn.appscatalog.utils.app.AppStrings
 @Composable
 fun AppDetailsScreen(
     state: AppDetailsScreenState,
+    modifier: Modifier = Modifier,
     onNavIconClicked: () -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier,
         topBar = {
             LargeTopAppBar(
                 title = {
@@ -38,9 +39,7 @@ fun AppDetailsScreen(
                     IconButton(onClick = onNavIconClicked) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = stringResource(
-                                id = AppStrings.content_desc_back
-                            )
+                            contentDescription = stringResource(id = AppStrings.content_desc_back)
                         )
                     }
                 },

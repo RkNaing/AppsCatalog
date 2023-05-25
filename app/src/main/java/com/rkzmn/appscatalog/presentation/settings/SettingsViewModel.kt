@@ -38,5 +38,4 @@ class SettingsViewModel @Inject constructor(
             appPrefRepo.setUseDynamicColors(use)
         }
     }
-
 }

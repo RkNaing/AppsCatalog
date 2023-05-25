@@ -13,9 +13,8 @@ import com.rkzmn.appscatalog.presentation.apps.AppsViewModel
 @Composable
 fun RootNavGraph(
     navHostController: NavHostController,
+    viewModel: AppsViewModel = hiltViewModel()
 ) {
-    val viewModel: AppsViewModel = hiltViewModel()
-
     NavHost(
         navController = navHostController,
         startDestination = AppsListDestination.route,

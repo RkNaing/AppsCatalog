@@ -1,4 +1,4 @@
-package com.rkzmn.apps_data_provider.model
+package com.rkzmn.appsdataprovider.model
 
 data class AppComponent(
     val name: String,

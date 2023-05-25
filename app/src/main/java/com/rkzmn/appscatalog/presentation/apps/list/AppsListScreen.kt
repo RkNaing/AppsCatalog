@@ -29,7 +29,6 @@ import androidx.compose.ui.text.font.FontWeight
 import com.rkzmn.appscatalog.domain.model.AppSortOption
 import com.rkzmn.appscatalog.domain.model.AppsListType
 import com.rkzmn.appscatalog.presentation.apps.list.states.AppsDisplayType
-import com.rkzmn.appscatalog.presentation.apps.list.states.AppsDisplayType.*
 import com.rkzmn.appscatalog.presentation.apps.list.states.AppsListScreenState
 import com.rkzmn.appscatalog.presentation.apps.options.AppsListOptionsBottomSheet
 import com.rkzmn.appscatalog.ui.theme.seed
@@ -47,6 +46,7 @@ fun AppListScreen(
     onSelectDisplayType: (AppsDisplayType) -> Unit,
     onSelectSortOption: (AppSortOption) -> Unit,
     onClickedSettings: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val context = LocalContext.current
@@ -72,9 +72,8 @@ fun AppListScreen(
         )
     }
 
-
     Scaffold(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -92,7 +91,6 @@ fun AppListScreen(
                             fontWeight = FontWeight.SemiBold
                         )
                     }
-
                 },
                 actions = {
                     IconButton(onClick = { showFilterDialog = true }) {
@@ -123,7 +121,7 @@ fun AppListScreen(
             )
         } else {
             when (state.listDisplayType) {
-                LIST -> AppsList(
+                AppsDisplayType.LIST -> AppsList(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(contentPadding),
@@ -131,7 +129,7 @@ fun AppListScreen(
                     onItemClicked = onItemClicked,
                 )
 
-                GRID -> AppsGrid(
+                AppsDisplayType.GRID -> AppsGrid(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(contentPadding),
@@ -140,6 +138,5 @@ fun AppListScreen(
                 )
             }
         }
-
     }
 }

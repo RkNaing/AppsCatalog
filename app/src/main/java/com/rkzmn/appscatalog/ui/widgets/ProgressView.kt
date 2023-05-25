@@ -14,8 +14,8 @@ import com.rkzmn.appscatalog.utils.android.compose.preview.UiModePreviews
 
 @Composable
 fun ProgressView(
-    modifier: Modifier = Modifier,
     message: String?,
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier,
@@ -25,7 +25,6 @@ fun ProgressView(
         ),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-
         CircularProgressIndicator()
 
         if (!message.isNullOrBlank()) {
