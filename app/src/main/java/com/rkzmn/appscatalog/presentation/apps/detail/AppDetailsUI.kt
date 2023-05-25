@@ -1,6 +1,8 @@
 package com.rkzmn.appscatalog.presentation.apps.detail
 
 import androidx.annotation.StringRes
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,6 +39,7 @@ import com.rkzmn.appscatalog.domain.model.AppDetails
 import com.rkzmn.appscatalog.domain.model.AppPermissionInfo
 import com.rkzmn.appscatalog.domain.model.AppTypeIndicator
 import com.rkzmn.appscatalog.ui.theme.appIconSize
+import com.rkzmn.appscatalog.ui.theme.spacingExtraLarge
 import com.rkzmn.appscatalog.ui.theme.spacingMedium
 import com.rkzmn.appscatalog.ui.theme.spacingSmall
 import com.rkzmn.appscatalog.ui.widgets.AppIcon
@@ -124,22 +127,27 @@ fun AppDetailsUI(
 
         }
 
-//        Spacer(modifier = Modifier.height(spacingLarge))
-
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(24.dp),
+                .height(24.dp)
+                .padding(horizontal = spacingExtraLarge),
             contentAlignment = Alignment.CenterStart
         ) {
-            if (subtitleText.isNotBlank()) {
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = spacingMedium),
-                    text = subtitleText,
-                    style = MaterialTheme.typography.labelLarge
-                )
+            // Needs method FQN: https://stackoverflow.com/a/69669445
+            androidx.compose.animation.AnimatedVisibility(
+                visible = subtitleText.isNotBlank(),
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                if (subtitleText.isNotBlank()) {
+                    Text(
+                        modifier = Modifier.animateContentSize(
+                            animationSpec = tween(durationMillis = 200)
+                        ),
+                        text = subtitleText,
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                }
             }
         }
 
