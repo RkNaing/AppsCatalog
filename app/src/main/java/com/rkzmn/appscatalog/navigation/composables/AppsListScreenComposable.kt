@@ -21,17 +21,20 @@ fun NavGraphBuilder.appsListScreenComposable(
         Timber.tag(NAV_TAG).d("Navigating to AppsList Screen")
 
         val state by viewModel.appsListState.collectAsStateWithLifecycle()
+        val searchState by viewModel.appsSearchState.collectAsStateWithLifecycle()
+
         AppListScreen(
             state = state,
-            onItemClicked = { item ->
-                navHostController.navigate(
-                    AppDetailDestination.getAddress(item.packageName)
-                )
+            searchState = searchState,
+            onItemClicked = { packageName ->
+                navHostController.navigate(AppDetailDestination.getAddress(packageName))
             },
             onSelectAppListType = { viewModel.onSelectListType(it) },
             onSelectDisplayType = { viewModel.onSelectDisplayType(it) },
             onSelectSortOption = { viewModel.onSelectSortOption(it) },
-            onClickedSettings = { navHostController.navigate(AppSettingsDestination.route) }
+            onClickedSettings = { navHostController.navigate(AppSettingsDestination.route) },
+            onSearchQueryChanged = { viewModel.onSearchQueryChange(it) },
+            onSearchStatusChanged = { viewModel.onSearchStatusChange(it) },
         )
     }
 }

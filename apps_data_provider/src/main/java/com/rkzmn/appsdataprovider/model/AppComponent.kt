@@ -10,4 +10,5 @@ data class AppComponent(
     enum class Type {
         SERVICE, ACTIVITY, BROADCAST
     }
+    companion object
 }

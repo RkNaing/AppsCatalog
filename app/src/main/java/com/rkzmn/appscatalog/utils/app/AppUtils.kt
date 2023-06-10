@@ -2,6 +2,7 @@ package com.rkzmn.appscatalog.utils.app
 
 import android.content.Context
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
@@ -48,4 +49,18 @@ fun AppComponentInfo.launch(context: Context) {
     if (!isLaunched) {
         context.toast(message = context.getString(AppStrings.msg_component_launch_failed, name))
     }
+}
+
+fun getHighlightedMatchingText(
+    text: String,
+    query: String,
+    highlightStyle: SpanStyle = SpanStyle(color = seed),
+): AnnotatedString {
+    val startIndex = text.indexOf(query, 0, true)
+    val builder = AnnotatedString.Builder(text)
+    if (startIndex >= 0) {
+        val endIndex = startIndex + query.length
+        builder.addStyle(highlightStyle, startIndex, endIndex)
+    }
+    return builder.toAnnotatedString()
 }

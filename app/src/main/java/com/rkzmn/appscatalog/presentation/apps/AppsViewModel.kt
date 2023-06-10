@@ -8,24 +8,32 @@ import com.rkzmn.appscatalog.domain.repositories.AppDataRepository
 import com.rkzmn.appscatalog.domain.repositories.ListPreferenceRepository
 import com.rkzmn.appscatalog.presentation.apps.detail.states.AppDetailsScreenState
 import com.rkzmn.appscatalog.presentation.apps.list.AppItem
+import com.rkzmn.appscatalog.presentation.apps.list.AppSearchResult
 import com.rkzmn.appscatalog.presentation.apps.list.states.AppsDisplayType
 import com.rkzmn.appscatalog.presentation.apps.list.states.AppsListScreenState
+import com.rkzmn.appscatalog.presentation.apps.list.states.AppsSearchState
 import com.rkzmn.appscatalog.utils.kotlin.CoroutineDispatcherProvider
 import com.rkzmn.appscatalog.utils.kotlin.emitUpdate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 @HiltViewModel
 class AppsViewModel @Inject constructor(
     private val repository: AppDataRepository,
@@ -41,6 +49,9 @@ class AppsViewModel @Inject constructor(
 
     private val _appsListState = MutableStateFlow(defaultAppsListState)
     val appsListState: StateFlow<AppsListScreenState> = _appsListState.asStateFlow()
+
+    private val _appsSearchState = MutableStateFlow(AppsSearchState())
+    val appsSearchState: StateFlow<AppsSearchState> = _appsSearchState.asStateFlow()
 
     private val _appDetailsState = MutableStateFlow(AppDetailsScreenState())
     val appDetailsScreenState: StateFlow<AppDetailsScreenState> = _appDetailsState.asStateFlow()
@@ -80,6 +91,26 @@ class AppsViewModel @Inject constructor(
             listPrefRepo.displayType.distinctUntilChanged().collectLatest { displayType ->
                 _appsListState.emitUpdate { it.copy(listDisplayType = displayType) }
             }
+        }
+
+        viewModelScope.launch {
+            _appsSearchState
+                .mapLatest { it.query }
+                .debounce(300)
+                .distinctUntilChanged()
+                .mapLatest { query ->
+                    if (query.isNotBlank()) {
+                        repository.searchByNameAndPackageName(query).map {
+                            AppSearchResult.from(it, query)
+                        }
+                    } else {
+                        emptyList()
+                    }
+                }
+                .flowOn(dispatcherProvider.default)
+                .collectLatest { searchResult ->
+                    _appsSearchState.update { it.copy(results = searchResult.toImmutableList()) }
+                }
         }
     }
 
@@ -140,6 +171,16 @@ class AppsViewModel @Inject constructor(
         viewModelScope.launch {
             val details = repository.getAppDetails(packageName)
             _appDetailsState.emitUpdate { it.copy(isLoading = false, details = details) }
+        }
+    }
+
+    fun onSearchQueryChange(query: String) {
+        _appsSearchState.update { it.copy(query = query.trim()) }
+    }
+
+    fun onSearchStatusChange(isActive: Boolean) {
+        _appsSearchState.update {
+            AppsSearchState(isActive = isActive)
         }
     }
 }

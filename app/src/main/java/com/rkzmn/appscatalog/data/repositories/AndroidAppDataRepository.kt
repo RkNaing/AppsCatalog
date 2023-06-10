@@ -58,6 +58,16 @@ class AndroidAppDataRepository @Inject constructor(
         }
     }
 
+    override suspend fun searchByNameAndPackageName(query: String): List<AppInfo> {
+        Timber.d("searchByNameAndPackageName() called with: query = [$query]")
+        return withContext(dispatcherProvider.default) {
+            apps.filter { app ->
+                app.appName.contains(query, ignoreCase = true) ||
+                    app.packageName.contains(query, ignoreCase = true)
+            }
+        }
+    }
+
     override suspend fun getAppDetails(packageName: String): AppDetails? {
         Timber.d("getAppDetails() called with: packageName = [$packageName]")
         val cache = appDetails[packageName]

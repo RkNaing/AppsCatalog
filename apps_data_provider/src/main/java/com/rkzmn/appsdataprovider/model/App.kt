@@ -28,4 +28,5 @@ data class App(
 
     val compileSdkAndroidVersion: String
         get() = getAndroidVersionLabel(compileSdk)
+    companion object
 }

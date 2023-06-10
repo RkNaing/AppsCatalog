@@ -2,6 +2,7 @@ package com.rkzmn.appscatalog.presentation.apps.list
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -34,16 +35,17 @@ import com.rkzmn.appscatalog.ui.theme.spacingSmall
 import com.rkzmn.appscatalog.ui.widgets.AppIcon
 import com.rkzmn.appscatalog.ui.widgets.ThemedPreview
 import com.rkzmn.appscatalog.utils.android.compose.preview.UiModePreviews
+import com.rkzmn.appscatalog.utils.app.getHighlightedMatchingText
 
 @Composable
 fun AppGridItem(
     appItem: AppItem,
     modifier: Modifier = Modifier,
-    onClicked: (AppItem) -> Unit,
+    onClicked: (String) -> Unit,
 ) {
     AppItemContainer(
         modifier = modifier,
-        onClick = { onClicked(appItem) },
+        onClick = { onClicked(appItem.packageName) },
         isSelected = appItem.isSelected,
     ) {
         AppIcon(
@@ -77,11 +79,11 @@ fun AppGridItem(
 fun AppListItem(
     appItem: AppItem,
     modifier: Modifier = Modifier,
-    onClicked: (AppItem) -> Unit,
+    onClicked: (String) -> Unit,
 ) {
     AppItemContainer(
         modifier = modifier,
-        onClick = { onClicked(appItem) },
+        onClick = { onClicked(appItem.packageName) },
         isSelected = appItem.isSelected,
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
@@ -167,6 +169,59 @@ fun AppListItem(
     }
 }
 
+@Composable
+fun AppSearchResultItem(
+    appItem: AppSearchResult,
+    modifier: Modifier = Modifier,
+    onClicked: (String) -> Unit,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable { onClicked(appItem.packageName.text) }
+            .padding(
+                horizontal = spacingMedium,
+                vertical = spacingSmall
+            ),
+    ) {
+        AppIcon(
+            iconPath = appItem.appIcon,
+            contentDescription = appItem.appName?.text,
+            modifier = Modifier
+                .padding(spacingMedium)
+                .size(appIconSize)
+        )
+
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(vertical = spacingMedium),
+            verticalArrangement = Arrangement.spacedBy(spacingSmall)
+        ) {
+            if (!appItem.appName.isNullOrBlank()) {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = spacingMedium),
+                    text = appItem.appName,
+                    maxLines = 2,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = spacingMedium),
+                text = appItem.packageName,
+                maxLines = 2,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AppItemContainer(
@@ -205,7 +260,7 @@ const val ITEM_TYPE_APP = "AppItem"
 // /////////////////////////////////////////////////////////////////////////
 @UiModePreviews
 @Composable
-fun AppGridItemPreview() {
+private fun AppGridItemPreview() {
     ThemedPreview {
         AppGridItem(
             appItem = AppItem(
@@ -220,7 +275,7 @@ fun AppGridItemPreview() {
 
 @UiModePreviews
 @Composable
-fun AppListItemPreview() {
+private fun AppListItemPreview() {
     ThemedPreview {
         AppListItem(
             appItem = AppItem(
@@ -228,6 +283,20 @@ fun AppListItemPreview() {
                 packageName = "com.rkzmn.appscatalog",
                 version = "1.0.0 (23)",
                 isSelected = true,
+            ),
+            onClicked = {}
+        )
+    }
+}
+
+@UiModePreviews
+@Composable
+private fun AppSearchResultItemPreview() {
+    ThemedPreview {
+        AppSearchResultItem(
+            appItem = AppSearchResult(
+                appName = getHighlightedMatchingText("Apps Catalog", "Catalog"),
+                packageName = getHighlightedMatchingText("com.rkzmn.appscatalog", "rkzmn")
             ),
             onClicked = {}
         )

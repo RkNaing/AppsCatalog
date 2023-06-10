@@ -13,6 +13,10 @@ interface AppDataRepository {
         listType: AppsListType = AppsListType.ALL,
     ): List<AppInfo>
 
+    suspend fun searchByNameAndPackageName(
+        query: String
+    ): List<AppInfo>
+
     suspend fun getAppDetails(
         packageName: String
     ): AppDetails?

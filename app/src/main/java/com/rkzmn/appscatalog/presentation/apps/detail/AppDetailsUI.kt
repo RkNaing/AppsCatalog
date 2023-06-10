@@ -287,10 +287,15 @@ private fun prepareSubtitle(
         return AnnotatedString("")
     }
 
-    return createCountLabelAnnotatedString(
-        count = details.itemSize(selectedTab),
-        label = context.getString(selectedTab.label)
-    )
+    val itemSize = details.itemSize(selectedTab)
+    return if (itemSize > 0) {
+        createCountLabelAnnotatedString(
+            count = itemSize,
+            label = context.getString(selectedTab.label)
+        )
+    } else {
+        AnnotatedString("")
+    }
 }
 
 private val AppDetails.tabTitles: List<AppDetailTab>

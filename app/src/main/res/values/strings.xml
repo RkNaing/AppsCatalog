@@ -64,4 +64,8 @@
     <string name="lbl_launching_component">Launching %1$s</string>
     <string name="msg_component_launch_failed">Failed to launch %1$s</string>
     <string name="msg_component_launched_already">You are already using AppsCatalog 😁</string>
+
+    <string name="hint_search_apps">Search by app name or package name…</string>
+    <string name="content_desc_clear">Clear</string>
+    <string name="lbl_apps_found">Apps Found.</string>
 </resources>

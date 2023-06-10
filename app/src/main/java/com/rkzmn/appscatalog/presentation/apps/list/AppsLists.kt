@@ -3,11 +3,18 @@ package com.rkzmn.appscatalog.presentation.apps.list
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,14 +35,16 @@ import kotlin.random.Random
 fun AppsGrid(
     apps: ImmutableList<AppItem>,
     modifier: Modifier = Modifier,
-    onItemClicked: (AppItem) -> Unit,
+    state: LazyGridState = rememberLazyGridState(),
+    onItemClicked: (String) -> Unit,
 ) {
     LazyVerticalGrid(
         modifier = modifier,
         columns = GridCells.Adaptive(minSize = appGridItemMinSize),
         verticalArrangement = Arrangement.spacedBy(spacingMedium),
         horizontalArrangement = Arrangement.spacedBy(spacingMedium, Alignment.CenterHorizontally),
-        contentPadding = PaddingValues(spacingMedium)
+        contentPadding = PaddingValues(spacingMedium),
+        state = state,
     ) {
         items(
             items = apps,
@@ -53,14 +62,16 @@ fun AppsGrid(
 @Composable
 fun AppsList(
     apps: ImmutableList<AppItem>,
-    onItemClicked: (AppItem) -> Unit,
+    onItemClicked: (String) -> Unit,
     modifier: Modifier = Modifier,
+    state: LazyListState = rememberLazyListState(),
 ) {
     LazyColumn(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(spacingMedium),
-        contentPadding = PaddingValues(spacingMedium)
+        contentPadding = PaddingValues(spacingMedium),
+        state = state,
     ) {
         items(
             items = apps,
@@ -71,6 +82,38 @@ fun AppsList(
                 appItem = appItem,
                 onClicked = onItemClicked,
             )
+        }
+    }
+}
+
+@Composable
+fun AppsSearchResultsList(
+    results: ImmutableList<AppSearchResult>,
+    onItemClicked: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    state: LazyListState = rememberLazyListState(),
+) {
+    LazyColumn(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(spacingMedium),
+        contentPadding = PaddingValues(spacingMedium),
+        state = state,
+    ) {
+        itemsIndexed(
+            items = results,
+            key = { _, item -> item.packageName.text },
+            contentType = { _, _ -> ITEM_TYPE_APP }
+        ) { index, appItem ->
+
+            AppSearchResultItem(
+                appItem = appItem,
+                onClicked = onItemClicked,
+            )
+
+            if (index < results.lastIndex) {
+                Divider(modifier = Modifier.fillMaxWidth())
+            }
         }
     }
 }
@@ -90,9 +133,7 @@ fun AppsGridPreview() {
         AppsGrid(
             modifier = Modifier.fillMaxSize(),
             apps = apps.toImmutableList(),
-            onItemClicked = {
-                selectedApp = it.packageName
-            },
+            onItemClicked = { selectedApp = it },
         )
     }
 }
@@ -108,9 +149,7 @@ fun AppsListPreview() {
         AppsList(
             modifier = Modifier.fillMaxSize(),
             apps = apps.toImmutableList(),
-            onItemClicked = {
-                selectedApp = it.packageName
-            },
+            onItemClicked = { selectedApp = it },
         )
     }
 }
