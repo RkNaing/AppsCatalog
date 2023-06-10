@@ -1,5 +1,6 @@
 package com.rkzmn.appscatalog.presentation.apps.detail
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,8 +14,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -28,18 +29,15 @@ import com.rkzmn.appscatalog.ui.widgets.ThemedPreview
 import com.rkzmn.appscatalog.utils.android.compose.preview.UiModePreviews
 import com.rkzmn.appscatalog.utils.app.AppStrings
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toImmutableMap
+import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 fun AppInfoContainer(
     details: AppDetails,
     modifier: Modifier = Modifier,
 ) {
-    val appInfoData = remember(key1 = details) {
-        mutableStateMapOf<Int, String>().apply { putAll(details.infoDataMap) }
-    }
+    val appInfoData = remember(key1 = details) { details.infoDataMap.toMutableStateList() }
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(spacingLarge)
@@ -52,11 +50,11 @@ fun AppInfoContainer(
             )
         }
 
-        appInfoData.forEach { (labelRes, value) ->
+        appInfoData.forEach {
             InfoTile(
                 modifier = Modifier.fillMaxWidth(),
-                title = stringResource(id = labelRes),
-                message = value
+                title = stringResource(id = it.label),
+                message = it.value
             )
         }
     }
@@ -91,29 +89,28 @@ private fun AppIndicators(
     }
 }
 
-private val AppDetails.infoDataMap: ImmutableMap<Int, String>
-    get() {
-        val data = mapOf(
-            AppStrings.lbl_package_name to packageName,
-            AppStrings.lbl_version_name to versionName,
-            AppStrings.lbl_version_code to versionCode.takeIf { it > 0 }?.toString(),
-            AppStrings.lbl_app_size to appSize,
-            AppStrings.lbl_min_android_version to minAndroidVersion,
-            AppStrings.lbl_target_android_version to targetAndroidVersion,
-            AppStrings.lbl_compile_android_version to compileSdkAndroidVersion,
-            AppStrings.lbl_install_source to installationSource,
-            AppStrings.lbl_installed_at to installedTimestamp,
-            AppStrings.lbl_last_updated_at to lastUpdatedTimestamp,
-            AppStrings.lbl_last_used_at to lastUsedTimestamp,
-        )
-        val filteredData = mutableMapOf<Int, String>()
-        data.forEach { (k, v) ->
-            if (!v.isNullOrBlank()) {
-                filteredData[k] = v
-            }
-        }
-        return filteredData.toImmutableMap()
-    }
+private val AppDetails.infoDataMap: ImmutableList<AppInfoData>
+    get() = arrayOf(
+        AppInfoData(AppStrings.lbl_package_name, packageName),
+        AppInfoData(AppStrings.lbl_version_name, versionName.orEmpty()),
+        AppInfoData(
+            AppStrings.lbl_version_code,
+            versionCode.takeIf { it > 0 }?.toString().orEmpty()
+        ),
+        AppInfoData(AppStrings.lbl_app_size, appSize.orEmpty()),
+        AppInfoData(AppStrings.lbl_min_android_version, minAndroidVersion),
+        AppInfoData(AppStrings.lbl_target_android_version, targetAndroidVersion),
+        AppInfoData(AppStrings.lbl_compile_android_version, compileSdkAndroidVersion),
+        AppInfoData(AppStrings.lbl_install_source, installationSource.orEmpty()),
+        AppInfoData(AppStrings.lbl_installed_at, installedTimestamp.orEmpty()),
+        AppInfoData(AppStrings.lbl_last_updated_at, lastUpdatedTimestamp.orEmpty()),
+        AppInfoData(AppStrings.lbl_last_used_at, lastUsedTimestamp.orEmpty()),
+    ).filter { it.value.isNotBlank() }.toPersistentList()
+
+private data class AppInfoData(
+    @StringRes val label: Int,
+    val value: String,
+)
 
 @Composable
 private fun InfoTile(
