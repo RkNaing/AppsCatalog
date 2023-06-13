@@ -1,13 +1,19 @@
 package com.rkzmn.appscatalog.presentation.apps.list
 
+import android.content.Context
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
@@ -23,6 +29,9 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.surfaceColorAtElevation
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,6 +47,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.rkzmn.appscatalog.domain.model.AppSortOption
 import com.rkzmn.appscatalog.domain.model.AppsListType
+import com.rkzmn.appscatalog.presentation.apps.detail.AppDetailsContent
+import com.rkzmn.appscatalog.presentation.apps.detail.states.AppDetailsScreenState
 import com.rkzmn.appscatalog.presentation.apps.list.states.AppsDisplayType
 import com.rkzmn.appscatalog.presentation.apps.list.states.AppsListScreenState
 import com.rkzmn.appscatalog.presentation.apps.list.states.AppsSearchState
@@ -54,6 +65,7 @@ import com.rkzmn.appscatalog.utils.app.createCountLabelAnnotatedString
 fun AppListScreen(
     state: AppsListScreenState,
     searchState: AppsSearchState,
+    windowSize: WindowSizeClass,
     onItemClicked: (String) -> Unit,
     onSelectAppListType: (AppsListType) -> Unit,
     onSelectDisplayType: (AppsDisplayType) -> Unit,
@@ -61,6 +73,7 @@ fun AppListScreen(
     onClickedSettings: () -> Unit,
     onSearchQueryChanged: (String) -> Unit,
     onSearchStatusChanged: (Boolean) -> Unit,
+    appDetailsProvider: () -> AppDetailsScreenState,
     modifier: Modifier = Modifier,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -70,20 +83,8 @@ fun AppListScreen(
         state.apps.size,
         searchState.isActive,
         searchState.results.size,
-    ) {
-        val subtitleText = if (searchState.isActive) {
-            createCountLabelAnnotatedString(
-                count = searchState.results.size,
-                label = context.getString(AppStrings.lbl_apps_found)
-            )
-        } else {
-            createCountLabelAnnotatedString(
-                count = state.apps.size,
-                label = state.listType.label.asString(context)
-            )
-        }
-        mutableStateOf(subtitleText)
-    }
+    ) { mutableStateOf(createSubtitleText(state, searchState, context)) }
+
     var showFilterDialog by remember { mutableStateOf(false) }
 
     if (showFilterDialog) {
@@ -119,36 +120,58 @@ fun AppListScreen(
                     .padding(contentPadding)
             )
         } else {
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(contentPadding)
+                    .padding(contentPadding),
             ) {
-                val listModifier = Modifier
-                    .padding(top = LIST_HEADER_HEIGHT)
-                    .fillMaxSize()
-
-                when (state.listDisplayType) {
-                    AppsDisplayType.LIST -> AppsList(
-                        modifier = listModifier,
-                        apps = state.apps,
-                        onItemClicked = onItemClicked,
-                    )
-
-                    AppsDisplayType.GRID -> AppsGrid(
-                        modifier = listModifier,
-                        apps = state.apps,
-                        onItemClicked = onItemClicked,
-                    )
-                }
-
                 AppsSearchBar(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            color = MaterialTheme.colorScheme
+                                .surfaceColorAtElevation(3.dp)
+                                .copy(alpha = scrollBehavior.state.collapsedFraction),
+                        )
+                        .padding(bottom = spacingMedium),
                     state = searchState,
                     onQueryChanged = onSearchQueryChanged,
                     onItemClicked = onItemClicked,
                     onSearchStatusChanged = onSearchStatusChanged,
                 )
+
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                ) {
+                    val listModifier = Modifier
+                        .weight(1f)
+                        .fillMaxSize()
+
+                    when (state.listDisplayType) {
+                        AppsDisplayType.LIST -> AppsList(
+                            modifier = listModifier,
+                            apps = state.apps,
+                            onItemClicked = onItemClicked,
+                        )
+
+                        AppsDisplayType.GRID -> AppsGrid(
+                            modifier = listModifier,
+                            apps = state.apps,
+                            onItemClicked = onItemClicked,
+                        )
+                    }
+
+                    if (windowSize.widthSizeClass == WindowWidthSizeClass.Expanded) {
+                        AppDetailsContent(
+                            state = appDetailsProvider(),
+                            modifier = Modifier
+                                .padding(spacingMedium)
+                                .weight(2f)
+                                .fillMaxHeight()
+                                .verticalScroll(state = rememberScrollState())
+                        )
+                    }
+                }
             }
         }
     }
@@ -261,4 +284,18 @@ private fun AppsListTopAppBar(
     )
 }
 
-private val LIST_HEADER_HEIGHT = 72.dp
+private fun createSubtitleText(
+    state: AppsListScreenState,
+    searchState: AppsSearchState,
+    context: Context
+): AnnotatedString = if (searchState.isActive) {
+    createCountLabelAnnotatedString(
+        count = searchState.results.size,
+        label = context.getString(AppStrings.lbl_apps_found)
+    )
+} else {
+    createCountLabelAnnotatedString(
+        count = state.apps.size,
+        label = state.listType.label.asString(context)
+    )
+}

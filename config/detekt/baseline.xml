@@ -7,6 +7,7 @@
     <ID>MagicNumber:Utils.kt$1000.0</ID>
     <ID>TooManyFunctions:PreferenceDataStoreUtils.kt$com.rkzmn.appscatalog.utils.android.PreferenceDataStoreUtils.kt</ID>
     <ID>MagicNumber:AppsViewModel.kt$AppsViewModel$300</ID>
+    <ID>MagicNumber:AppsListScreen.kt$3f</ID>
   </ManuallySuppressedIssues>
   <CurrentIssues>
     <ID>TooManyFunctions:PreferenceDataStoreUtil.kt</ID>

@@ -1,5 +1,6 @@
 package com.rkzmn.appscatalog.navigation.graphs
 
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -13,6 +14,7 @@ import com.rkzmn.appscatalog.presentation.apps.AppsViewModel
 @Composable
 fun RootNavGraph(
     navHostController: NavHostController,
+    windowSize: WindowSizeClass,
     viewModel: AppsViewModel = hiltViewModel()
 ) {
     NavHost(
@@ -22,7 +24,8 @@ fun RootNavGraph(
     ) {
         appsListScreenComposable(
             navHostController = navHostController,
-            viewModel = viewModel
+            viewModel = viewModel,
+            windowSize = windowSize
         )
 
         appDetailsScreenComposable(

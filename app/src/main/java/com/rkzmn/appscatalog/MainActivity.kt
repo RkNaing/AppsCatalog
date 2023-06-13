@@ -7,6 +7,8 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -24,6 +26,7 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var appPrefRepo: AppPreferenceRepository
 
+    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -39,6 +42,8 @@ class MainActivity : ComponentActivity() {
                 AppTheme.FOLLOW_SYSTEM -> isSystemInDarkTheme()
             }
 
+            val windowSize = calculateWindowSizeClass(activity = this)
+
             AppsCatalogTheme(
                 darkTheme = isDarkTheme,
                 dynamicColor = useDynamicColors,
@@ -48,7 +53,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    RootNavGraph(navHostController = rememberNavController())
+                    RootNavGraph(
+                        navHostController = rememberNavController(),
+                        windowSize = windowSize
+                    )
                 }
             }
         }

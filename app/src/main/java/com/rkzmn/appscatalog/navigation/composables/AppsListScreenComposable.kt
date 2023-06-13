@@ -1,6 +1,11 @@
 package com.rkzmn.appscatalog.navigation.composables
 
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -15,6 +20,7 @@ import timber.log.Timber
 
 fun NavGraphBuilder.appsListScreenComposable(
     navHostController: NavHostController,
+    windowSize: WindowSizeClass,
     viewModel: AppsViewModel,
 ) {
     composable(AppsListDestination.route) {
@@ -22,19 +28,51 @@ fun NavGraphBuilder.appsListScreenComposable(
 
         val state by viewModel.appsListState.collectAsStateWithLifecycle()
         val searchState by viewModel.appsSearchState.collectAsStateWithLifecycle()
+        val appDetailsState by viewModel.appDetailsScreenState.collectAsStateWithLifecycle()
+        val onItemClicked = rememberAppItemClickHandler(
+            navHostController = navHostController,
+            windowSize = windowSize,
+            viewModel = viewModel
+        )
+
+        LaunchedEffect(key1 = windowSize) {
+            if (windowSize.widthSizeClass != WindowWidthSizeClass.Expanded) {
+                viewModel.clearSelection()
+            }
+        }
 
         AppListScreen(
             state = state,
             searchState = searchState,
-            onItemClicked = { packageName ->
-                navHostController.navigate(AppDetailDestination.getAddress(packageName))
-            },
+            windowSize = windowSize,
+            onItemClicked = onItemClicked,
             onSelectAppListType = { viewModel.onSelectListType(it) },
             onSelectDisplayType = { viewModel.onSelectDisplayType(it) },
             onSelectSortOption = { viewModel.onSelectSortOption(it) },
             onClickedSettings = { navHostController.navigate(AppSettingsDestination.route) },
             onSearchQueryChanged = { viewModel.onSearchQueryChange(it) },
             onSearchStatusChanged = { viewModel.onSearchStatusChange(it) },
+            appDetailsProvider = { appDetailsState }
         )
+    }
+}
+
+@Composable
+private fun rememberAppItemClickHandler(
+    navHostController: NavHostController,
+    windowSize: WindowSizeClass,
+    viewModel: AppsViewModel
+): (String) -> Unit = remember(windowSize.widthSizeClass) {
+    if (windowSize.widthSizeClass == WindowWidthSizeClass.Expanded) {
+        { packageName ->
+            with(viewModel) {
+                onAppSelected(packageName)
+                loadAppDetails(packageName)
+            }
+        }
+    } else {
+        { packageName ->
+            navHostController.navigate(AppDetailDestination.getAddress(packageName))
+        }
     }
 }

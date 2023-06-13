@@ -162,6 +162,7 @@ class AppsViewModel @Inject constructor(
     }
 
     fun loadAppDetails(packageName: String) {
+        Timber.d("loadAppDetails() called with: packageName = [$packageName]")
         if (_appDetailsState.value.isLoading) {
             Timber.d("loadAppDetails: Already in progress. No-Op!")
             return
@@ -181,6 +182,34 @@ class AppsViewModel @Inject constructor(
     fun onSearchStatusChange(isActive: Boolean) {
         _appsSearchState.update {
             AppsSearchState(isActive = isActive)
+        }
+    }
+
+    fun onAppSelected(packageName: String) {
+        Timber.d("onAppSelected() called with: packageName = [$packageName]")
+        selectApp(packageName)
+    }
+
+    fun clearSelection() {
+        selectApp(null)
+    }
+
+    private fun selectApp(packageName: String?) {
+        Timber.d("selectAppInternal() called with: packageName = [$packageName]")
+        viewModelScope.launch {
+            var changesCount = 0
+            val updatedList = _appsListState.value.apps.map {
+                val wasSelected = it.isSelected
+                val matches = it.packageName == packageName
+                if (wasSelected != matches) {
+                    changesCount += 1
+                }
+                it.copy(isSelected = matches)
+            }.toImmutableList()
+            if (changesCount > 0) {
+                _appsListState.emitUpdate { it.copy(apps = updatedList) }
+            }
+            Timber.d("selectApp: $changesCount Selections updated.")
         }
     }
 }

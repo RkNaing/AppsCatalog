@@ -47,25 +47,34 @@ fun AppDetailsScreen(
             )
         }
     ) { contentPadding ->
-        when {
-            state.isLoading -> {
-                ProgressView(
-                    message = stringResource(id = AppStrings.lbl_loading),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(contentPadding)
-                )
-            }
+        AppDetailsContent(
+            state = state,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(contentPadding)
+                .nestedScroll(scrollBehavior.nestedScrollConnection)
+        )
+    }
+}
 
-            state.details != null -> {
-                AppDetailsUI(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(contentPadding)
-                        .nestedScroll(scrollBehavior.nestedScrollConnection),
-                    details = state.details,
-                )
-            }
+@Composable
+fun AppDetailsContent(
+    state: AppDetailsScreenState,
+    modifier: Modifier = Modifier
+) {
+    when {
+        state.isLoading -> {
+            ProgressView(
+                message = stringResource(id = AppStrings.lbl_loading),
+                modifier = modifier
+            )
+        }
+
+        state.details != null -> {
+            AppDetailsUI(
+                modifier = modifier,
+                details = state.details,
+            )
         }
     }
 }
