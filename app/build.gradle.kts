@@ -100,7 +100,7 @@ fun DependencyHandlerScope.setupJetpackCompose() {
     implementation("androidx.compose.ui:ui")
 
     // Material 3
-    implementation("androidx.compose.material3:material3:1.1.0-rc01")
+    implementation("androidx.compose.material3:material3:1.1.0")
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.compose.material3:material3-window-size-class")
 

@@ -17,11 +17,10 @@ typealias AppStrings = com.rkzmn.appscatalog.R.string
 typealias AppFonts = com.rkzmn.appscatalog.R.font
 
 fun createCountLabelAnnotatedString(
-    count: Int,
+    countLabel: String,
     label: String,
     countColor: Color = seed
 ) = buildAnnotatedString {
-    val countLabel = count.toString()
     append(countLabel)
     append(" ")
     append(label)

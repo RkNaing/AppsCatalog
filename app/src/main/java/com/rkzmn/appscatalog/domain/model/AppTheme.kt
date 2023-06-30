@@ -8,4 +8,3 @@ enum class AppTheme(val label: UiString) {
     DARK(UiString.from(AppStrings.lbl_theme_dark)),
     FOLLOW_SYSTEM(UiString.from(AppStrings.lbl_theme_follow_system)),
 }
-

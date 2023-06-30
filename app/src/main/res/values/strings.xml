@@ -68,4 +68,6 @@
     <string name="hint_search_apps">Search by app name or package name…</string>
     <string name="content_desc_clear">Clear</string>
     <string name="lbl_apps_found">Apps Found.</string>
+    <string name="lbl_no">No</string>
+    <string name="msg_select_app_to_view">Select an application item to view the detail information.</string>
 </resources>

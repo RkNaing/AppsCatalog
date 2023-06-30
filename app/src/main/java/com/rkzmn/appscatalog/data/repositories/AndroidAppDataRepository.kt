@@ -47,7 +47,10 @@ class AndroidAppDataRepository @Inject constructor(
         )
         return withContext(dispatcherProvider.default) {
             if (isRefresh || apps.isEmpty()) {
-                apps.addAll(getApps(context).map { it.getAppInfo() })
+                apps.apply {
+                    clear()
+                    addAll(getApps(context).map { it.getAppInfo() })
+                }
             }
 
             val allApps = apps.sortedWith(comparator = sortOption.appInfoComparator)

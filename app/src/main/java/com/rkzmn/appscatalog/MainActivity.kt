@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -17,6 +18,7 @@ import com.rkzmn.appscatalog.domain.model.AppTheme
 import com.rkzmn.appscatalog.domain.repositories.AppPreferenceRepository
 import com.rkzmn.appscatalog.navigation.graphs.RootNavGraph
 import com.rkzmn.appscatalog.ui.theme.AppsCatalogTheme
+import com.rkzmn.appscatalog.utils.android.compose.LocalWindowSize
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -53,10 +55,9 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    RootNavGraph(
-                        navHostController = rememberNavController(),
-                        windowSize = windowSize
-                    )
+                    CompositionLocalProvider(LocalWindowSize provides windowSize) {
+                        RootNavGraph(navHostController = rememberNavController())
+                    }
                 }
             }
         }

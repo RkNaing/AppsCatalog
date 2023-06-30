@@ -23,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import com.rkzmn.appscatalog.domain.model.AppTypeIndicator
 import com.rkzmn.appscatalog.ui.theme.spacingMedium
 import com.rkzmn.appscatalog.ui.widgets.ThemedPreview
@@ -35,12 +36,13 @@ import kotlin.random.Random
 fun AppsGrid(
     apps: ImmutableList<AppItem>,
     modifier: Modifier = Modifier,
+    gridMinSize: Dp = appGridItemMinSize,
     state: LazyGridState = rememberLazyGridState(),
     onItemClicked: (String) -> Unit,
 ) {
     LazyVerticalGrid(
         modifier = modifier,
-        columns = GridCells.Adaptive(minSize = appGridItemMinSize),
+        columns = GridCells.Adaptive(minSize = gridMinSize),
         verticalArrangement = Arrangement.spacedBy(spacingMedium),
         horizontalArrangement = Arrangement.spacedBy(spacingMedium, Alignment.CenterHorizontally),
         contentPadding = PaddingValues(spacingMedium),

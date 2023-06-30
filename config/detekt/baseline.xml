@@ -8,6 +8,8 @@
     <ID>TooManyFunctions:PreferenceDataStoreUtils.kt$com.rkzmn.appscatalog.utils.android.PreferenceDataStoreUtils.kt</ID>
     <ID>MagicNumber:AppsViewModel.kt$AppsViewModel$300</ID>
     <ID>MagicNumber:AppsListScreen.kt$3f</ID>
+    <ID>CompositionLocalAllowlist:LocalWindowSizeProvider.kt$LocalWindowSize</ID>
+    <ID>MagicNumber:AppDetailsUI.kt$3f</ID>
   </ManuallySuppressedIssues>
   <CurrentIssues>
     <ID>TooManyFunctions:PreferenceDataStoreUtil.kt</ID>

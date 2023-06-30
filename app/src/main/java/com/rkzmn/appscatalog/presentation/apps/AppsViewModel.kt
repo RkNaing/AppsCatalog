@@ -114,6 +114,15 @@ class AppsViewModel @Inject constructor(
         }
     }
 
+    fun refreshAppsList() {
+        val currentListState = _appsListState.value
+        loadApps(
+            isRefresh = true,
+            sortOption = currentListState.sortBy,
+            listType = currentListState.listType
+        )
+    }
+
     private fun loadApps(
         isRefresh: Boolean,
         sortOption: AppSortOption,
@@ -124,7 +133,7 @@ class AppsViewModel @Inject constructor(
             return
         }
 
-        _appsListState.update { it.copy(isLoading = true) }
+        _appsListState.update { it.copy(isLoading = true, isRefresh = isRefresh) }
 
         viewModelScope.launch(dispatcherProvider.default) {
             val appItems = repository.getAllApps(
@@ -137,7 +146,8 @@ class AppsViewModel @Inject constructor(
                     apps = appItems.toImmutableList(),
                     sortBy = sortOption,
                     listType = listType,
-                    isLoading = false
+                    isLoading = false,
+                    isRefresh = false,
                 )
             }
         }

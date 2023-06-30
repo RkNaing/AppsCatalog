@@ -5,9 +5,12 @@ import androidx.annotation.StringRes
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,6 +26,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -46,6 +52,7 @@ import com.rkzmn.appscatalog.ui.theme.spacingMedium
 import com.rkzmn.appscatalog.ui.theme.spacingSmall
 import com.rkzmn.appscatalog.ui.widgets.AppIcon
 import com.rkzmn.appscatalog.ui.widgets.ThemedPreview
+import com.rkzmn.appscatalog.utils.android.compose.LocalWindowSize
 import com.rkzmn.appscatalog.utils.android.compose.preview.UiModePreviews
 import com.rkzmn.appscatalog.utils.app.AppStrings
 import com.rkzmn.appscatalog.utils.app.createCountLabelAnnotatedString
@@ -60,10 +67,12 @@ fun AppDetailsUI(
     details: AppDetails,
     modifier: Modifier = Modifier,
 ) {
-    val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
+    val windowSizeClass = LocalWindowSize.current
+    val coroutineScope = rememberCoroutineScope()
+    val pagerState = rememberPagerState()
+
     val tabs = remember(details) { details.tabTitles.toImmutableList() }
-    val pagerState = rememberPagerState(initialPage = 0)
     val selectedTabIndex = pagerState.currentPage
     val subtitleText by remember(key1 = selectedTabIndex, key2 = details) {
         mutableStateOf(
@@ -75,11 +84,19 @@ fun AppDetailsUI(
         )
     }
 
-    LaunchedEffect(key1 = details) { pagerState.scrollToPage(0) }
+    LaunchedEffect(key1 = pagerState, key2 = tabs) {
+        if (pagerState.currentPage > tabs.lastIndex) {
+            pagerState.scrollToPage(0)
+        }
+    }
 
-    Column(
-        modifier = modifier,
-    ) {
+    val onTabSelected: (Int) -> Unit = { index ->
+        coroutineScope.launch { pagerState.animateScrollToPage(index) }
+    }
+
+    val getSelectedTab: (Int) -> AppDetailTab? = { index -> tabs.getOrNull(index) }
+
+    Column(modifier = modifier) {
         TitleSection(
             appName = details.appName,
             packageName = details.packageName,
@@ -97,25 +114,53 @@ fun AppDetailsUI(
                 .padding(horizontal = spacingExtraLarge)
         )
 
-        SectionTabBar(
-            tabs = tabs,
-            selectedTabIndex = selectedTabIndex,
-            onTabSelected = { index ->
-                coroutineScope.launch { pagerState.scrollToPage(index) }
+        if (windowSizeClass.showLandscapeLayout) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+                SectionTabBar(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .verticalScroll(state = rememberScrollState()),
+                    tabs = tabs,
+                    selectedTabIndex = selectedTabIndex,
+                    orientation = Orientation.Vertical,
+                    onTabSelected = onTabSelected
+                )
+
+                AppDetailsContentPager(
+                    modifier = Modifier
+                        .weight(3f)
+                        .fillMaxHeight(),
+                    details = details,
+                    pagerState = pagerState,
+                    pageCount = tabs.size,
+                    selectedTab = getSelectedTab
+                )
             }
-        )
+        } else {
+            SectionTabBar(
+                tabs = tabs,
+                selectedTabIndex = selectedTabIndex,
+                orientation = Orientation.Horizontal,
+                onTabSelected = onTabSelected
+            )
 
-        Divider(modifier = Modifier.fillMaxWidth())
+            Divider(modifier = Modifier.fillMaxWidth())
 
-        AppDetailsContentPager(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            details = details,
-            pagerState = pagerState,
-            pageCount = tabs.size,
-            selectedTab = { index -> tabs.getOrNull(index) }
-        )
+            AppDetailsContentPager(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                details = details,
+                pagerState = pagerState,
+                pageCount = tabs.size,
+                selectedTab = getSelectedTab
+            )
+        }
     }
 }
 
@@ -124,11 +169,20 @@ private fun TitleSection(
     appName: String?,
     packageName: String,
     icon: String?,
+//    orientation: Orientation,
     modifier: Modifier = Modifier,
 ) {
+//    val titleIcon: @Composable () -> Unit = {
+//
+//    }
+
+//    val titleLabel: @Composable (Modifier) -> Unit = { labelModifier ->
+//
+//    }
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
     ) {
         AppIcon(
             iconPath = icon,
@@ -137,6 +191,7 @@ private fun TitleSection(
                 .padding(spacingMedium)
                 .size(appIconSize)
         )
+
         if (!appName.isNullOrBlank()) {
             Text(
                 modifier = Modifier
@@ -158,6 +213,35 @@ private fun TitleSection(
             )
         }
     }
+//    when (orientation) {
+//        Orientation.Vertical -> {
+//            Column(
+//                modifier = modifier,
+//                horizontalAlignment = Alignment.CenterHorizontally,
+//                verticalArrangement = Arrangement.Center
+//            ) {
+//                titleIcon()
+//
+//                titleLabel(Modifier)
+//            }
+//        }
+//
+//        Orientation.Horizontal -> {
+//            Row(
+//                modifier = modifier,
+//                verticalAlignment = Alignment.CenterVertically,
+//                horizontalArrangement = Arrangement.Center,
+//            ) {
+//                titleIcon()
+//
+//                titleLabel(
+//                    Modifier
+//                        .fillMaxWidth()
+//                        .padding(end = spacingMedium)
+//                )
+//            }
+//        }
+//    }
 }
 
 @Composable
@@ -191,15 +275,11 @@ private fun SubtitleSection(
 private fun SectionTabBar(
     tabs: ImmutableList<AppDetailTab>,
     selectedTabIndex: Int,
+    orientation: Orientation,
     modifier: Modifier = Modifier,
     onTabSelected: (Int) -> Unit,
 ) {
-    ScrollableTabRow(
-        modifier = modifier.fillMaxWidth(),
-        selectedTabIndex = selectedTabIndex,
-        edgePadding = spacingMedium,
-        divider = { }
-    ) {
+    val tabsComposable: @Composable () -> Unit = {
         tabs.forEachIndexed { index, tab ->
             val isTabSelected = index == selectedTabIndex
             Tab(
@@ -216,6 +296,26 @@ private fun SectionTabBar(
                         fontWeight = if (isTabSelected) FontWeight.Bold else null
                     )
                 }
+            )
+        }
+    }
+
+    when (orientation) {
+        Orientation.Vertical -> {
+            Column(
+                modifier = modifier.fillMaxHeight()
+            ) {
+                tabsComposable()
+            }
+        }
+
+        Orientation.Horizontal -> {
+            ScrollableTabRow(
+                modifier = modifier.fillMaxWidth(),
+                selectedTabIndex = selectedTabIndex,
+                edgePadding = spacingMedium,
+                divider = { },
+                tabs = tabsComposable
             )
         }
     }
@@ -293,7 +393,7 @@ private fun prepareSubtitle(
     val itemSize = details.itemSize(selectedTab)
     return if (itemSize > 0) {
         createCountLabelAnnotatedString(
-            count = itemSize,
+            countLabel = itemSize.toString(),
             label = context.getString(selectedTab.label)
         )
     } else {
@@ -335,6 +435,9 @@ private enum class AppDetailTab(@StringRes val label: Int) {
     SERVICES(AppStrings.lbl_services),
     RECEIVERS(AppStrings.lbl_receivers),
 }
+
+private val WindowSizeClass.showLandscapeLayout: Boolean
+    get() = widthSizeClass == WindowWidthSizeClass.Expanded || heightSizeClass == WindowHeightSizeClass.Compact
 
 // /////////////////////////////////////////////////////////////////////////
 // Previews

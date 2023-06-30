@@ -1,6 +1,7 @@
 package com.rkzmn.appscatalog.presentation.apps.list
 
 import android.content.Context
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -29,13 +30,19 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.pullrefresh.PullRefreshIndicator
+import androidx.compose.material3.pullrefresh.pullRefresh
+import androidx.compose.material3.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.surfaceColorAtElevation
+import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -75,17 +82,13 @@ fun AppListScreen(
     onSearchStatusChanged: (Boolean) -> Unit,
     appDetailsProvider: () -> AppDetailsScreenState,
     modifier: Modifier = Modifier,
+    onSearchResultItemClicked: (String) -> Unit = onItemClicked,
+    onRefresh: () -> Unit = {},
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-    val context = LocalContext.current
-    val subtitle by remember(
-        state.listType,
-        state.apps.size,
-        searchState.isActive,
-        searchState.results.size,
-    ) { mutableStateOf(createSubtitleText(state, searchState, context)) }
+    val subtitle = rememberAppsListSubtitle(state = state, searchState = searchState)
 
-    var showFilterDialog by remember { mutableStateOf(false) }
+    var showFilterDialog by rememberSaveable { mutableStateOf(false) }
 
     if (showFilterDialog) {
         AppsListOptionsBottomSheet(
@@ -112,67 +115,113 @@ fun AppListScreen(
             )
         }
     ) { contentPadding ->
-        if (state.isLoading) {
-            ProgressView(
-                message = stringResource(id = AppStrings.lbl_loading),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(contentPadding)
-            )
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(contentPadding),
-            ) {
-                AppsSearchBar(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            color = MaterialTheme.colorScheme
-                                .surfaceColorAtElevation(3.dp)
-                                .copy(alpha = scrollBehavior.state.collapsedFraction),
-                        )
-                        .padding(bottom = spacingMedium),
-                    state = searchState,
-                    onQueryChanged = onSearchQueryChanged,
-                    onItemClicked = onItemClicked,
-                    onSearchStatusChanged = onSearchStatusChanged,
-                )
+        val pullRefreshState = rememberPullRefreshState(
+            refreshing = state.isRefresh,
+            onRefresh = onRefresh,
+        )
 
-                Row(
+        Box(
+            modifier = Modifier
+                .padding(contentPadding)
+                .pullRefresh(pullRefreshState)
+        ) {
+            if (state.isLoading && !state.isRefresh) {
+                ProgressView(
+                    message = stringResource(id = AppStrings.lbl_loading),
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else {
+                Column(
                     modifier = Modifier.fillMaxSize(),
                 ) {
-                    val listModifier = Modifier
-                        .weight(1f)
-                        .fillMaxSize()
-
-                    when (state.listDisplayType) {
-                        AppsDisplayType.LIST -> AppsList(
-                            modifier = listModifier,
-                            apps = state.apps,
-                            onItemClicked = onItemClicked,
-                        )
-
-                        AppsDisplayType.GRID -> AppsGrid(
-                            modifier = listModifier,
-                            apps = state.apps,
-                            onItemClicked = onItemClicked,
-                        )
+                    val searchBarBackgroundAlpha by remember {
+                        derivedStateOf {
+                            val fraction = scrollBehavior.state.collapsedFraction
+                            when {
+                                fraction > 1f -> 1f
+                                fraction < 0 -> 0f
+                                else -> fraction
+                            }
+                        }
                     }
+                    AppsSearchBar(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                color = MaterialTheme.colorScheme
+                                    .surfaceColorAtElevation(3.dp)
+                                    .copy(alpha = searchBarBackgroundAlpha),
+                            )
+                            .padding(bottom = spacingMedium),
+                        state = searchState,
+                        onQueryChanged = onSearchQueryChanged,
+                        onItemClicked = onSearchResultItemClicked,
+                        onSearchStatusChanged = onSearchStatusChanged,
+                    )
 
-                    if (windowSize.widthSizeClass == WindowWidthSizeClass.Expanded) {
-                        AppDetailsContent(
-                            state = appDetailsProvider(),
-                            modifier = Modifier
-                                .padding(spacingMedium)
-                                .weight(2f)
-                                .fillMaxHeight()
-                                .verticalScroll(state = rememberScrollState())
-                        )
+                    Row(
+                        modifier = Modifier.fillMaxSize(),
+                    ) {
+                        val listModifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+
+                        when (state.listDisplayType) {
+                            AppsDisplayType.LIST -> AppsList(
+                                modifier = listModifier,
+                                apps = state.apps,
+                                onItemClicked = onItemClicked,
+                            )
+
+                            AppsDisplayType.GRID -> AppsGrid(
+                                modifier = listModifier,
+                                apps = state.apps,
+                                gridMinSize = if (windowSize.widthSizeClass == WindowWidthSizeClass.Medium) {
+                                    appGridItemMinSizeLarge
+                                } else {
+                                    appGridItemMinSize
+                                },
+                                onItemClicked = onItemClicked,
+                            )
+                        }
+
+                        if (
+                            windowSize.widthSizeClass == WindowWidthSizeClass.Expanded &&
+                            windowSize.heightSizeClass > WindowHeightSizeClass.Compact
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .padding(spacingMedium)
+                                    .weight(2f)
+                                    .fillMaxHeight()
+                                    .verticalScroll(state = rememberScrollState())
+                            ) {
+                                val detailState = appDetailsProvider()
+                                if (!detailState.isLoading && detailState.details == null) {
+                                    Text(
+                                        text = stringResource(id = AppStrings.msg_select_app_to_view),
+                                        modifier = Modifier.align(alignment = Alignment.Center),
+                                        style = MaterialTheme.typography.labelLarge,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                } else {
+                                    AppDetailsContent(
+                                        state = detailState,
+                                        modifier = Modifier.matchParentSize()
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
+
+            PullRefreshIndicator(
+                refreshing = state.isRefresh,
+                state = pullRefreshState,
+                scale = true,
+                modifier = Modifier.align(Alignment.TopCenter),
+            )
         }
     }
 }
@@ -257,11 +306,13 @@ private fun AppsListTopAppBar(
             ) {
                 Text(text = stringResource(id = AppStrings.app_name))
 
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.SemiBold
-                )
+                AnimatedVisibility(visible = subtitle.isNotBlank()) {
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
             }
         },
         actions = {
@@ -284,18 +335,51 @@ private fun AppsListTopAppBar(
     )
 }
 
+@Composable
+private fun rememberAppsListSubtitle(
+    state: AppsListScreenState,
+    searchState: AppsSearchState,
+): AnnotatedString {
+    val context = LocalContext.current
+    val subtitle by remember(
+        state.listType,
+        state.apps.size,
+        searchState.isActive,
+        searchState.results.size,
+    ) { mutableStateOf(createSubtitleText(state, searchState, context)) }
+    return subtitle
+}
+
 private fun createSubtitleText(
     state: AppsListScreenState,
     searchState: AppsSearchState,
     context: Context
-): AnnotatedString = if (searchState.isActive) {
-    createCountLabelAnnotatedString(
-        count = searchState.results.size,
-        label = context.getString(AppStrings.lbl_apps_found)
-    )
-} else {
-    createCountLabelAnnotatedString(
-        count = state.apps.size,
-        label = state.listType.label.asString(context)
-    )
+): AnnotatedString {
+    return if (searchState.isActive) {
+        val resultsSize = searchState.results.size
+        if (searchState.query.isBlank()) {
+            AnnotatedString("")
+        } else {
+            val countLabel = if (resultsSize > 0) {
+                resultsSize.toString()
+            } else {
+                context.getString(AppStrings.lbl_no)
+            }
+            createCountLabelAnnotatedString(
+                countLabel = countLabel,
+                label = context.getString(AppStrings.lbl_apps_found)
+            )
+        }
+    } else {
+        val appsCount = state.apps.size
+        val countLabel = if (appsCount > 0) {
+            appsCount.toString()
+        } else {
+            context.getString(AppStrings.lbl_no)
+        }
+        createCountLabelAnnotatedString(
+            countLabel = countLabel,
+            label = state.listType.label.asString(context)
+        )
+    }
 }

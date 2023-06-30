@@ -252,6 +252,7 @@ private fun AppItemContainer(
 }
 
 val appGridItemMinSize = 85.dp
+val appGridItemMinSizeLarge = 120.dp
 
 const val ITEM_TYPE_APP = "AppItem"
 

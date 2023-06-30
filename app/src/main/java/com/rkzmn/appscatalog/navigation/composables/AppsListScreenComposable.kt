@@ -1,5 +1,6 @@
 package com.rkzmn.appscatalog.navigation.composables
 
+import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
@@ -16,15 +17,17 @@ import com.rkzmn.appscatalog.navigation.destination.AppSettingsDestination
 import com.rkzmn.appscatalog.navigation.destination.AppsListDestination
 import com.rkzmn.appscatalog.presentation.apps.AppsViewModel
 import com.rkzmn.appscatalog.presentation.apps.list.AppListScreen
+import com.rkzmn.appscatalog.utils.android.compose.LocalWindowSize
 import timber.log.Timber
 
 fun NavGraphBuilder.appsListScreenComposable(
     navHostController: NavHostController,
-    windowSize: WindowSizeClass,
     viewModel: AppsViewModel,
 ) {
     composable(AppsListDestination.route) {
         Timber.tag(NAV_TAG).d("Navigating to AppsList Screen")
+
+        val windowSize = LocalWindowSize.current
 
         val state by viewModel.appsListState.collectAsStateWithLifecycle()
         val searchState by viewModel.appsSearchState.collectAsStateWithLifecycle()
@@ -52,7 +55,11 @@ fun NavGraphBuilder.appsListScreenComposable(
             onClickedSettings = { navHostController.navigate(AppSettingsDestination.route) },
             onSearchQueryChanged = { viewModel.onSearchQueryChange(it) },
             onSearchStatusChanged = { viewModel.onSearchStatusChange(it) },
-            appDetailsProvider = { appDetailsState }
+            appDetailsProvider = { appDetailsState },
+            onSearchResultItemClicked = { packageName ->
+                navHostController.navigate(AppDetailDestination.getAddress(packageName))
+            },
+            onRefresh = { viewModel.refreshAppsList() }
         )
     }
 }
@@ -62,8 +69,11 @@ private fun rememberAppItemClickHandler(
     navHostController: NavHostController,
     windowSize: WindowSizeClass,
     viewModel: AppsViewModel
-): (String) -> Unit = remember(windowSize.widthSizeClass) {
-    if (windowSize.widthSizeClass == WindowWidthSizeClass.Expanded) {
+): (String) -> Unit = remember(windowSize, viewModel) {
+    if (
+        windowSize.widthSizeClass == WindowWidthSizeClass.Expanded &&
+        windowSize.heightSizeClass > WindowHeightSizeClass.Compact
+    ) {
         { packageName ->
             with(viewModel) {
                 onAppSelected(packageName)

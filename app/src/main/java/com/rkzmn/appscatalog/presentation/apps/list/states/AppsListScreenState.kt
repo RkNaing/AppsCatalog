@@ -13,4 +13,5 @@ data class AppsListScreenState(
     val listType: AppsListType = AppsListType.ALL,
     val selectedPackageName: String? = null,
     val isLoading: Boolean = false,
+    val isRefresh: Boolean = false,
 )
