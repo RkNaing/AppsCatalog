@@ -44,7 +44,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.6"
+        kotlinCompilerExtensionVersion = "1.4.8"
     }
 
     packaging {
@@ -62,6 +62,7 @@ dependencies {
 
     /* Androidx */
     implementation("androidx.core:core-ktx:1.10.1")
+    implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
 
     /* Hilt https://tinyurl.com/hilt-android */
@@ -91,7 +92,7 @@ kapt {
 }
 
 fun DependencyHandlerScope.setupJetpackCompose() {
-    val versionComposeBom = "2023.05.00"
+    val versionComposeBom = "2023.06.01"
 
     val composeBom = platform("androidx.compose:compose-bom:$versionComposeBom")
     implementation(composeBom)

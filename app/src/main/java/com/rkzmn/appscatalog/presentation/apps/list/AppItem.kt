@@ -19,7 +19,10 @@ data class AppItem(
 ) {
 
     companion object {
-        fun from(appInfo: AppInfo): AppItem {
+        fun from(
+            appInfo: AppInfo,
+            isSelected: Boolean = false
+        ): AppItem {
             val displayVersion = buildString {
                 val components = mutableListOf<String>()
                 val versionName = appInfo.versionName
@@ -44,8 +47,8 @@ data class AppItem(
                 packageName = appInfo.packageName,
                 version = displayVersion,
                 appTypeIndicators = appInfo.indicators,
-                readableSize = appInfo.readableSize
-
+                readableSize = appInfo.readableSize,
+                isSelected = isSelected,
             )
         }
     }

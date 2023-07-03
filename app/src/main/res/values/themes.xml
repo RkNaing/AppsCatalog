@@ -2,4 +2,9 @@
 <resources>
 
     <style name="Theme.AppsCatalog" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.AppsCatalog.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/natural</item>
+        <item name="postSplashScreenTheme">@style/Theme.AppsCatalog</item>
+    </style>
 </resources>
