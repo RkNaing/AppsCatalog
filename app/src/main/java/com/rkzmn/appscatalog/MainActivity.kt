@@ -2,6 +2,7 @@ package com.rkzmn.appscatalog
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +21,8 @@ import com.rkzmn.appscatalog.domain.repositories.AppPreferenceRepository
 import com.rkzmn.appscatalog.navigation.graphs.RootNavGraph
 import com.rkzmn.appscatalog.ui.theme.AppsCatalogTheme
 import com.rkzmn.appscatalog.utils.android.compose.LocalWindowSize
+import com.rkzmn.appscatalog.utils.android.toast
+import com.rkzmn.appscatalog.utils.app.AppStrings
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -29,10 +32,16 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var appPrefRepo: AppPreferenceRepository
 
+    private var lastBackPressTime = 0L
+
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
+
         super.onCreate(savedInstanceState)
+
+        onBackPressedDispatcher.addCallback(this) { handleBackPress() }
+
         setContent {
             val currentAppTheme by appPrefRepo.appTheme
                 .collectAsStateWithLifecycle(initialValue = AppTheme.FOLLOW_SYSTEM)
@@ -63,5 +72,19 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun handleBackPress() {
+        val currentTime = System.currentTimeMillis()
+        if ((currentTime - lastBackPressTime) < BACK_PRESS_TIME_GAP_MILLIS) {
+            finish()
+        } else {
+            lastBackPressTime = currentTime
+            toast(AppStrings.msg_double_back_to_exit)
+        }
+    }
+
+    companion object {
+        private const val BACK_PRESS_TIME_GAP_MILLIS = 2000
     }
 }
