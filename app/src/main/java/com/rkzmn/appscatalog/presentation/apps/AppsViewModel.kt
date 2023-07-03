@@ -136,11 +136,23 @@ class AppsViewModel @Inject constructor(
         _appsListState.update { it.copy(isLoading = true, isRefresh = isRefresh) }
 
         viewModelScope.launch(dispatcherProvider.default) {
+            val selectedPackage = if (isRefresh) {
+                _appsListState.value.apps.firstOrNull { it.isSelected }?.packageName
+            } else {
+                null
+            }
+
             val appItems = repository.getAllApps(
                 isRefresh = isRefresh,
                 sortOption = sortOption,
                 listType = listType
-            ).map(AppItem.Companion::from)
+            ).map {
+                AppItem.from(
+                    appInfo = it,
+                    isSelected = isRefresh && it.packageName == selectedPackage
+                )
+            }
+
             _appsListState.emitUpdate {
                 it.copy(
                     apps = appItems.toImmutableList(),
