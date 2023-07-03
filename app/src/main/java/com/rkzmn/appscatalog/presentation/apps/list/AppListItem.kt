@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -242,7 +243,7 @@ private fun AppItemContainer(
     }
 
     Card(
-        modifier = modifier,
+        modifier = modifier.testTag(if (isSelected) TEST_TAG_APP_ITEM_SELECTED else TEST_TAG_APP_ITEM),
         onClick = onClick,
         border = if (isSelected) BorderStroke(1.dp, color = seed) else null,
         colors = cardColors,
@@ -255,6 +256,9 @@ val appGridItemMinSize = 85.dp
 val appGridItemMinSizeLarge = 120.dp
 
 const val ITEM_TYPE_APP = "AppItem"
+
+const val TEST_TAG_APP_ITEM_SELECTED = "AppItemSelected"
+const val TEST_TAG_APP_ITEM = "AppItem"
 
 // /////////////////////////////////////////////////////////////////////////
 // Previews

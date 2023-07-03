@@ -1,6 +1,6 @@
 package com.rkzmn.appscatalog.utils.kotlin
 
-import junit.framework.Assert.assertEquals
+import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 
 class KotlinUtilsTest {
@@ -25,11 +25,7 @@ class KotlinUtilsTest {
 
         inputToExpectedMap.forEach { (input, expected) ->
             val result = byteCountToDisplaySize(input)
-            assertEquals(
-                "byteCountToDisplaySize($input) | Expected : $expected | Returned: $result",
-                result,
-                expected
-            )
+            assertThat(result).isEqualTo(expected)
         }
     }
 }

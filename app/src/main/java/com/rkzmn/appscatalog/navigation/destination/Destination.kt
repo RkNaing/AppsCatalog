@@ -1,5 +1,7 @@
 package com.rkzmn.appscatalog.navigation.destination
 
+import androidx.annotation.VisibleForTesting
+
 sealed class Destination(
     val label: String,
     val arguments: Array<String>? = null,
@@ -7,17 +9,7 @@ sealed class Destination(
 ) {
 
     val route: String
-        get() = StringBuilder(label).apply {
-            arguments?.let { args ->
-                args.forEach { arg ->
-                    append("/{$arg}")
-                }
-            }
-            optionalArguments?.let { args ->
-                append("?")
-                append(args.joinToString("&", transform = { "$it={$it}" }))
-            }
-        }.toString()
+        get() = buildRoute(label, arguments, optionalArguments)
 
     fun address(
         args: Map<String, Any?>? = null,
@@ -32,5 +24,28 @@ sealed class Destination(
         }
 
         return address
+    }
+
+    override fun toString(): String {
+        return route
+    }
+
+    companion object {
+        @VisibleForTesting
+        fun buildRoute(
+            label: String,
+            arguments: Array<String>? = null,
+            optionalArguments: Array<String>? = null
+        ) = StringBuilder(label).apply {
+            arguments?.let { args ->
+                args.forEach { arg ->
+                    append("/{$arg}")
+                }
+            }
+            optionalArguments?.let { args ->
+                append("?")
+                append(args.joinToString("&", transform = { "$it={$it}" }))
+            }
+        }.toString()
     }
 }

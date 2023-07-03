@@ -17,8 +17,4 @@ object AppDetailDestination : Destination(
     }
 }
 
-object AppSettingsDestination: Destination(label = "app_setting")
-
-///////////////////////////////////////////////////////////////////////////
-// Arguments
-///////////////////////////////////////////////////////////////////////////
+object AppSettingsDestination : Destination(label = "app_setting")

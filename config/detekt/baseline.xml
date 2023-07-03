@@ -10,6 +10,10 @@
     <ID>MagicNumber:AppsListScreen.kt$3f</ID>
     <ID>CompositionLocalAllowlist:LocalWindowSizeProvider.kt$LocalWindowSize</ID>
     <ID>MagicNumber:AppDetailsUI.kt$3f</ID>
+    <ID>NoWildcardImports:ExampleInstrumentedTest.kt$import org.junit.Assert.*</ID>
+    <ID>NoWildcardImports:AppListItemTest.kt$import org.junit.Assert.*</ID>
+    <ID>WildcardImport:ExampleInstrumentedTest.kt$import org.junit.Assert.*</ID>
+    <ID>WildcardImport:AppListItemTest.kt$import org.junit.Assert.*</ID>
   </ManuallySuppressedIssues>
   <CurrentIssues>
     <ID>TooManyFunctions:PreferenceDataStoreUtil.kt</ID>
