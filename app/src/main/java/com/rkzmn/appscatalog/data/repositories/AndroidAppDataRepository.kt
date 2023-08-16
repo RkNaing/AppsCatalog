@@ -16,11 +16,7 @@ import com.rkzmn.appscatalog.domain.repositories.AppDataRepository
 import com.rkzmn.appscatalog.utils.kotlin.CoroutineDispatcherProvider
 import com.rkzmn.appscatalog.utils.kotlin.DateTimeFormat
 import com.rkzmn.appscatalog.utils.kotlin.asFormattedDate
-import com.rkzmn.appsdataprovider.getAppActivities
-import com.rkzmn.appsdataprovider.getAppPermissions
-import com.rkzmn.appsdataprovider.getAppReceivers
-import com.rkzmn.appsdataprovider.getAppServices
-import com.rkzmn.appsdataprovider.getApps
+import com.rkzmn.appsdataprovider.AppDataProvider
 import com.rkzmn.appsdataprovider.model.AppComponent
 import com.rkzmn.appsdataprovider.model.AppPermission
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -31,6 +27,7 @@ import javax.inject.Inject
 
 class AndroidAppDataRepository @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val appDataProvider: AppDataProvider,
     private val dispatcherProvider: CoroutineDispatcherProvider,
 ) : AppDataRepository {
 
@@ -43,13 +40,14 @@ class AndroidAppDataRepository @Inject constructor(
         listType: AppsListType
     ): List<AppInfo> {
         Timber.d(
-            "getAllApps() called with: isRefresh = [$isRefresh], sortOption = [$sortOption], listType = [$listType]"
+            "getAllApps() called with: isRefresh = [$isRefresh], " +
+                "sortOption = [$sortOption], listType = [$listType]"
         )
         return withContext(dispatcherProvider.default) {
             if (isRefresh || apps.isEmpty()) {
                 apps.apply {
                     clear()
-                    addAll(getApps(context).map { it.getAppInfo() })
+                    addAll(appDataProvider.getApps(context).map { it.getAppInfo() })
                 }
             }
 
@@ -85,19 +83,19 @@ class AndroidAppDataRepository @Inject constructor(
             val dateTimeFormat = DateTimeFormat.display_date_full_time
             val comparator = compareBy<AppComponentInfo>({ it.packageName }, { it.name })
             val details = AppDetails(
-                activities = getAppActivities(
+                activities = appDataProvider.getAppActivities(
                     context = context,
                     packageName = packageName
                 ).map(AppComponent::getComponentInfo).sortedWith(comparator).toImmutableList(),
-                services = getAppServices(
+                services = appDataProvider.getAppServices(
                     context = context,
                     packageName = packageName
                 ).map(AppComponent::getComponentInfo).sortedWith(comparator).toImmutableList(),
-                broadcastReceivers = getAppReceivers(
+                broadcastReceivers = appDataProvider.getAppReceivers(
                     context = context,
                     packageName = packageName
                 ).map(AppComponent::getComponentInfo).sortedWith(comparator).toImmutableList(),
-                permissions = getAppPermissions(
+                permissions = appDataProvider.getAppPermissions(
                     context = context,
                     packageName = packageName
                 ).map(AppPermission::getPermissionInfo).toImmutableList(),

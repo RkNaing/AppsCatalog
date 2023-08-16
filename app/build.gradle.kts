@@ -18,7 +18,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.rkzmn.appscatalog.HiltAndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -50,6 +50,8 @@ android {
     packaging {
         resources {
             excludes.add("/META-INF/{AL2.0,LGPL2.1}")
+            excludes.add("META-INF/LICENSE.md")
+            excludes.add("META-INF/LICENSE-notice.md")
         }
     }
 }
@@ -66,15 +68,20 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
 
     /* Hilt https://tinyurl.com/hilt-android */
-    val hiltVersion = "2.46.1"
+    /* Hilt https://tinyurl.com/hilt-testing-guide */
+    val hiltVersion = "2.47"
     implementation("com.google.dagger:hilt-android:$hiltVersion")
     kapt("com.google.dagger:hilt-android-compiler:$hiltVersion")
+    testImplementation("com.google.dagger:hilt-android-testing:$hiltVersion")
+    kaptTest("com.google.dagger:hilt-android-compiler:$hiltVersion")
+    androidTestImplementation("com.google.dagger:hilt-android-testing:$hiltVersion")
+    kaptAndroidTest("com.google.dagger:hilt-android-compiler:$hiltVersion")
 
     /* Preference Datastore https://tinyurl.com/preference-datastore*/
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 
     /* Kotlin Coroutines */
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
     implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")
 
@@ -82,9 +89,18 @@ dependencies {
     implementation("com.jakewharton.timber:timber:5.0.1")
 
     testImplementation("junit:junit:4.13.2")
-    testImplementation("com.google.truth:truth:1.1.4")
+    testImplementation("com.google.truth:truth:1.1.5")
+    testImplementation("app.cash.turbine:turbine:1.0.0")
+    androidTestImplementation("com.google.truth:truth:1.1.5")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.ext:truth:1.5.0")
+    androidTestImplementation("app.cash.turbine:turbine:1.0.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+
+    val mockKVersion = "1.13.7"
+    testImplementation("io.mockk:mockk:$mockKVersion")
+    androidTestImplementation("io.mockk:mockk-android:$mockKVersion")
 }
 
 // Allow references to generated code
@@ -114,7 +130,9 @@ fun DependencyHandlerScope.setupJetpackCompose() {
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 
     // https://developer.android.com/jetpack/compose/navigation#setup
-    implementation("androidx.navigation:navigation-compose:2.5.3")
+    val versionNav = "2.6.0"
+    implementation("androidx.navigation:navigation-compose:$versionNav")
+    androidTestImplementation("androidx.navigation:navigation-testing:$versionNav")
 
     // https://coil-kt.github.io/coil/compose/#jetpack-compose
     implementation("io.coil-kt:coil-compose:2.3.0")

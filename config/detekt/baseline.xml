@@ -14,6 +14,9 @@
     <ID>NoWildcardImports:AppListItemTest.kt$import org.junit.Assert.*</ID>
     <ID>WildcardImport:ExampleInstrumentedTest.kt$import org.junit.Assert.*</ID>
     <ID>WildcardImport:AppListItemTest.kt$import org.junit.Assert.*</ID>
+    <ID>MagicNumber:RecompositionTrackers.kt$3000</ID>
+    <ID>MaxLineLength:AppsViewModelTest.kt$AppsViewModelTest$produceFile = { tmpFolder.newFile("test.preferences_pb").also { println("Test DATASTORE => ${it.absolutePath}") } }</ID>
+    <ID>MaximumLineLength:AppsViewModelTest.kt$AppsViewModelTest$ </ID>
   </ManuallySuppressedIssues>
   <CurrentIssues>
     <ID>TooManyFunctions:PreferenceDataStoreUtil.kt</ID>

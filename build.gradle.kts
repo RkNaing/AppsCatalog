@@ -1,9 +1,9 @@
 
 plugins {
-    id("com.android.application") version "8.0.2" apply false
-    id("com.android.library") version "8.0.2" apply false
+    id("com.android.application") version "8.1.0" apply false
+    id("com.android.library") version "8.1.0" apply false
     id("org.jetbrains.kotlin.android") version "1.8.22" apply false
-    id("com.google.dagger.hilt.android") version "2.44" apply false
+    id("com.google.dagger.hilt.android") version "2.47" apply false
     id("io.gitlab.arturbosch.detekt") version "1.23.0"
 }
 
@@ -76,7 +76,7 @@ subprojects {
     tasks.getByPath("$path:assembleDebug").dependsOn("installGitHooks")
 
     dependencies {
-        detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.0")
+        detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.1")
         detektPlugins("com.twitter.compose.rules:detekt:0.0.26")
     }
 }

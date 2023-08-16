@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,8 +45,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -99,11 +100,13 @@ fun AppListScreen(
             onSelectDisplayType = onSelectDisplayType,
             selectedSortOption = state.sortBy,
             onSelectSortOption = onSelectSortOption,
+            modifier = Modifier.testTag(TEST_TAG_APPS_LIST_OPTIONS),
         )
     }
 
     Scaffold(
         modifier = modifier
+            .testTag(TEST_TAG_APPS_LIST_SCREEN)
             .fillMaxSize()
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -128,30 +131,30 @@ fun AppListScreen(
             if (state.isLoading && !state.isRefresh) {
                 ProgressView(
                     message = stringResource(id = AppStrings.lbl_loading),
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .testTag(TEST_TAG_APPS_LIST_LOADING)
                 )
             } else {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                 ) {
-                    val searchBarBackgroundAlpha by remember {
+                    val colorScheme = MaterialTheme.colorScheme
+                    val surfaceColorWithElevation by remember(key1 = colorScheme) {
+                        mutableStateOf(colorScheme.surfaceColorAtElevation(3.dp))
+                    }
+                    val searchBarBackground by remember {
                         derivedStateOf {
-                            val fraction = scrollBehavior.state.collapsedFraction
-                            when {
-                                fraction > 1f -> 1f
-                                fraction < 0 -> 0f
-                                else -> fraction
-                            }
+                            val alpha =
+                                scrollBehavior.state.collapsedFraction.coerceIn(range = 0f..1f)
+                            surfaceColorWithElevation.copy(alpha = alpha)
                         }
                     }
+
                     AppsSearchBar(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(
-                                color = MaterialTheme.colorScheme
-                                    .surfaceColorAtElevation(3.dp)
-                                    .copy(alpha = searchBarBackgroundAlpha),
-                            )
+                            .drawBehind { drawRect(color = searchBarBackground) }
                             .padding(bottom = spacingMedium),
                         state = searchState,
                         onQueryChanged = onSearchQueryChanged,
@@ -168,13 +171,13 @@ fun AppListScreen(
 
                         when (state.listDisplayType) {
                             AppsDisplayType.LIST -> AppsList(
-                                modifier = listModifier,
+                                modifier = listModifier.testTag(TEST_TAG_APPS_LIST),
                                 apps = state.apps,
                                 onItemClicked = onItemClicked,
                             )
 
                             AppsDisplayType.GRID -> AppsGrid(
-                                modifier = listModifier,
+                                modifier = listModifier.testTag(TEST_TAG_APPS_GRID),
                                 apps = state.apps,
                                 gridMinSize = if (windowSize.widthSizeClass == WindowWidthSizeClass.Medium) {
                                     appGridItemMinSizeLarge
@@ -207,7 +210,9 @@ fun AppListScreen(
                                 } else {
                                     AppDetailsContent(
                                         state = detailState,
-                                        modifier = Modifier.matchParentSize()
+                                        modifier = Modifier
+                                            .matchParentSize()
+                                            .testTag(TEST_TAG_APPS_LIST_DETAIL_CONTENT)
                                     )
                                 }
                             }
@@ -220,7 +225,9 @@ fun AppListScreen(
                 refreshing = state.isRefresh,
                 state = pullRefreshState,
                 scale = true,
-                modifier = Modifier.align(Alignment.TopCenter),
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .testTag(TEST_TAG_APPS_LIST_REFRESH_INDICATOR),
             )
         }
     }
@@ -238,7 +245,8 @@ private fun AppsSearchBar(
 ) {
     val searchPadding by animateDpAsState(
         targetValue = if (state.isActive) 0.dp else spacingMedium,
-        animationSpec = tween(durationMillis = 500)
+        animationSpec = tween(durationMillis = 500),
+        label = "AppsListSearchBarPaddingAnimation"
     )
 
     Box(
@@ -282,7 +290,8 @@ private fun AppsSearchBar(
             AppsSearchResultsList(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(spacingMedium),
+                    .padding(spacingMedium)
+                    .testTag(TEST_TAG_APPS_SEARCH_RESULTS),
                 results = state.results,
                 onItemClicked = onItemClicked,
             )
@@ -383,3 +392,15 @@ private fun createSubtitleText(
         )
     }
 }
+
+// /////////////////////////////////////////////////////////////////////////
+// Test Tags
+// /////////////////////////////////////////////////////////////////////////
+const val TEST_TAG_APPS_LIST_SCREEN = "apps_list_screen"
+const val TEST_TAG_APPS_LIST_LOADING = "apps_list_loading_view"
+const val TEST_TAG_APPS_LIST_OPTIONS = "apps_list_options_bottom_sheet"
+const val TEST_TAG_APPS_LIST = "apps_list"
+const val TEST_TAG_APPS_GRID = "apps_grid"
+const val TEST_TAG_APPS_LIST_DETAIL_CONTENT = "app_detail"
+const val TEST_TAG_APPS_LIST_REFRESH_INDICATOR = "apps_list_refresh_indicator"
+const val TEST_TAG_APPS_SEARCH_RESULTS = "apps_search_results"

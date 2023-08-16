@@ -41,13 +41,7 @@ class AppsViewModel @Inject constructor(
     private val dispatcherProvider: CoroutineDispatcherProvider,
 ) : ViewModel() {
 
-    private val defaultAppsListState = AppsListScreenState(
-        listDisplayType = AppsDisplayType.GRID,
-        sortBy = AppSortOption.NAME_ASC,
-        listType = AppsListType.ALL,
-    )
-
-    private val _appsListState = MutableStateFlow(defaultAppsListState)
+    private val _appsListState = MutableStateFlow(AppsListScreenState())
     val appsListState: StateFlow<AppsListScreenState> = _appsListState.asStateFlow()
 
     private val _appsSearchState = MutableStateFlow(AppsSearchState())
@@ -76,9 +70,10 @@ class AppsViewModel @Inject constructor(
 
         viewModelScope.launch {
             combine(
-                listPrefRepo.appsListType.distinctUntilChanged(),
-                listPrefRepo.sortOption.distinctUntilChanged(),
+                listPrefRepo.appsListType,
+                listPrefRepo.sortOption,
             ) { listType, sortOption ->
+                Timber.d("Combine Flow Transformer called with: listType = [$listType], sortOption = [$sortOption]")
                 loadApps(
                     isRefresh = false,
                     sortOption = sortOption,
@@ -89,7 +84,7 @@ class AppsViewModel @Inject constructor(
 
         viewModelScope.launch {
             listPrefRepo.displayType.distinctUntilChanged().collectLatest { displayType ->
-                _appsListState.emitUpdate { it.copy(listDisplayType = displayType) }
+                _appsListState.update { it.copy(listDisplayType = displayType) }
             }
         }
 
@@ -128,8 +123,18 @@ class AppsViewModel @Inject constructor(
         sortOption: AppSortOption,
         listType: AppsListType
     ) {
-        if (_appsListState.value.isLoading) {
+        val currentState = _appsListState.value
+        if (currentState.isLoading) {
             Timber.d("loadApps: Already loading in progress. No-Op.")
+            return
+        }
+
+        val skipLoad = !isRefresh && with(currentState) {
+            apps.isNotEmpty() && sortOption == sortBy && listType == this.listType
+        }
+
+        if (skipLoad) {
+            Timber.d("loadApps: Duplicate load. No-Op.")
             return
         }
 
@@ -153,7 +158,7 @@ class AppsViewModel @Inject constructor(
                 )
             }
 
-            _appsListState.emitUpdate {
+            _appsListState.update {
                 it.copy(
                     apps = appItems.toImmutableList(),
                     sortBy = sortOption,
@@ -229,7 +234,7 @@ class AppsViewModel @Inject constructor(
                 it.copy(isSelected = matches)
             }.toImmutableList()
             if (changesCount > 0) {
-                _appsListState.emitUpdate { it.copy(apps = updatedList) }
+                _appsListState.update { it.copy(apps = updatedList) }
             }
             Timber.d("selectApp: $changesCount Selections updated.")
         }

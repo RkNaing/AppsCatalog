@@ -11,6 +11,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import androidx.navigation.navOptions
 import com.rkzmn.appscatalog.navigation.NAV_TAG
 import com.rkzmn.appscatalog.navigation.destination.AppDetailDestination
 import com.rkzmn.appscatalog.navigation.destination.AppSettingsDestination
@@ -57,7 +58,10 @@ fun NavGraphBuilder.appsListScreenComposable(
             onSearchStatusChanged = { viewModel.onSearchStatusChange(it) },
             appDetailsProvider = { appDetailsState },
             onSearchResultItemClicked = { packageName ->
-                navHostController.navigate(AppDetailDestination.getAddress(packageName))
+                navHostController.navigate(
+                    route = AppDetailDestination.getAddress(packageName),
+                    navOptions = navOptions { launchSingleTop = true }
+                )
             },
             onRefresh = { viewModel.refreshAppsList() }
         )
@@ -82,7 +86,10 @@ private fun rememberAppItemClickHandler(
         }
     } else {
         { packageName ->
-            navHostController.navigate(AppDetailDestination.getAddress(packageName))
+            navHostController.navigate(
+                route = AppDetailDestination.getAddress(packageName),
+                navOptions = navOptions { launchSingleTop = true }
+            )
         }
     }
 }

@@ -8,7 +8,7 @@ import kotlinx.collections.immutable.persistentListOf
 
 data class AppsListScreenState(
     val apps: ImmutableList<AppItem> = persistentListOf(),
-    val listDisplayType: AppsDisplayType = AppsDisplayType.LIST,
+    val listDisplayType: AppsDisplayType = AppsDisplayType.GRID,
     val sortBy: AppSortOption = AppSortOption.NAME_ASC,
     val listType: AppsListType = AppsListType.ALL,
     val selectedPackageName: String? = null,
