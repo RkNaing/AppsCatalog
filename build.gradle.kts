@@ -81,6 +81,19 @@ subprojects {
     }
 }
 
+tasks.register("runUITests") {
+    val hasTestFiles = File(rootProject.projectDir.toString() + "/app/src/androidTest")
+        .walkTopDown()
+        .any { it.name.endsWith(".kt") }
+
+    if (hasTestFiles) {
+        println("UI tests found")
+        dependsOn("pixel2api34DebugAndroidTest")
+    } else {
+        println("No UI tests found")
+    }
+}
+
 fun isLinuxOrMacOs(): Boolean {
     val osName = System.getProperty("os.name").lowercase(java.util.Locale.ROOT)
     return osName.contains("linux") || osName.contains("mac os") || osName.contains("macos")
