@@ -38,9 +38,9 @@ steps:
 - script: |
     #!/usr/bin/env bash
     # Install AVD files
-    echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install 'system-images;android-34;google_apis;x86'
+    echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install 'system-images;android-33;google_apis;arm64-v8a'
     # Create emulator
-    echo "no" | $ANDROID_HOME/tools/bin/avdmanager create avd -n xamarin_android_emulator -k 'system-images;android-34;google_apis;x86' --force
+    echo "no" | $ANDROID_HOME/tools/bin/avdmanager create avd -n xamarin_android_emulator -k 'system-images;android-33;google_apis;arm64-v8a' --force
     $ANDROID_HOME/emulator/emulator -list-avds
     echo "Starting emulator"
     # Start emulator in background
