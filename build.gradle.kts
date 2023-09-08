@@ -1,11 +1,15 @@
-
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    id("com.android.application") version "8.1.0" apply false
-    id("com.android.library") version "8.1.0" apply false
-    id("org.jetbrains.kotlin.android") version "1.8.22" apply false
-    id("com.google.dagger.hilt.android") version "2.47" apply false
-    id("io.gitlab.arturbosch.detekt") version "1.23.0"
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.hilt.android) apply false
+    alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.detekt)
 }
+
+// Workaround for "Expecting an expression" build error
+println("")
 
 val reportMerge by tasks.registering(io.gitlab.arturbosch.detekt.report.ReportMergeTask::class) {
     output.set(rootProject.layout.buildDirectory.file("reports/detekt/merge.xml")) // or "reports/detekt/merge.sarif"
@@ -76,8 +80,8 @@ subprojects {
     tasks.getByPath("$path:assembleDebug").dependsOn("installGitHooks")
 
     dependencies {
-        detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.1")
-        detektPlugins("com.twitter.compose.rules:detekt:0.0.26")
+        detektPlugins(libs.detekt.formatting)
+        detektPlugins(libs.detekt.twitter.compose)
     }
 }
 

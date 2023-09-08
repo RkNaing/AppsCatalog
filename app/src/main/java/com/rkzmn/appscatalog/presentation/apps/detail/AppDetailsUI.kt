@@ -67,13 +67,12 @@ fun AppDetailsUI(
     details: AppDetails,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
     val windowSizeClass = LocalWindowSize.current
     val coroutineScope = rememberCoroutineScope()
-    val pagerState = rememberPagerState()
-
     val tabs = remember(details) { details.tabTitles.toImmutableList() }
+    val pagerState = rememberPagerState { tabs.size }
     val selectedTabIndex = pagerState.currentPage
+    val context = LocalContext.current
     val subtitleText by remember(key1 = selectedTabIndex, key2 = details) {
         mutableStateOf(
             prepareSubtitle(
@@ -137,7 +136,6 @@ fun AppDetailsUI(
                         .fillMaxHeight(),
                     details = details,
                     pagerState = pagerState,
-                    pageCount = tabs.size,
                     selectedTab = getSelectedTab
                 )
             }
@@ -157,7 +155,6 @@ fun AppDetailsUI(
                     .weight(1f),
                 details = details,
                 pagerState = pagerState,
-                pageCount = tabs.size,
                 selectedTab = getSelectedTab
             )
         }
@@ -326,13 +323,11 @@ private fun SectionTabBar(
 private fun AppDetailsContentPager(
     details: AppDetails,
     pagerState: PagerState,
-    pageCount: Int,
     modifier: Modifier = Modifier,
     selectedTab: (Int) -> AppDetailTab?,
 ) {
     HorizontalPager(
         modifier = modifier,
-        pageCount = pageCount,
         state = pagerState,
     ) { position ->
 

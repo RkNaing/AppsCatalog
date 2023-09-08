@@ -21,7 +21,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -177,7 +176,7 @@ private fun AppDisplayTypeOptions(
 ) {
     FlowRow(
         modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalArrangement = Arrangement.Center,
         horizontalArrangement = Arrangement.spacedBy(spacingSmall),
     ) {
         displayTypes.forEach { type ->
@@ -213,7 +212,7 @@ private fun AppListTypeOptions(
 ) {
     FlowRow(
         modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalArrangement = Arrangement.Center,
         horizontalArrangement = Arrangement.spacedBy(spacingSmall),
     ) {
         listTypes.forEach { type ->
@@ -240,7 +239,7 @@ private fun SortFilterRow(
 ) {
     FlowRow(
         modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
+        verticalArrangement = Arrangement.Center,
         horizontalArrangement = Arrangement.spacedBy(spacingSmall),
     ) {
         val label = filter.label.asString()

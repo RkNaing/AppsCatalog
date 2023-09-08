@@ -16,7 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.toMutableStateList
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -69,7 +68,7 @@ private fun AppIndicators(
     FlowRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(spacingSmall),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalArrangement = Arrangement.Center,
     ) {
         indicators.forEach { indicator ->
             val label = indicator.contentDescription.asString()

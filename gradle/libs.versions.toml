@@ -1,0 +1,77 @@
+[versions]
+kotlin = "1.9.10"
+compose-compiler = "1.5.3" # https://developer.android.com/jetpack/androidx/releases/compose-kotlin
+compose-bom = "2023.09.00" # https://developer.android.com/jetpack/compose/bom
+navigation-compose = "2.7.2" # https://developer.android.com/jetpack/compose/navigation#setup
+accompanist = "0.31.2-alpha"
+hilt = "2.48" # https://tinyurl.com/hilt-android , https://tinyurl.com/hilt-testing-guide
+mockk = "1.13.7"
+coroutines = "1.7.3"
+androidGradlePlugin = "8.1.1"
+
+[libraries]
+compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
+compose-ui = { module = "androidx.compose.ui:ui" }
+compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+compose-junit4 = { module = "androidx.compose.ui:ui-test-junit4"}
+compose-test-manifest = { module = "androidx.compose.ui:ui-test-manifest"}
+
+compose-material = { module = "androidx.compose.material3:material3" }
+compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
+compose-material-window-size = { module = "androidx.compose.material3:material3-window-size-class" }
+
+activity-compose = { module = "androidx.activity:activity-compose", version = "1.7.2" }
+viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version = "2.6.2" }
+lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version = "2.6.2" }
+lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version = "2.6.2"}
+
+# https://developer.android.com/jetpack/compose/libraries#hilt-navigation
+hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version = "1.0.0" }
+
+navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
+navigation-compose-test = { module = "androidx.navigation:navigation-testing", version.ref = "navigation-compose" }
+
+coil-compose = { module = "io.coil-kt:coil-compose", version = "2.3.0" }
+
+accompanist-material-placeholder = { module = "com.google.accompanist:accompanist-placeholder-material", version.ref = "accompanist"}
+accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist"}
+
+core-ktx = { module = "androidx.core:core-ktx", version = "1.12.0"}
+core-splashscreen = { module = "androidx.core:core-splashscreen", version = "1.0.1"}
+appcompat = { module = "androidx.appcompat:appcompat", version = "1.6.1" }
+
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref ="hilt" }
+hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref ="hilt" }
+hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", version.ref ="hilt" }
+
+# https://tinyurl.com/preference-datastore
+datastore-preference = { module = "androidx.datastore:datastore-preferences", version = "1.0.0"}
+
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines"}
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.3.5"}
+
+# Timber Logging - https://github.com/JakeWharton/timber
+timber = { module = "com.jakewharton.timber:timber", version = "5.0.1"}
+
+mockk = { module = "io.mockk:mockk", version.ref = "mockk"}
+mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk"}
+
+junit = { module = "junit:junit", version = "4.13.2" }
+junit-android = { module = "androidx.test.ext:junit", version = "1.1.5" }
+truth = { module = "com.google.truth:truth", version = "1.1.5" }
+truth-android = { module = "androidx.test.ext:truth", version = "1.5.0" }
+turbine = { module = "app.cash.turbine:turbine", version = "1.0.0" }
+expression-android = { module = "androidx.test.espresso:espresso-core", version = "3.5.1" }
+
+detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version = "1.23.1" }
+detekt-twitter-compose = { module = "com.twitter.compose.rules:detekt", version = "0.0.26" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
+android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version = "1.23.0" }
+ksp = { id = "com.google.devtools.ksp", version = "1.9.10-1.0.13" }

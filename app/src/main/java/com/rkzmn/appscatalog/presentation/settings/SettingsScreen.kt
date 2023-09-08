@@ -125,7 +125,7 @@ private fun AppThemeChooserCard(
             )
 
             FlowRow(
-                verticalAlignment = Alignment.CenterVertically,
+                verticalArrangement = Arrangement.Center,
                 horizontalArrangement = Arrangement.spacedBy(spacingSmall),
             ) {
                 AppTheme.values().forEach { theme ->
