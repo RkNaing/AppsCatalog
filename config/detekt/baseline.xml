@@ -17,6 +17,7 @@
     <ID>MagicNumber:RecompositionTrackers.kt$3000</ID>
     <ID>MaxLineLength:AppsViewModelTest.kt$AppsViewModelTest$produceFile = { tmpFolder.newFile("test.preferences_pb").also { println("Test DATASTORE => ${it.absolutePath}") } }</ID>
     <ID>MaximumLineLength:AppsViewModelTest.kt$AppsViewModelTest$ </ID>
+    <ID>ReturnCount:CollectionUtils.kt$fun &lt;T, C : Comparable&lt;C>> List&lt;T?>.isSortedBy( ascending: Boolean = true, skipNulls: Boolean = true, component: T.() -> C? ): Boolean</ID>
   </ManuallySuppressedIssues>
   <CurrentIssues>
     <ID>TooManyFunctions:PreferenceDataStoreUtil.kt</ID>

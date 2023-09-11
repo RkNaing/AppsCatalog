@@ -1,5 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
+include(":common-test")
+
 include(":apps_data_provider")
 
 pluginManagement {
@@ -18,5 +20,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Apps Catalog"
-include(":app",":apps_data_provider")
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
+rootProject.name = "AppsCatalog"
+include(":app", ":apps_data_provider")

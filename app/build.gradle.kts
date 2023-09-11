@@ -10,14 +10,14 @@ plugins {
 }
 
 android {
-    compileSdk = 34
+    compileSdk = ProjectConfigs.COMPILE_SDK
     defaultConfig {
-        namespace = "com.rkzmn.appscatalog"
-        applicationId = "com.rkzmn.appscatalog"
-        minSdk = 22
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        namespace = ProjectConfigs.APP_ID
+        applicationId = ProjectConfigs.APP_ID
+        minSdk = ProjectConfigs.MIN_SDK
+        targetSdk = ProjectConfigs.TARGET_SDK
+        versionCode = ProjectConfigs.APP_VERSION_CODE
+        versionName = ProjectConfigs.APP_VERSION_NAME
 
         testInstrumentationRunner = "com.rkzmn.appscatalog.HiltAndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -53,7 +53,7 @@ android {
 
 dependencies {
 
-    implementation(project(":apps_data_provider"))
+    implementation(projects.appsDataProvider)
 
     setupJetpackCompose()
 
@@ -80,14 +80,20 @@ dependencies {
     implementation(libs.timber)
 
     testImplementation(libs.junit)
-    testImplementation(libs.truth)
-    testImplementation(libs.turbine)
-    androidTestImplementation(libs.truth)
     androidTestImplementation(libs.junit.android)
+
+    testImplementation(libs.truth)
+    androidTestImplementation(libs.truth)
     androidTestImplementation(libs.truth.android)
+
+    testImplementation(libs.turbine)
     androidTestImplementation(libs.turbine)
+
+    testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.expression.android)
-    androidTestImplementation(libs.kotlinx.coroutines.test)
+
+    testImplementation(projects.commonTest)
+    androidTestImplementation(projects.commonTest)
 
     testImplementation(libs.mockk)
     androidTestImplementation(libs.mockk.android)

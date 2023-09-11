@@ -7,10 +7,10 @@ plugins {
 
 android {
     namespace = "com.rkzmn.apps_data_provider"
-    compileSdk = 33
+    compileSdk = ProjectConfigs.COMPILE_SDK
 
     defaultConfig {
-        minSdk = 22
+        minSdk = ProjectConfigs.MIN_SDK
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

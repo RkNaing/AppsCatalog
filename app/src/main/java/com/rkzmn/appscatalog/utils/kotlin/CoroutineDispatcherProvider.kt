@@ -21,7 +21,7 @@ interface CoroutineDispatcherProvider {
  * @property io Defaults to [Dispatchers.IO]
  * @property unconfined Defaults to [Dispatchers.Unconfined]
  */
-class CoroutineDispatcherProviderImpl(
+class StandardCoroutineDispatcherProvider(
     override val main: CoroutineDispatcher = Dispatchers.Main,
     override val default: CoroutineDispatcher = Dispatchers.Default,
     override val io: CoroutineDispatcher = Dispatchers.IO,

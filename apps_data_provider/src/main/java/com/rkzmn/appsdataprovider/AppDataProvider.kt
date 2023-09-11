@@ -6,30 +6,12 @@ import com.rkzmn.appsdataprovider.model.AppComponent
 import com.rkzmn.appsdataprovider.model.AppPermission
 
 interface AppDataProvider {
-
-    fun getApps(context: Context): List<App>
-
-    fun getAppServices(
-        context: Context,
-        packageName: String
-    ): List<AppComponent>
-
-    fun getAppActivities(
-        context: Context,
-        packageName: String
-    ): List<AppComponent>
-
-    fun getAppReceivers(
-        context: Context,
-        packageName: String
-    ): List<AppComponent>
-
-    fun getAppPermissions(
-        context: Context,
-        packageName: String
-    ): List<AppPermission>
-
+    fun getApps(): List<App>
+    fun getAppServices(packageName: String): List<AppComponent>
+    fun getAppActivities(packageName: String): List<AppComponent>
+    fun getAppReceivers(packageName: String): List<AppComponent>
+    fun getAppPermissions(packageName: String): List<AppPermission>
     companion object {
-        fun getInstance(): AppDataProvider = AppDataProviderImpl()
+        fun getInstance(context: Context): AppDataProvider = AndroidAppDataProvider(context)
     }
 }

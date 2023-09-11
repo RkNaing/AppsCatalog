@@ -83,7 +83,7 @@ class AppsViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            listPrefRepo.displayType.distinctUntilChanged().collectLatest { displayType ->
+            listPrefRepo.displayType.distinctUntilChanged().collect { displayType ->
                 _appsListState.update { it.copy(listDisplayType = displayType) }
             }
         }
