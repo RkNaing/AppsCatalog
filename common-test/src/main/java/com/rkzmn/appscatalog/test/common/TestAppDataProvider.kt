@@ -14,7 +14,6 @@ class TestAppDataProvider : AppDataProvider {
 
     override fun getAppServices(packageName: String): List<AppComponent> {
         return generateDummyAppComponent(
-            count = 50,
             packageName = packageName,
             type = AppComponent.Type.SERVICE
         )
@@ -22,7 +21,6 @@ class TestAppDataProvider : AppDataProvider {
 
     override fun getAppActivities(packageName: String): List<AppComponent> {
         return generateDummyAppComponent(
-            count = 360,
             packageName = packageName,
             type = AppComponent.Type.ACTIVITY
         )
@@ -30,7 +28,6 @@ class TestAppDataProvider : AppDataProvider {
 
     override fun getAppReceivers(packageName: String): List<AppComponent> {
         return generateDummyAppComponent(
-            count = 36,
             packageName = packageName,
             type = AppComponent.Type.BROADCAST
         )
@@ -43,14 +40,14 @@ class TestAppDataProvider : AppDataProvider {
                 permission = "SamplePermission$i",
                 group = "Mock Permissions",
                 description = "This is just a mock permission for testing.",
-                isDangerous = Random.nextBoolean()
+                isDangerous = i % 2 == 0
             )
         }
         return dummyPermissions
     }
 
     private fun generateDummyAppComponent(
-        count: Int = 250,
+        count: Int = 5,
         packageName: String,
         type: AppComponent.Type
     ): List<AppComponent> {
@@ -67,7 +64,7 @@ class TestAppDataProvider : AppDataProvider {
                 name = name,
                 packageName = packageName,
                 fqn = "$packageName.$name",
-                isPrivate = Random.nextBoolean(),
+                isPrivate = i % 2 == 0,
                 type = type
             )
         }
@@ -117,6 +114,6 @@ class TestAppDataProvider : AppDataProvider {
     }
     companion object {
         private const val DUMMY_APPS_COUNT = 20
-        private const val DUMMY_PERMISSIONS_COUNT = 45
+        private const val DUMMY_PERMISSIONS_COUNT = 5
     }
 }

@@ -38,6 +38,7 @@ accompanist-material-placeholder = { module = "com.google.accompanist:accompanis
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 
 core-ktx = { module = "androidx.core:core-ktx", version = "1.12.0" }
+core-desugar = { module = "com.android.tools:desugar_jdk_libs", version = "2.0.3"}
 core-splashscreen = { module = "androidx.core:core-splashscreen", version = "1.0.1" }
 appcompat = { module = "androidx.appcompat:appcompat", version = "1.6.1" }
 
@@ -51,6 +52,7 @@ datastore-preference = { module = "androidx.datastore:datastore-preferences", ve
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.3.5" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.4.1" }
 
 # Timber Logging - https://github.com/JakeWharton/timber
 timber = { module = "com.jakewharton.timber:timber", version = "5.0.1" }

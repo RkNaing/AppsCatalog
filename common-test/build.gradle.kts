@@ -16,11 +16,17 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        val javaVersion = JavaVersion.toVersion(ProjectConfigs.javaSourceCodeCompatibilityVersion)
+        sourceCompatibility = javaVersion
+        targetCompatibility = javaVersion
     }
+
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = ProjectConfigs.javaSourceCodeCompatibilityVersion.toString()
+    }
+
+    kotlin {
+        jvmToolchain(ProjectConfigs.javaToolchainVersion)
     }
 }
 

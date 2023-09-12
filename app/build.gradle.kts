@@ -1,5 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
+import com.android.build.api.dsl.ManagedVirtualDevice
+
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     alias(libs.plugins.android.application)
@@ -30,8 +32,20 @@ android {
         }
     }
 
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+
+        val javaVersion = JavaVersion.toVersion(ProjectConfigs.javaSourceCodeCompatibilityVersion)
+        sourceCompatibility = javaVersion
+        targetCompatibility = javaVersion
+    }
+
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
+        jvmTarget = ProjectConfigs.javaSourceCodeCompatibilityVersion.toString()
+    }
+
+    kotlin {
+        jvmToolchain(ProjectConfigs.javaToolchainVersion)
     }
 
     buildFeatures {
@@ -40,6 +54,21 @@ android {
 
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
+    }
+
+    testOptions {
+        managedDevices { // https://developer.android.com/studio/test/gradle-managed-devices#create_a_gradle_managed_device
+            devices {
+                maybeCreate<ManagedVirtualDevice>("pixel2api30").apply {
+                    // Use device profiles you typically see in Android Studio.
+                    device = "Pixel 2"
+                    // Use only API levels 27 and higher.
+                    apiLevel = 30
+                    // To include Google services, use "google".
+                    systemImageSource = "google-atd" // "aosp"
+                }
+            }
+        }
     }
 
     packaging {
@@ -52,6 +81,8 @@ android {
 }
 
 dependencies {
+
+    coreLibraryDesugaring(libs.core.desugar)
 
     implementation(projects.appsDataProvider)
 
@@ -76,6 +107,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
 
     implementation(libs.kotlinx.collections.immutable)
+    implementation(libs.kotlinx.datetime)
 
     implementation(libs.timber)
 

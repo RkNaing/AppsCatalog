@@ -25,14 +25,18 @@ android {
         }
     }
 
-    val javaVersion = JavaVersion.VERSION_17
     compileOptions {
+        val javaVersion = JavaVersion.toVersion(ProjectConfigs.javaSourceCodeCompatibilityVersion)
         sourceCompatibility = javaVersion
         targetCompatibility = javaVersion
     }
 
     kotlinOptions {
-        jvmTarget = javaVersion.toString()
+        jvmTarget = ProjectConfigs.javaSourceCodeCompatibilityVersion.toString()
+    }
+
+    kotlin {
+        jvmToolchain(ProjectConfigs.javaToolchainVersion)
     }
 }
 

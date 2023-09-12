@@ -12,4 +12,7 @@ object ProjectConfigs {
 
     const val TARGET_SDK = COMPILE_SDK
 
+    const val javaToolchainVersion = 17
+
+    const val javaSourceCodeCompatibilityVersion = 1.8
 }

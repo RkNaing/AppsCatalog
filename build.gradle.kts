@@ -92,7 +92,7 @@ tasks.register("runUITests") {
 
     if (hasTestFiles) {
         println("UI tests found")
-        dependsOn("pixel2api34DebugAndroidTest")
+        dependsOn("pixel2api30DebugAndroidTest")
     } else {
         println("No UI tests found")
     }
