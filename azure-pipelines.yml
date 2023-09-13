@@ -16,6 +16,10 @@ steps:
     jdkArchitectureOption: 'x64'
     jdkSourceOption: 'PreInstalled'
   displayName: 'Setup to use JDK 17.'
+- scripts: |
+    # Accept all SDK licenses
+    yes | sdkmanager --licenses
+  displayName: 'Accept all Android SDK Licenses'
 - task: Gradle@2
   inputs:
     workingDirectory: ''
@@ -52,7 +56,7 @@ steps:
     publishJUnitResults: false
     testResultsFiles: '**/TEST-*.xml'
     options: '--build-cache -Pandroid.sdk.channel=3 -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect'
-    displayName: 'UI Tests'
+  displayName: 'UI Tests'
 - task: Gradle@3
   inputs:
     gradleWrapperFile: 'gradlew'
