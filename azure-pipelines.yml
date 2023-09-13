@@ -16,7 +16,7 @@ steps:
     jdkArchitectureOption: 'x64'
     jdkSourceOption: 'PreInstalled'
   displayName: 'Setup to use JDK 17.'
-- scripts: |
+- script: |
     # Accept all SDK licenses
     yes | sdkmanager --licenses
   displayName: 'Accept all Android SDK Licenses'
