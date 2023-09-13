@@ -18,11 +18,11 @@ steps:
   displayName: 'Setup to use JDK 17.'
 - script: |
     # Accept all SDK licenses
-    yes | sdkmanager --licenses
+    yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
   displayName: 'Accept all Android SDK Licenses'
 - task: Gradle@2
   inputs:
-    workingDirectory: ''
+#    workingDirectory: ''
     gradleWrapperFile: 'gradlew'
     gradleOptions: '-Xmx3072m'
     publishJUnitResults: true
