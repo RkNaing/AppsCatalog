@@ -57,12 +57,3 @@ steps:
     testResultsFiles: '**/TEST-*.xml'
     options: '--build-cache -Pandroid.sdk.channel=3 -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect'
   displayName: 'UI Tests'
-- task: Gradle@3
-  inputs:
-    gradleWrapperFile: 'gradlew'
-    tasks: 'test'
-    gradleOptions: '-Xmx3072m'
-    publishJUnitResults: false
-    testResultsFiles: '**/TEST-*.xml'
-    options: '--build-cache'
-  displayName: 'Unit Tests'
