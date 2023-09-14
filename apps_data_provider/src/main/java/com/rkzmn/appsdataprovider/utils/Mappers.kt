@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
 import android.content.pm.PermissionInfo
 import android.content.pm.ServiceInfo
 import com.rkzmn.appsdataprovider.model.App
@@ -107,19 +108,24 @@ internal fun AppPermission.Companion.from(
     val name = info.name
     val permissionGroup = info.group?.let {
         runCatching {
-            packageManager.getPermissionGroupInfo(it, 0).loadLabel(packageManager)
+            packageManager.getPermissionGroupInfo(it, PackageManager.GET_META_DATA).loadLabel(packageManager)
         }
     }?.getOrNull()?.toString()
     val description =
         runCatching { info.loadDescription(packageManager) }.getOrNull()?.toString()
 
     val protectionFlags = if (isSDKIntAtLeast(AndroidVersions.P)) {
-        info.protectionFlags
+        info.protection
     } else {
         @Suppress("DEPRECATION")
         info.protectionLevel
     }
     val isDangerous = protectionFlags and PermissionInfo.PROTECTION_DANGEROUS != 0
+//    val isDangerous = if (isSDKIntAtLeast(AndroidVersions.P)) {
+//        info.protection
+//    }else {
+//
+//    }
     return AppPermission(
         permission = name,
         group = permissionGroup,

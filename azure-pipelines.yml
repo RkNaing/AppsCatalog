@@ -60,9 +60,9 @@ steps:
 - task: Gradle@3
   inputs:
     gradleWrapperFile: 'gradlew'
-    tasks: 'checkDebugAll'
+    tasks: 'test'
     gradleOptions: '-Xmx3072m'
     publishJUnitResults: false
     testResultsFiles: '**/TEST-*.xml'
     options: '--build-cache'
-  displayName: 'Gradle Check'
+  displayName: 'Unit Tests'

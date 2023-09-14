@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import com.rkzmn.appscatalog.domain.model.AppComponentInfo
 import com.rkzmn.appscatalog.ui.theme.cardColorAndElevation
 import com.rkzmn.appscatalog.ui.theme.spacingExtraSmall
@@ -72,7 +73,8 @@ private fun ItemService(
             ) {
                 Text(
                     text = service.name,
-                    style = MaterialTheme.typography.labelMedium
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium
                 )
 
                 Text(

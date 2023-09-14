@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.text.font.FontWeight
 import com.rkzmn.appscatalog.domain.model.AppComponentInfo
 import com.rkzmn.appscatalog.ui.theme.cardColorAndElevation
 import com.rkzmn.appscatalog.ui.theme.spacingExtraSmall
@@ -84,7 +85,8 @@ private fun ItemActivity(
             ) {
                 Text(
                     text = activity.name,
-                    style = MaterialTheme.typography.labelMedium
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium
                 )
 
                 Text(

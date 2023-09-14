@@ -58,15 +58,31 @@ internal class AndroidAppDataProvider(private val context: Context) : AppDataPro
     }
 
     override fun getAppPermissions(packageName: String): List<AppPermission> {
-        return context.packageManager
+        val packageManager = context.packageManager
+        val packageInfo = packageManager
             .getPackageInfoCompat(
                 packageName = packageName,
                 flags = PackageManager.GET_PERMISSIONS
-            )?.permissions?.map { info ->
+            ) ?: return emptyList()
+
+        return packageInfo.requestedPermissions?.map { permission ->
+            val permissionInfo = runCatching {
+                packageManager.getPermissionInfo(permission, PackageManager.GET_META_DATA)
+            }.getOrNull()
+
+            if (permissionInfo != null) {
                 AppPermission.from(
-                    info = info,
+                    info = permissionInfo,
                     context = context
                 )
-            } ?: emptyList()
+            } else {
+                AppPermission(
+                    permission = permission,
+                    group = null,
+                    description = null,
+                    isDangerous = false
+                )
+            }
+        } ?: emptyList()
     }
 }

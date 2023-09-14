@@ -1,6 +1,5 @@
 package com.rkzmn.appscatalog.presentation.apps.options
 
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -12,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -20,11 +20,13 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.rkzmn.appscatalog.domain.model.AppSortOption
 import com.rkzmn.appscatalog.domain.model.AppsListType
@@ -85,33 +87,32 @@ fun AppsListOptions(
     val displayTypes = AppsDisplayType.values()
     val listTypes = AppsListType.values()
 
-    val appTypeInteractionSource = remember { MutableInteractionSource() }
-    val displayTypeInteractionSource = remember { MutableInteractionSource() }
-    val sortInteractionSource = remember { MutableInteractionSource() }
-
     Column(
         modifier = modifier.padding(spacingMedium),
-        verticalArrangement = Arrangement.spacedBy(spacingMedium)
+        verticalArrangement = Arrangement.spacedBy(spacingSmall)
     ) {
         Text(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = spacingMedium),
+                .fillMaxWidth(),
             text = stringResource(id = AppStrings.lbl_options_filter),
             style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Medium,
+            textAlign = TextAlign.Center
         )
+
+        Divider(modifier = Modifier.padding(vertical = spacingSmall))
 
         Text(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = spacingMedium),
+                .padding(bottom = spacingSmall),
             text = stringResource(id = AppStrings.lbl_app_type),
-            style = MaterialTheme.typography.titleSmall,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Medium,
         )
 
         AppListTypeOptions(
             listTypes = listTypes,
-            appTypeInteractionSource = appTypeInteractionSource,
             appsType = appsType,
             onSelectAppListType = onSelectAppListType
         )
@@ -119,14 +120,14 @@ fun AppsListOptions(
         Text(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = spacingMedium),
+                .padding(bottom = spacingSmall),
             text = stringResource(id = AppStrings.lbl_app_display_type),
-            style = MaterialTheme.typography.titleSmall,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Medium,
         )
 
         AppDisplayTypeOptions(
             displayTypes = displayTypes,
-            displayTypeInteractionSource = displayTypeInteractionSource,
             displayType = displayType,
             onSelectDisplayType = onSelectDisplayType
         )
@@ -134,14 +135,14 @@ fun AppsListOptions(
         Text(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = spacingMedium),
+                .padding(bottom = spacingSmall),
             text = stringResource(id = AppStrings.lbl_sort_by),
-            style = MaterialTheme.typography.titleSmall,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Medium,
         )
 
         AppSortOptions(
             sortFilters = sortFilters,
-            sortInteractionSource = sortInteractionSource,
             selectedSortOption = selectedSortOption,
             onSelectSortOption = onSelectSortOption
         )
@@ -151,14 +152,12 @@ fun AppsListOptions(
 @Composable
 private fun AppSortOptions(
     sortFilters: Array<AppSortFilter>,
-    sortInteractionSource: MutableInteractionSource,
     selectedSortOption: AppSortOption,
     onSelectSortOption: (AppSortOption) -> Unit
 ) {
     sortFilters.forEach { filter ->
         SortFilterRow(
             modifier = Modifier.fillMaxWidth(),
-            interactionSource = sortInteractionSource,
             filter = filter,
             selectedOption = selectedSortOption,
             onSelected = onSelectSortOption
@@ -170,7 +169,6 @@ private fun AppSortOptions(
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 private fun AppDisplayTypeOptions(
     displayTypes: Array<AppsDisplayType>,
-    displayTypeInteractionSource: MutableInteractionSource,
     displayType: AppsDisplayType,
     onSelectDisplayType: (AppsDisplayType) -> Unit
 ) {
@@ -185,7 +183,6 @@ private fun AppDisplayTypeOptions(
 
             FilterChip(
                 modifier = Modifier.testTag(label),
-                interactionSource = displayTypeInteractionSource,
                 selected = displayType == type,
                 label = {
                     Text(text = label)
@@ -206,7 +203,6 @@ private fun AppDisplayTypeOptions(
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 private fun AppListTypeOptions(
     listTypes: Array<AppsListType>,
-    appTypeInteractionSource: MutableInteractionSource,
     appsType: AppsListType,
     onSelectAppListType: (AppsListType) -> Unit
 ) {
@@ -217,7 +213,6 @@ private fun AppListTypeOptions(
     ) {
         listTypes.forEach { type ->
             FilterChip(
-                interactionSource = appTypeInteractionSource,
                 selected = appsType == type,
                 label = {
                     Text(text = type.label.asString())
@@ -235,11 +230,9 @@ private fun SortFilterRow(
     selectedOption: AppSortOption?,
     onSelected: (AppSortOption) -> Unit,
     modifier: Modifier = Modifier,
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
     FlowRow(
         modifier = modifier,
-        verticalArrangement = Arrangement.Center,
         horizontalArrangement = Arrangement.spacedBy(spacingSmall),
     ) {
         val label = filter.label.asString()
@@ -247,6 +240,7 @@ private fun SortFilterRow(
         Icon(
             modifier = Modifier
                 .size(24.dp)
+                .align(Alignment.CenterVertically)
                 .padding(end = spacingExtraSmall),
             painter = painterResource(id = filter.icon),
             contentDescription = label,
@@ -254,15 +248,15 @@ private fun SortFilterRow(
         )
 
         Text(
-            modifier = Modifier.padding(end = spacingMedium),
+            modifier = Modifier.align(Alignment.CenterVertically).padding(end = spacingMedium),
             text = label,
-            style = MaterialTheme.typography.titleSmall,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Medium,
         )
 
         filter.options.forEach { option ->
 
             FilterChip(
-                interactionSource = interactionSource,
                 selected = selectedOption == option,
                 label = { Text(text = option.label.asString()) },
                 onClick = { onSelected(option) }
@@ -279,15 +273,14 @@ private fun SortFilterRow(
 @Composable
 private fun AppsListOptionsPreview() {
     ThemedPreview {
-        AppsListOptionsBottomSheet(
-//            modifier = Modifier.fillMaxWidth(),
+        AppsListOptions(
+            modifier = Modifier.fillMaxWidth(),
             appsType = AppsListType.ALL,
             onSelectAppListType = {},
             displayType = AppsDisplayType.LIST,
             onSelectDisplayType = {},
             selectedSortOption = AppSortOption.NAME_ASC,
             onSelectSortOption = {},
-            onDismissRequest = {}
         )
     }
 }
