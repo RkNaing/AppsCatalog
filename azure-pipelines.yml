@@ -22,7 +22,7 @@ steps:
     inputs:
       SourceFolder: $(Agent.TempDirectory)
       Contents: 'sonar.properties'
-      TargetFolder: $(Pipeline.Workspace)/config
+      TargetFolder: config
       OverWrite: true
       retryCount: '1'
     displayName: 'Copy sonar properties'
