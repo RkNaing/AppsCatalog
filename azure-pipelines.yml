@@ -3,6 +3,9 @@
 # Add steps that test, sign, and distribute the APK, save build artifacts, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/android
 
+variables:
+  PROJECT_GRADLE: $(Pipeline.Workspace)/.gradle
+
 trigger:
 - master
 
@@ -10,50 +13,72 @@ pool:
   vmImage: 'macos-latest'
 
 steps:
-- task: JavaToolInstaller@0
-  inputs:
-    versionSpec: '17'
-    jdkArchitectureOption: 'x64'
-    jdkSourceOption: 'PreInstalled'
-  displayName: 'Setup to use JDK 17.'
-- script: |
-    # Accept all SDK licenses
-    yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
-  displayName: 'Accept all Android SDK Licenses'
-- task: Gradle@2
-  inputs:
-#    workingDirectory: ''
-    gradleWrapperFile: 'gradlew'
-    gradleOptions: '-Xmx3072m'
-    publishJUnitResults: true
-    testResultsFiles: '**/TEST-*.xml'
-    tasks: 'clean build assemble'
-  displayName: 'Build (Compilation Check)'
-- task: Gradle@2
-  inputs:
-    workingDirectory: ''
-    gradleWrapperFile: 'gradlew'
-    gradleOptions: '-Xmx3072m'
-    publishJUnitResults: true
-    testResultsFiles: '**/build/reports/detekt/detekt.html'
-    tasks: 'detekt'
-    options: '--build-cache'
-  displayName: 'Check code quality (Detekt).'
-- task: Gradle@2
-  inputs:
-    gradleWrapperFile: 'gradlew'
-    tasks: 'testDebugUnitTest'
-    gradleOptions: '-Xmx3072m'
-    publishJUnitResults: false
-    testResultsFiles: '**/TEST-*.xml'
-    options: '--build-cache'
-  displayName: 'Unit Tests'
-- task: Gradle@2
-  inputs:
-    gradleWrapperFile: 'gradlew'
-    tasks: 'pixel2api30DebugAndroidTest'
-    gradleOptions: '-Xmx3072m'
-    publishJUnitResults: false
-    testResultsFiles: '**/TEST-*.xml'
-    options: '--build-cache -Pandroid.sdk.channel=3 -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect'
-  displayName: 'UI Tests'
+  - task: DownloadSecureFile@1
+    inputs:
+      secureFile: 'gradle.properties'
+      retryCount: '1'
+    displayName: 'Fetch gradle.properties'
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: $(Agent.TempDirectory)
+      Contents: 'gradle.properties'
+      TargetFolder: $(PROJECT_GRADLE)
+      OverWrite: true
+      retryCount: '1'
+    displayName: 'Copy Gradle Cache'
+  - task: JavaToolInstaller@0
+    inputs:
+      versionSpec: '17'
+      jdkArchitectureOption: 'x64'
+      jdkSourceOption: 'PreInstalled'
+    displayName: 'Setup to use JDK 17.'
+  - script: |
+      # Accept all SDK licenses
+      yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+    displayName: 'Accept all Android SDK Licenses'
+  - task: Gradle@2
+    inputs:
+  #    workingDirectory: ''
+      gradleWrapperFile: 'gradlew'
+      gradleOptions: '-Xmx3072m'
+      publishJUnitResults: true
+      testResultsFiles: '**/TEST-*.xml'
+      tasks: 'clean build assemble'
+    displayName: 'Build (Compilation Check)'
+  - task: Gradle@2
+    inputs:
+      workingDirectory: ''
+      gradleWrapperFile: 'gradlew'
+      gradleOptions: '-Xmx3072m'
+      publishJUnitResults: true
+      testResultsFiles: '**/build/reports/detekt/detekt.html'
+      tasks: 'detekt'
+      options: '--build-cache'
+    displayName: 'Check code quality (Detekt).'
+  - task: Gradle@3
+    inputs:
+      gradleWrapperFile: 'gradlew'
+      tasks: 'sonar'
+      gradleOptions: '-Xmx3072m'
+      publishJUnitResults: false
+      testResultsFiles: '**/TEST-*.xml'
+      options: '--build-cache'
+    displayName: 'Sonar Cloud'
+  - task: Gradle@2
+    inputs:
+      gradleWrapperFile: 'gradlew'
+      tasks: 'testDebugUnitTest'
+      gradleOptions: '-Xmx3072m'
+      publishJUnitResults: false
+      testResultsFiles: '**/TEST-*.xml'
+      options: '--build-cache'
+    displayName: 'Unit Tests'
+  - task: Gradle@2
+    inputs:
+      gradleWrapperFile: 'gradlew'
+      tasks: 'pixel2api30DebugAndroidTest'
+      gradleOptions: '-Xmx3072m'
+      publishJUnitResults: false
+      testResultsFiles: '**/TEST-*.xml'
+      options: '--build-cache -Pandroid.sdk.channel=3 -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect'
+    displayName: 'UI Tests'

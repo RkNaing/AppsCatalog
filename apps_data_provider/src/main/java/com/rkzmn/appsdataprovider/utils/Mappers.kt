@@ -121,11 +121,7 @@ internal fun AppPermission.Companion.from(
         info.protectionLevel
     }
     val isDangerous = protectionFlags and PermissionInfo.PROTECTION_DANGEROUS != 0
-//    val isDangerous = if (isSDKIntAtLeast(AndroidVersions.P)) {
-//        info.protection
-//    }else {
-//
-//    }
+
     return AppPermission(
         permission = name,
         group = permissionGroup,

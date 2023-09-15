@@ -9,10 +9,21 @@ plugins {
     alias(libs.plugins.ksp)
     id("kotlin-parcelize")
     alias(libs.plugins.hilt.android)
+    id("org.sonarqube") version "4.2.1.3168"
+}
+
+sonar {
+    properties {
+        val sonarProperties = readProperties(file("../config/sonar.properties"))
+        sonarProperties.forEach { key, value ->
+            property(key as String, value as Any)
+        }
+    }
 }
 
 android {
     compileSdk = ProjectConfigs.COMPILE_SDK
+
     defaultConfig {
         namespace = ProjectConfigs.APP_ID
         applicationId = ProjectConfigs.APP_ID
@@ -25,10 +36,20 @@ android {
         vectorDrawables.useSupportLibrary = true
     }
 
+    lint {
+        quiet = true
+        abortOnError = false
+        xmlReport = true
+        xmlOutput = file("../build/reports/lint-results.xml")
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 
