@@ -15,17 +15,17 @@ pool:
 steps:
   - task: DownloadSecureFile@1
     inputs:
-      secureFile: 'gradle.properties'
+      secureFile: 'sonar.properties'
       retryCount: '1'
     displayName: 'Fetch gradle.properties'
   - task: CopyFiles@2
     inputs:
       SourceFolder: $(Agent.TempDirectory)
-      Contents: 'gradle.properties'
-      TargetFolder: $(PROJECT_GRADLE)
+      Contents: 'sonar.properties'
+      TargetFolder: $(Pipeline.Workspace)/config
       OverWrite: true
       retryCount: '1'
-    displayName: 'Copy Gradle Cache'
+    displayName: 'Copy sonar properties'
   - task: JavaToolInstaller@0
     inputs:
       versionSpec: '17'
