@@ -14,71 +14,63 @@ pool:
 
 steps:
   - task: DownloadSecureFile@1
+    displayName: 'Fetch sonar configurations.'
     inputs:
       secureFile: 'sonar.properties'
       retryCount: '1'
-    displayName: 'Fetch gradle.properties'
   - task: CopyFiles@2
+    displayName: 'Copy sonar configurations.'
     inputs:
       SourceFolder: $(Agent.TempDirectory)
       Contents: 'sonar.properties'
       TargetFolder: $(Build.SourcesDirectory)/config
       OverWrite: true
       retryCount: '1'
-    displayName: 'Copy sonar properties'
   - task: JavaToolInstaller@0
+    displayName: 'Setup to use JDK 17.'
     inputs:
       versionSpec: '17'
       jdkArchitectureOption: 'x64'
       jdkSourceOption: 'PreInstalled'
-    displayName: 'Setup to use JDK 17.'
   - script: |
       # Accept all SDK licenses
       yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
     displayName: 'Accept all Android SDK Licenses'
-  - task: Gradle@2
-    inputs:
-  #    workingDirectory: ''
-      gradleWrapperFile: 'gradlew'
-      gradleOptions: '-Xmx3072m'
-      publishJUnitResults: true
-      testResultsFiles: '**/TEST-*.xml'
-      tasks: 'clean build assemble'
+  - task: Gradle@3
     displayName: 'Build (Compilation Check)'
-  - task: Gradle@2
     inputs:
-      workingDirectory: ''
       gradleWrapperFile: 'gradlew'
       gradleOptions: '-Xmx3072m'
-      publishJUnitResults: true
-      testResultsFiles: '**/build/reports/detekt/detekt.html'
+      tasks: 'clean build'
+  - task: Gradle@3
+    displayName: 'Check code quality (Detekt).'
+    inputs:
+      gradleWrapperFile: 'gradlew'
+      gradleOptions: '-Xmx3072m'
       tasks: 'detekt'
       options: '--build-cache'
-    displayName: 'Check code quality (Detekt).'
   - task: Gradle@3
+    displayName: 'Check code quality (Sonar Cloud)'
     inputs:
       gradleWrapperFile: 'gradlew'
+      gradleOptions: '-Xmx3072m'
       tasks: 'sonar'
-      gradleOptions: '-Xmx3072m'
-      publishJUnitResults: false
-      testResultsFiles: '**/TEST-*.xml'
       options: '--build-cache'
-    displayName: 'Sonar Cloud'
-  - task: Gradle@2
-    inputs:
-      gradleWrapperFile: 'gradlew'
-      tasks: 'testDebugUnitTest'
-      gradleOptions: '-Xmx3072m'
-      publishJUnitResults: false
-      testResultsFiles: '**/TEST-*.xml'
-      options: '--build-cache'
+  - task: Gradle@3
     displayName: 'Unit Tests'
-  - task: Gradle@2
     inputs:
       gradleWrapperFile: 'gradlew'
-      tasks: 'pixel2api30DebugAndroidTest'
       gradleOptions: '-Xmx3072m'
-      publishJUnitResults: false
+      tasks: 'testDebugUnitTest'
+      options: '--build-cache'
+      publishJUnitResults: true
       testResultsFiles: '**/TEST-*.xml'
-      options: '--build-cache -Pandroid.sdk.channel=3 -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect'
+  - task: Gradle@3
     displayName: 'UI Tests'
+    inputs:
+      gradleWrapperFile: 'gradlew'
+      gradleOptions: '-Xmx3072m'
+      tasks: 'pixel2api30DebugAndroidTest'
+      options: '--build-cache -Pandroid.sdk.channel=3 -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect'
+      publishJUnitResults: true
+      testResultsFiles: '**/TEST-*.xml'
