@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/android
 
 variables:
-  PROJECT_GRADLE: $(Pipeline.Workspace)/.gradle
+  GRADLE_USER_HOME: $(Pipeline.Workspace)/.gradle
 
 trigger:
 - master
@@ -36,6 +36,12 @@ steps:
       # Accept all SDK licenses
       yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
     displayName: 'Accept all Android SDK Licenses'
+  - task: Cache@2
+    displayName: 'Configure gradle caching'
+    inputs:
+      key: 'gradle | "$(Agent.OS)" | **/build.gradle.kts'
+      path: '$(GRADLE_USER_HOME)/caches'
+      cacheHitVar: 'GRADLE_RESTORED'
   - task: Gradle@3
     displayName: 'Build (Compilation Check)'
     inputs:
