@@ -58,6 +58,9 @@ class AndroidAppDataRepository @Inject constructor(
 
     override suspend fun searchByNameAndPackageName(query: String): List<AppInfo> {
         Timber.d("searchByNameAndPackageName() called with: query = [$query]")
+        if (query.isBlank()) {
+            return emptyList()
+        }
         return withContext(dispatcherProvider.default) {
             apps.filter { app ->
                 app.appName.contains(query, ignoreCase = true) ||

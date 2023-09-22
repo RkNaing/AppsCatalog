@@ -4,13 +4,19 @@ import com.rkzmn.appsdataprovider.AppDataProvider
 import com.rkzmn.appsdataprovider.model.App
 import com.rkzmn.appsdataprovider.model.AppComponent
 import com.rkzmn.appsdataprovider.model.AppPermission
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.random.Random
 
 class TestAppDataProvider : AppDataProvider {
 
     val dummyApps = generateDummyApps()
 
-    override fun getApps(): List<App> = dummyApps
+    private var getAppsInvoked = AtomicBoolean(false)
+
+    override fun getApps(): List<App> {
+        getAppsInvoked.set(true)
+        return dummyApps
+    }
 
     override fun getAppServices(packageName: String): List<AppComponent> {
         return generateDummyAppComponent(
@@ -71,6 +77,8 @@ class TestAppDataProvider : AppDataProvider {
         return dummyComponents
     }
 
+    fun wasGetAppsCalled() = getAppsInvoked.getAndSet(false)
+
     private fun generateDummyApps(): List<App> {
         val dummyApps = mutableListOf<App>()
 
@@ -83,10 +91,10 @@ class TestAppDataProvider : AppDataProvider {
             val isSystemApp = i % 2 == 0
             val isDebuggable = i % 3 == 0
             val installationSource = if (isSystemApp) "System" else "User"
-            val installedTimestamp = System.currentTimeMillis()
-            val lastUpdatedTimestamp = System.currentTimeMillis()
-            val lastUsedTimestamp = if (i % 4 == 0) System.currentTimeMillis() else null
-            val appSize = i * 1024L
+            val installedTimestamp = generateRandomTimestamp()
+            val lastUpdatedTimestamp = generateRandomTimestamp(minTimestamp = installedTimestamp)
+            val lastUsedTimestamp = if (i % 4 == 0) generateRandomTimestamp(minTimestamp = installedTimestamp) else null
+            val appSize = Random.nextLong(from = 1024L, until = 1024L * 30)
             val minSdk = Random.nextInt(from = 1, until = 33)
             val targetSdk = 33
             val compileSdk = 33

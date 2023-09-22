@@ -23,14 +23,13 @@ class AppListItemTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
-    @Test
-    fun appListItem_assert_showsAllAppTypeIndicators() {
-        val item = AppItem(
+    private val dummyAppItem: AppItem
+        get() = AppItem(
             appName = "AppsCatalog",
             appIcon = null,
-            readableSize = null,
+            readableSize = "133.1 MB",
             packageName = "com.rkzmn.appscatalog",
-            version = "augue",
+            version = "1.0.1",
             appTypeIndicators = persistentListOf(
                 AppTypeIndicator.system,
                 AppTypeIndicator.installed,
@@ -38,6 +37,10 @@ class AppListItemTest {
             ),
             isSelected = false
         )
+
+    @Test
+    fun appListItem_assert_showsAllAppTypeIndicators() {
+        val item = dummyAppItem
         composeTestRule.setContent {
             AppListItem(
                 appItem = item,
@@ -55,35 +58,21 @@ class AppListItemTest {
 
     @Test
     fun appListItem_assert_showsSelectedAndNormalUIAccordingly() {
-        composeTestRule.setContent {
-            var item by remember {
-                mutableStateOf(
-                    AppItem(
-                        appName = "AppsCatalog",
-                        appIcon = null,
-                        readableSize = null,
-                        packageName = "com.rkzmn.appscatalog",
-                        version = "augue",
-                        appTypeIndicators = persistentListOf(
-                            AppTypeIndicator.system,
-                            AppTypeIndicator.installed,
-                            AppTypeIndicator.debuggable
-                        ),
-                        isSelected = false
-                    )
+        with(composeTestRule) {
+            setContent {
+                var item by remember { mutableStateOf(dummyAppItem) }
+                AppListItem(
+                    appItem = item,
+                    onClicked = {
+                        item = item.copy(isSelected = !item.isSelected)
+                    }
                 )
             }
-            AppListItem(
-                appItem = item,
-                onClicked = {
-                    item = item.copy(isSelected = !item.isSelected)
-                }
-            )
+            onNodeWithTag(TEST_TAG_APP_ITEM).assertExists()
+            onNodeWithTag(TEST_TAG_APP_ITEM_SELECTED).assertDoesNotExist()
+            onNodeWithTag(TEST_TAG_APP_ITEM).performClick()
+            onNodeWithTag(TEST_TAG_APP_ITEM).assertDoesNotExist()
+            onNodeWithTag(TEST_TAG_APP_ITEM_SELECTED).assertExists()
         }
-        composeTestRule.onNodeWithTag(TEST_TAG_APP_ITEM).assertExists()
-        composeTestRule.onNodeWithTag(TEST_TAG_APP_ITEM_SELECTED).assertDoesNotExist()
-        composeTestRule.onNodeWithTag(TEST_TAG_APP_ITEM).performClick()
-        composeTestRule.onNodeWithTag(TEST_TAG_APP_ITEM).assertDoesNotExist()
-        composeTestRule.onNodeWithTag(TEST_TAG_APP_ITEM_SELECTED).assertExists()
     }
 }

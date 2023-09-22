@@ -1,5 +1,6 @@
 package com.rkzmn.appscatalog.utils
 
+import android.content.Context
 import androidx.annotation.StringRes
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
@@ -10,6 +11,7 @@ import androidx.compose.ui.test.junit4.AndroidComposeTestRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.test.core.app.ApplicationProvider
 
 fun AndroidComposeTestRule<*, *>.getString(
     @StringRes resId: Int,
@@ -53,3 +55,6 @@ fun mockWindowSizeClass(
 
     return WindowSizeClass.calculateFromSize(DpSize(dummyWidthValue, dummyHeightValue))
 }
+
+val testContext: Context
+    get() = ApplicationProvider.getApplicationContext()

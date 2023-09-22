@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.ksp)
     id("kotlin-parcelize")
     alias(libs.plugins.hilt.android)
+    alias(libs.plugins.kover)
     id("org.sonarqube") version "4.2.1.3168"
 }
 
@@ -150,6 +151,37 @@ dependencies {
 
     testImplementation(libs.mockk)
     androidTestImplementation(libs.mockk.android)
+}
+
+koverReport {
+    filters {
+        filters {
+            excludes {
+                packages(
+                    "androidx.compose.material3",
+                    "dagger.hilt.internal",
+                    "hilt_aggregated_deps",
+                    "com.rkzmn.appsdataprovider",
+                    "com.rkzmn.appscatalog.di",
+                    "com.rkzmn.appscatalog.test.common"
+                )
+                classes("*_Hilt*", "*Hilt_*")
+                annotatedBy("*Generated*")
+            }
+        }
+    }
+    defaults {
+        mergeWith("debug")
+
+        html {
+            title = "AppsCatalog"
+            onCheck = true
+        }
+
+        xml {
+            onCheck = true
+        }
+    }
 }
 
 fun DependencyHandlerScope.setupJetpackCompose() {

@@ -179,6 +179,15 @@ suspend fun DataStore<Preferences>.remove(key: Preferences.Key<*>) {
 }
 
 /**
+ * Clear the datastore.
+ *
+ * @receiver[DataStore] of [Preferences]
+ */
+suspend fun DataStore<Preferences>.clear() {
+    edit { preferences -> preferences.clear() }
+}
+
+/**
  *
  * @param[key] Key to remove
  * @receiver[DataStore] of [Preferences]

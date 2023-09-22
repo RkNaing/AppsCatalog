@@ -1,8 +1,8 @@
 [versions]
 kotlin = "1.9.10"
 compose-compiler = "1.5.3" # https://developer.android.com/jetpack/androidx/releases/compose-kotlin
-compose-bom = "2023.09.00" # https://developer.android.com/jetpack/compose/bom
-navigation-compose = "2.7.2" # https://developer.android.com/jetpack/compose/navigation#setup
+compose-bom = "2023.09.01" # https://developer.android.com/jetpack/compose/bom
+navigation-compose = "2.7.3" # https://developer.android.com/jetpack/compose/navigation#setup
 accompanist = "0.31.2-alpha"
 hilt = "2.48" # https://tinyurl.com/hilt-android , https://tinyurl.com/hilt-testing-guide
 mockk = "1.13.7"
@@ -77,3 +77,4 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version = "1.23.0" }
 ksp = { id = "com.google.devtools.ksp", version = "1.9.10-1.0.13" }
+kover = { id = "org.jetbrains.kotlinx.kover", version = "0.7.3"}

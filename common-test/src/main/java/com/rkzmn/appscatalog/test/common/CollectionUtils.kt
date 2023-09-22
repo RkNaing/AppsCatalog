@@ -41,14 +41,17 @@ fun <T, C : Comparable<C>> List<T?>.isSortedBy(
         val current = this[i]?.component()
         val next = this[i + 1]?.component()
 
-        if (current == null || next == null) {
-            if (!skipNulls) {
-                println("Comparison broke due to $current & $next ")
+        when {
+            current == null || next == null -> {
+                if (!skipNulls) {
+                    println("Comparison broke due to $current & $next ")
+                    return false
+                }
+            }
+            current.compareTo(next) * order > 0 -> {
+                println("First unsorted pair => $current & $next ")
                 return false
             }
-        } else if (current.compareTo(next) * order > 0) {
-            println("First unsorted pair => $current & $next ")
-            return false
         }
     }
     return true

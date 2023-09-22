@@ -13,7 +13,11 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class AppPreferencesModule {
+object AppPreferencesModule {
+
+    // Needs to be 'object' otherwise duplicate appDataStore instances,
+    // the same preference file 'APPS_CATALOG_PREFS' exception will be thrown,
+    // while testing.
 
     private val Context.appDataStore by preferencesDataStore("APPS_CATALOG_PREFS")
 
