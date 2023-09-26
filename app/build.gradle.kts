@@ -136,6 +136,19 @@ android {
     }
 }
 
+tasks.register("runUITests") {
+    val hasTestFiles = File(rootProject.projectDir.toString() + "/app/src/androidTest")
+        .walkTopDown()
+        .any { it.name.endsWith(".kt") }
+
+    if (hasTestFiles) {
+        println("UI tests found")
+        dependsOn("pixel2api30DebugAndroidTest")
+    } else {
+        println("No UI tests found")
+    }
+}
+
 dependencies {
 
     coreLibraryDesugaring(libs.core.desugar)
@@ -186,8 +199,11 @@ dependencies {
     testImplementation(projects.commonTest)
     androidTestImplementation(projects.commonTest)
 
-    testImplementation(libs.mockk)
+    testImplementation(libs.mockk.android)
     androidTestImplementation(libs.mockk.android)
+
+    testImplementation(libs.mockk.agent)
+    androidTestImplementation(libs.mockk.agent)
 }
 
 koverReport {
