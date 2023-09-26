@@ -7,6 +7,8 @@ plugins {
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.detekt)
     alias(libs.plugins.kover) apply false
+    alias(libs.plugins.gms) apply false
+    alias(libs.plugins.firebase.appdistribution) apply false
 }
 
 // Workaround for "Expecting an expression" build error

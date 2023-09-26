@@ -14,3 +14,8 @@
 .cxx
 local.properties
 /config/sonar.properties
+/config/testers.txt
+/app/google-services.json
+apps_catalog_keystore
+/config/apps-catalog-e4a0b-140bcb296b4b.json
+/config/signing.properties

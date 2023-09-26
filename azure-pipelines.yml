@@ -13,6 +13,7 @@ pool:
   vmImage: 'macos-latest'
 
 steps:
+# Download & Copy sonar.properties
   - task: DownloadSecureFile@1
     displayName: 'Fetch sonar configurations.'
     inputs:
@@ -23,6 +24,48 @@ steps:
     inputs:
       SourceFolder: $(Agent.TempDirectory)
       Contents: 'sonar.properties'
+      TargetFolder: $(Build.SourcesDirectory)/config
+      OverWrite: true
+      retryCount: '1'
+# Download & Copy Firebase App Distribution Config json
+  - task: DownloadSecureFile@1
+    displayName: 'Fetch Firebase App Distribution Config.'
+    inputs:
+      secureFile: 'apps-catalog-e4a0b-140bcb296b4b.json'
+      retryCount: '1'
+  - task: CopyFiles@2
+    displayName: 'Copy Firebase App Distribution Config.'
+    inputs:
+      SourceFolder: $(Agent.TempDirectory)
+      Contents: 'apps-catalog-e4a0b-140bcb296b4b.json'
+      TargetFolder: $(Build.SourcesDirectory)/config
+      OverWrite: true
+      retryCount: '1'
+# Download & Copy keystore
+  - task: DownloadSecureFile@1
+    displayName: 'Fetch keystore.'
+    inputs:
+      secureFile: 'apps_catalog_keystore'
+      retryCount: '1'
+  - task: CopyFiles@2
+    displayName: 'Copy keystore.'
+    inputs:
+      SourceFolder: $(Agent.TempDirectory)
+      Contents: 'apps_catalog_keystore'
+      TargetFolder: $(Build.SourcesDirectory)
+      OverWrite: true
+      retryCount: '1'
+# Download & Copy signing.properties
+  - task: DownloadSecureFile@1
+    displayName: 'Fetch signing config.'
+    inputs:
+      secureFile: 'signing.properties'
+      retryCount: '1'
+  - task: CopyFiles@2
+    displayName: 'Copy signing config.'
+    inputs:
+      SourceFolder: $(Agent.TempDirectory)
+      Contents: 'signing.properties'
       TargetFolder: $(Build.SourcesDirectory)/config
       OverWrite: true
       retryCount: '1'
@@ -82,6 +125,13 @@ steps:
       options: '--build-cache -Pandroid.sdk.channel=3 -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect'
       publishJUnitResults: true
       testResultsFiles: '**/TEST-*.xml'
+  - task: Gradle@3
+    displayName: 'Upload to Firebase App Distribution.'
+    inputs:
+      gradleWrapperFile: 'gradlew'
+      gradleOptions: '-Xmx3072m'
+      tasks: 'assembleDebug appDistributionUploadDebug'
+      options: '--build-cache'
   - script: |
       ./gradlew --stop
     displayName: 'Stop Gradle'

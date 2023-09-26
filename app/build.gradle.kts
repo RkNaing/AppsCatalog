@@ -10,6 +10,8 @@ plugins {
     id("kotlin-parcelize")
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.kover)
+    alias(libs.plugins.gms)
+    alias(libs.plugins.firebase.appdistribution)
     id("org.sonarqube") version "4.2.1.3168"
 }
 
@@ -23,6 +25,9 @@ sonar {
 }
 
 android {
+
+    val configsDir = "$rootDir${File.separator}config${File.separator}"
+
     compileSdk = ProjectConfigs.COMPILE_SDK
 
     defaultConfig {
@@ -44,13 +49,42 @@ android {
         xmlOutput = file("../build/reports/lint-results.xml")
     }
 
+    signingConfigs {
+        create("release") {
+            val signingConfigs = readProperties(file("../config/signing.properties"))
+            storeFile = file("$rootDir${File.separator}apps_catalog_keystore")
+            storePassword = signingConfigs["storePassword"] as String
+            keyPassword = signingConfigs["keyPassword"] as String
+            keyAlias = signingConfigs["keyAlias"] as String
+        }
+    }
+
     buildTypes {
+        val credentialPath = "${configsDir}apps-catalog-e4a0b-140bcb296b4b.json"
+        val testersList = "${configsDir}testers.txt"
+
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            firebaseAppDistribution {
+                artifactType = "AAB"
+                releaseNotes = "Sample test release."
+                groups = "internaltesters"
+                serviceCredentialsFile = credentialPath
+            }
+        }
+        debug {
+            firebaseAppDistribution {
+                artifactType = "APK"
+                releaseNotes = "Sample test release."
+                testersFile = testersList
+                serviceCredentialsFile = credentialPath
+            }
         }
     }
 
@@ -132,6 +166,9 @@ dependencies {
     implementation(libs.kotlinx.datetime)
 
     implementation(libs.timber)
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.junit.android)
