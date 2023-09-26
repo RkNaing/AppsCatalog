@@ -69,6 +69,20 @@ steps:
       TargetFolder: $(Build.SourcesDirectory)/config
       OverWrite: true
       retryCount: '1'
+# Download & Copy google-services.json
+  - task: DownloadSecureFile@1
+    displayName: 'Fetch google-services.json.'
+    inputs:
+      secureFile: 'google-services.json'
+      retryCount: '1'
+  - task: CopyFiles@2
+    displayName: 'Copy google-services.json.'
+    inputs:
+      SourceFolder: $(Agent.TempDirectory)
+      Contents: 'google-services.json'
+      TargetFolder: $(Build.SourcesDirectory)/app
+      OverWrite: true
+      retryCount: '1'
   - task: JavaToolInstaller@0
     displayName: 'Setup to use JDK 17.'
     inputs:
