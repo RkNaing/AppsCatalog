@@ -21,8 +21,8 @@ sonar {
         sonarProperties.forEach { key, value ->
             property(key as String, value as Any)
         }
-        property("sonar.androidLint.reportPaths", "${project.buildDir}/build/reports/lint-results.xml")
-        property("sonar.kotlin.detekt.reportPaths", "${project.buildDir}/build/reports/detekt/merge.xml")
+        property("sonar.androidLint.reportPaths", "${project.rootDir}/build/reports/lint-results.xml")
+        property("sonar.kotlin.detekt.reportPaths", "${project.rootDir}/build/reports/detekt/merge.xml")
     }
 }
 
