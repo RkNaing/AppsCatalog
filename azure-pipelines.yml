@@ -3,6 +3,9 @@
 # Add steps that test, sign, and distribute the APK, save build artifacts, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/android
 
+# Pipeline shallow clone has been disabled (https://shorturl.at/otuX8) due to a
+# sonar cloud warning (https://shorturl.at/muyJ4)
+
 variables:
   GRADLE_USER_HOME: $(Pipeline.Workspace)/.gradle
 

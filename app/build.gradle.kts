@@ -21,6 +21,8 @@ sonar {
         sonarProperties.forEach { key, value ->
             property(key as String, value as Any)
         }
+        property("sonar.androidLint.reportPaths", "${project.buildDir}/build/reports/lint-results.xml")
+        property("sonar.kotlin.detekt.reportPaths", "${project.buildDir}/build/reports/detekt/merge.xml")
     }
 }
 
@@ -61,7 +63,6 @@ android {
 
     buildTypes {
         val credentialPath = "${configsDir}apps-catalog-e4a0b-140bcb296b4b.json"
-        val testersList = "${configsDir}testers.txt"
 
         release {
             isMinifyEnabled = true
@@ -78,11 +79,12 @@ android {
                 serviceCredentialsFile = credentialPath
             }
         }
+
         debug {
             firebaseAppDistribution {
                 artifactType = "APK"
                 releaseNotes = "Sample test release."
-                testersFile = testersList
+                groups = "internaltesters"
                 serviceCredentialsFile = credentialPath
             }
         }
