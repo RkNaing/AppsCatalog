@@ -9,14 +9,10 @@ import com.rkzmn.appscatalog.domain.repositories.ListPreferenceRepository
 import com.rkzmn.appscatalog.presentation.apps.list.states.AppsDisplayType
 import com.rkzmn.appscatalog.utils.android.setValue
 import com.rkzmn.appscatalog.utils.android.watchValueWithNonNullMapper
-import com.rkzmn.appscatalog.utils.kotlin.CoroutineDispatcherProvider
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class ListPreferenceRepositoryImpl @Inject constructor(
-    private val dispatcherProvider: CoroutineDispatcherProvider,
     private val dataStore: DataStore<Preferences>,
 ) : ListPreferenceRepository {
 
@@ -27,12 +23,10 @@ class ListPreferenceRepositoryImpl @Inject constructor(
             } else {
                 AppsListType.valueOf(rawValue)
             }
-        }.flowOn(dispatcherProvider.io)
+        }
 
     override suspend fun setAppsListType(type: AppsListType) {
-        withContext(dispatcherProvider.io) {
-            keyAppsListType.setValue(dataStore, type.name)
-        }
+        keyAppsListType.setValue(dataStore, type.name)
     }
 
     override val displayType: Flow<AppsDisplayType> =
@@ -42,12 +36,10 @@ class ListPreferenceRepositoryImpl @Inject constructor(
             } else {
                 AppsDisplayType.valueOf(rawValue)
             }
-        }.flowOn(dispatcherProvider.io)
+        }
 
     override suspend fun setAppsDisplayType(type: AppsDisplayType) {
-        withContext(dispatcherProvider.io) {
-            keyAppsDisplayType.setValue(dataStore, type.name)
-        }
+        keyAppsDisplayType.setValue(dataStore, type.name)
     }
 
     override val sortOption: Flow<AppSortOption> =
@@ -57,12 +49,10 @@ class ListPreferenceRepositoryImpl @Inject constructor(
             } else {
                 AppSortOption.valueOf(rawValue)
             }
-        }.flowOn(dispatcherProvider.io)
+        }
 
     override suspend fun setSortOption(option: AppSortOption) {
-        withContext(dispatcherProvider.io) {
-            keySortOption.setValue(dataStore, option.name)
-        }
+        keySortOption.setValue(dataStore, option.name)
     }
 
     companion object {

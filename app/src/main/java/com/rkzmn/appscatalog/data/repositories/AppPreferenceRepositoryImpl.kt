@@ -11,14 +11,10 @@ import com.rkzmn.appscatalog.utils.android.isSDKIntAtLeast
 import com.rkzmn.appscatalog.utils.android.setValue
 import com.rkzmn.appscatalog.utils.android.watchValueWithDefault
 import com.rkzmn.appscatalog.utils.android.watchValueWithNonNullMapper
-import com.rkzmn.appscatalog.utils.kotlin.CoroutineDispatcherProvider
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class AppPreferenceRepositoryImpl @Inject constructor(
-    private val dispatcherProvider: CoroutineDispatcherProvider,
     private val dataStore: DataStore<Preferences>,
 ) : AppPreferenceRepository {
 
@@ -29,23 +25,18 @@ class AppPreferenceRepositoryImpl @Inject constructor(
             } else {
                 AppTheme.valueOf(rawValue)
             }
-        }.flowOn(dispatcherProvider.io)
+        }
 
     override suspend fun setAppTheme(theme: AppTheme) {
-        withContext(dispatcherProvider.io) {
-            keyAppTheme.setValue(dataStore, theme.name)
-        }
+        keyAppTheme.setValue(dataStore, theme.name)
     }
 
     override val isUsingDynamicColors: Flow<Boolean>
         get() = keyDynamicColors
             .watchValueWithDefault(dataStore, isSDKIntAtLeast(AndroidVersions.S))
-            .flowOn(dispatcherProvider.io)
 
     override suspend fun setUseDynamicColors(use: Boolean) {
-        withContext(dispatcherProvider.io) {
-            keyDynamicColors.setValue(dataStore, use)
-        }
+        keyDynamicColors.setValue(dataStore, use)
     }
 
     companion object {
