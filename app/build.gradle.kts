@@ -23,6 +23,24 @@ sonar {
         }
         property("sonar.androidLint.reportPaths", "${project.rootDir}/build/reports/lint-results.xml")
         property("sonar.kotlin.detekt.reportPaths", "${project.rootDir}/build/reports/detekt/merge.xml")
+        property(
+            "sonar.exclusions",
+            listOf(
+                "**/test/common/**",
+                "**/androidx/compose/material3/pullrefresh/**",
+                "**/di/*",
+                "**/domain/model/*",
+                "**/navigation/*",
+                "**/ui/theme/*",
+                "**/ui/widgets/*",
+                "**/utils/android/**",
+                "**/AppUtils*",
+                "**/CoroutineDispatcherProvider*",
+                "**/AppsCatalog*",
+                "**/build/**",
+                "**/appsdataprovider/**",
+            )
+        )
     }
 }
 
@@ -210,19 +228,33 @@ dependencies {
 
 koverReport {
     filters {
-        filters {
-            excludes {
-                packages(
-                    "androidx.compose.material3",
-                    "dagger.hilt.internal",
-                    "hilt_aggregated_deps",
-                    "com.rkzmn.appsdataprovider",
-                    "com.rkzmn.appscatalog.di",
-                    "com.rkzmn.appscatalog.test.common"
-                )
-                classes("*_Hilt*", "*Hilt_*")
-                annotatedBy("*Generated*")
-            }
+        excludes {
+            packages(
+                "androidx.compose.material3",
+                "dagger.hilt.internal",
+                "*hilt_aggregated_deps",
+                "*.appsdataprovider",
+                "*.di",
+                "*.ui",
+                "*.utils.android.compose",
+                "*.utils.android.compose",
+                "*.test.common",
+                "*.domain.model.*",
+                "*.navigation.*",
+                "*.utils.*",
+            )
+            classes(
+                "*_Hilt*",
+                "*Hilt_*",
+                "*AppsCatalog"
+            )
+            annotatedBy("*Generated*")
+        }
+        includes {
+            classes(
+                "*.DateUtils*",
+                "com.rkzmn.appscatalog.navigation.destination.Destination",
+            )
         }
     }
     defaults {
