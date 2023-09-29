@@ -15,14 +15,20 @@ plugins {
     id("org.sonarqube") version "4.2.1.3168"
 }
 
+val mergedReportsDir = "${project.rootDir}${File.separator}build${File.separator}reports${File.separator}"
+val koverReportsDir = "${mergedReportsDir}${File.separator}kover${File.separator}"
+val koverXmlReport = "${koverReportsDir}kover_reports.xml"
+val configsDir = "${project.rootDir}${File.separator}config${File.separator}"
+
 sonar {
     properties {
         val sonarProperties = readProperties(file("../config/sonar.properties"))
         sonarProperties.forEach { key, value ->
             property(key as String, value as Any)
         }
-        property("sonar.androidLint.reportPaths", "${project.rootDir}/build/reports/lint-results.xml")
-        property("sonar.kotlin.detekt.reportPaths", "${project.rootDir}/build/reports/detekt/merge.xml")
+        property("sonar.androidLint.reportPaths", "${mergedReportsDir}lint-results.xml")
+        property("sonar.kotlin.detekt.reportPaths", "${mergedReportsDir}detekt${File.separator}merge.xml")
+        property("sonar.coverage.jacoco.xmlReportPaths", koverXmlReport)
         property(
             "sonar.exclusions",
             listOf(
@@ -246,28 +252,32 @@ koverReport {
             classes(
                 "*_Hilt*",
                 "*Hilt_*",
-                "*AppsCatalog"
+                "*AppsCatalog",
+                "*_ProvideFactory*"
             )
             annotatedBy("*Generated*")
         }
-        includes {
-            classes(
-                "*.DateUtils*",
-                "com.rkzmn.appscatalog.navigation.destination.Destination",
-            )
-        }
+//        includes {
+//            classes(
+//                "*.DateUtils*",
+//                "com.rkzmn.appscatalog.navigation.destination.Destination",
+//            )
+//        }
     }
     defaults {
         mergeWith("debug")
-
         html {
             title = "AppsCatalog"
             onCheck = true
+            setReportDir(file("${koverReportsDir}html"))
         }
 
         xml {
             onCheck = true
+            setReportFile(file(koverXmlReport))
         }
+    }
+    androidReports("release") {
     }
 }
 
