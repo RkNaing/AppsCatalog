@@ -1,13 +1,13 @@
 [versions]
 kotlin = "1.9.10"
 compose-compiler = "1.5.3" # https://developer.android.com/jetpack/androidx/releases/compose-kotlin
-compose-bom = "2023.09.01" # https://developer.android.com/jetpack/compose/bom
+compose-bom = "2023.09.02" # https://developer.android.com/jetpack/compose/bom
 navigation-compose = "2.7.3" # https://developer.android.com/jetpack/compose/navigation#setup
 accompanist = "0.31.2-alpha"
 hilt = "2.48" # https://tinyurl.com/hilt-android , https://tinyurl.com/hilt-testing-guide
 mockk = "1.13.8"
 coroutines = "1.7.3"
-androidGradlePlugin = "8.1.1"
+androidGradlePlugin = "8.1.2"
 
 [libraries]
 compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
