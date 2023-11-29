@@ -3,6 +3,14 @@ One stop insight details provider for applications installed on your Android dev
 
 ![SonaCloudStatus](https://sonarcloud.io/api/project_badges/measure?project=RkNaing_AppsCatalog&metric=alert_status) ![AzurePipelineStatus](https://dev.azure.com/1993khiladi/AppsCatalog/_apis/build/status%2FRkNaing.AppsCatalog?branchName=master)
 
+### Screenshots
+
+| ![](media/screenshots/01. Apps List (Grid UI).png)  | ![](media/screenshots/02. Apps List (List UI).png)  |
+|---|---|
+| ![](media/screenshots/03. Apps Filter Modal.png)  | ![](media/screenshots/05. App Detail.png)  |
+![](media/screenshots/06. Apps List (Master-Detail).png)  
+
+
 ### Required Files
 
 **config/signing.properties**
