@@ -5,10 +5,10 @@ One stop insight details provider for applications installed on your Android dev
 
 ### Screenshots
 
-| ![](media/screenshots/01. Apps List (Grid UI).png)  | ![](media/screenshots/02. Apps List (List UI).png)  |
+| ![](media/screenshots/01.%20Apps%20List%20(Grid%20UI).png)  | ![](media/screenshots/02.%20Apps%20List%20(List%20UI).png)  |
 |---|---|
-| ![](media/screenshots/03. Apps Filter Modal.png)  | ![](media/screenshots/05. App Detail.png)  |
-![](media/screenshots/06. Apps List (Master-Detail).png)  
+| ![](media/screenshots/03.%20Apps%20Filter%20Modal.png)  | ![](media/screenshots/05.%20App%20Detail.png)  |
+![](media/screenshots/06.%20Apps%20List%20(Master-Detail).png)  
 
 
 ### Required Files
